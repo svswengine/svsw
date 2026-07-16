@@ -6,6 +6,7 @@ holds one kind of document; new subdirectories (`docs/architecture`,
 `docs/decisions`, and others) arrive with their content, not ahead of it.
 
 - [docs/specs/README.md](specs/README.md) — the spec index and todo list.
+- [docs/decisions/README.md](decisions/README.md) — the decision log.
 - [docs/plans/claude-tooling-design.md](plans/claude-tooling-design.md) —
   design and planning records, starting with the Claude Code tooling design.
 - [docs/plans/public-stats.md](plans/public-stats.md) — the org profile's
@@ -23,5 +24,6 @@ holds one kind of document; new subdirectories (`docs/architecture`,
 | Directory | Holds |
 |---|---|
 | `docs/specs/` | The spec index and future spec documents. |
+| `docs/decisions/` | The decision log. |
 | `docs/plans/` | Design and planning records, such as `claude-tooling-design.md`. |
 | `docs/design/` | Design records and browsable design artifacts, such as the M00 editor mockup. |

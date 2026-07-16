@@ -6,7 +6,9 @@ inputs. SVSW at `../svsw` is the donor
 codebase; its deterministic kernel, ECS, Lua sandbox, multi-mod machinery, and
 gate/tooling patterns port in with their test suites. The research corpus and
 the dependency-ordered roadmap live at `../carbon/research` (see `ROADMAP.md`
-there); they are reference, and their D54-D77 decisions govern this index.
+there); they are reference. Decisions are canonical in
+[`docs/decisions/README.md`](../decisions/README.md), which governs this
+index.
 
 Specs get produced one at a time. Each spec goes through a brainstorm plus a
 grilling session with the maintainer before it is written in full, and every

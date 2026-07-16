@@ -5,7 +5,7 @@ svsw is a fresh engine project: an Odin/Luau/Go 3D engine built in the
 inputs. SVSW at `../svsw` is the donor
 codebase; its deterministic kernel, ECS, Lua sandbox, multi-mod machinery, and
 gate/tooling patterns port in with their test suites. The research corpus and
-the dependency-ordered roadmap live at `../carbon/research` (see `ROADMAP.md`
+the dependency-ordered roadmap live at `docs/research/` (see `ROADMAP.md`
 there); they are reference. Decisions are canonical in
 [`docs/decisions/README.md`](../decisions/README.md), which governs this
 index.

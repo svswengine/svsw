@@ -18,6 +18,7 @@ holds one kind of document; new subdirectories (`docs/architecture`,
   `index.html` in a browser.
 - [docs/design/editor-mockup-qa.md](design/editor-mockup-qa.md) — the M00
   mockup's QA sweep: findings, fixes, contrast ratios, and re-verification.
+- [docs/research/README.md](research/README.md) — the research corpus index.
 
 ## Layout
 
@@ -27,3 +28,4 @@ holds one kind of document; new subdirectories (`docs/architecture`,
 | `docs/decisions/` | The decision log. |
 | `docs/plans/` | Design and planning records, such as `claude-tooling-design.md`. |
 | `docs/design/` | Design records and browsable design artifacts, such as the M00 editor mockup. |
+| `docs/research/` | The research corpus. |

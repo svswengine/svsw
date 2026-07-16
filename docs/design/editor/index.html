@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>svsw editor mockup (M00)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- menu bar -->
+  <div id="menubar" role="menubar">
+    <span class="brand">svsw</span>
+    <span class="menu-item" role="menuitem" tabindex="0" aria-haspopup="menu" aria-expanded="false" data-menu="File">File</span>
+    <span class="menu-item" role="menuitem" tabindex="0" aria-haspopup="menu" aria-expanded="false" data-menu="Edit">Edit</span>
+    <span class="menu-item" role="menuitem" tabindex="0" aria-haspopup="menu" aria-expanded="false" data-menu="View">View</span>
+    <span class="menu-item" role="menuitem" tabindex="0" aria-haspopup="menu" aria-expanded="false" data-menu="Session">Session</span>
+    <span class="menu-item" role="menuitem" tabindex="0" aria-haspopup="menu" aria-expanded="false" data-menu="Mods">Mods</span>
+    <span class="menu-item" role="menuitem" tabindex="0" aria-haspopup="menu" aria-expanded="false" data-menu="Window">Window</span>
+    <span class="menu-item" role="menuitem" tabindex="0" aria-haspopup="menu" aria-expanded="false" data-menu="Help">Help</span>
+    <span class="menubar-right">editor mockup &middot; M00 design artifact &middot; not the engine</span>
+  </div>
+
+  <!-- toolbar -->
+  <div id="toolbar">
+    <select id="run-target" title="run target; follows selection unless pinned">
+      <option>scene: sandbox_01</option>
+      <option>sample: crates.lua</option>
+      <option>mod: sample_tweaks</option>
+    </select>
+    <button id="btn-pin" title="pin the run target (stop following selection)">pin</button>
+    <button id="btn-run" title="boot / end the play-in-editor session">&#9654; run</button>
+    <span class="tb-sep"></span>
+    <button id="btn-pause" title="pause / resume ticking" disabled>&#9208; pause</button>
+    <button id="btn-back" title="step back one tick (exact replay to tick-1)">&#9198; back</button>
+    <button id="btn-step" title="advance exactly one tick">&#9197; step</button>
+    <span class="tb-sep"></span>
+    <button id="btn-undo" title="undo (walk the command log back)">&#8630; undo</button>
+    <button id="btn-redo" title="redo (walk the command log forward)">&#8631; redo</button>
+    <span class="tb-sep"></span>
+    <button class="gizmo-btn active" data-mode="select" title="select (Q)">Q sel</button>
+    <button class="gizmo-btn" data-mode="move" title="move (W)">W move</button>
+    <button class="gizmo-btn" data-mode="rotate" title="rotate (E)">E rot</button>
+    <button class="gizmo-btn" data-mode="scale" title="scale (R)">R scale</button>
+    <span class="tb-sep"></span>
+    <button id="btn-chunks" title="chunk grid + per-chunk hashes">chunks</button>
+    <button id="btn-split" title="second viewport pane">split</button>
+    <span class="tb-sep"></span>
+    <button id="btn-scripts" title="files explorer: mod, engine, and server scripts">{ } scripts</button>
+    <span class="tb-sep"></span>
+    <button id="btn-tour" title="play the narrated determinism walkthrough">tour</button>
+  </div>
+
+  <!-- main: tree | viewport+timeline | inspector -->
+  <div id="main">
+    <div id="left" class="panel">
+      <div class="tabs">
+        <button class="tab active" data-panel="scene-tree">Scene Tree</button>
+        <button class="tab" data-panel="files-tree">Files</button>
+        <button class="collapse-btn" data-target="left" title="collapse / expand panel" aria-label="collapse or expand left dock">&#9662;</button>
+      </div>
+      <div id="scene-tree" class="tab-panel active"></div>
+      <div id="files-tree" class="tab-panel"></div>
+    </div>
+
+    <div id="center">
+      <div id="doc-tabs" class="tabs"></div>
+      <div id="doc-scene" class="doc active">
+        <div id="viewport-wrap">
+          <div class="pane" id="pane1">
+            <div class="pane-label">perspective</div>
+            <div class="scene3d"><div class="world"></div></div>
+            <div id="chunk-chips" class="hidden"></div>
+            <div id="demo-caption" class="hidden"></div>
+          </div>
+          <div class="pane hidden" id="pane2">
+            <div class="pane-label">top</div>
+            <div class="scene3d"><div class="world cam-top"></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- script editors are created per open file and inserted before the timeline -->
+      <div id="timeline" title="drag to scrub">
+        <div id="ruler"></div>
+        <div id="playhead"></div>
+        <div id="timeline-label" class="mono">tick 0</div>
+      </div>
+    </div>
+
+    <div id="right" class="panel">
+      <div class="panel-head"><span class="panel-title">inspector</span><button class="collapse-btn" data-target="right" title="collapse / expand panel" aria-label="collapse or expand inspector">&#9662;</button></div>
+      <div id="inspector-body" class="panel-body"></div>
+    </div>
+  </div>
+
+  <!-- bottom dock -->
+  <div id="bottom">
+    <div class="dock panel" id="dock-bl">
+      <div class="tabs">
+        <button class="tab active" data-panel="tab-assets">Asset Browser</button>
+        <button class="tab" data-panel="tab-mods">Mod / Data Browser</button>
+        <button class="collapse-btn" data-target="dock-bl" title="collapse / expand panel" aria-label="collapse or expand bottom-left dock">&#9662;</button>
+      </div>
+      <div id="tab-assets" class="tab-panel active">
+        <div class="asset-row"><span class="asset-kind">mesh</span><span class="asset-path">meshes/cube.mesh</span><span class="asset-meta">1.2 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">mesh</span><span class="asset-path">meshes/platform.mesh</span><span class="asset-meta">0.9 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">mesh</span><span class="asset-path">meshes/lamp_post.mesh</span><span class="asset-meta">2.4 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">tex</span><span class="asset-path">textures/crate_diffuse.png</span><span class="asset-meta">64 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">tex</span><span class="asset-path">textures/ground_tiles.png</span><span class="asset-meta">128 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">tex</span><span class="asset-path">textures/lamp_emissive.png</span><span class="asset-meta">16 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">mat</span><span class="asset-path">materials/crate.mat</span><span class="asset-meta">0.3 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">mat</span><span class="asset-path">materials/ground.mat</span><span class="asset-meta">0.3 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">wav</span><span class="asset-path">audio/click_01.wav</span><span class="asset-meta">42 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">ogg</span><span class="asset-path">audio/hum_loop.ogg</span><span class="asset-meta">210 KB</span></div>
+        <div class="asset-row"><span class="asset-kind">scn</span><span class="asset-path">scenes/sandbox_01.scene</span><span class="asset-meta">3.1 KB</span></div>
+      </div>
+      <div id="tab-mods" class="tab-panel">
+        <div class="mods-cols">
+          <div class="mods-list">
+            <div class="sec-title">loaded mods</div>
+            <div class="mod-row"><span class="mod-name">base</span><span class="mod-ver mono">1.0.0</span><span class="mod-meta">42 prototypes</span></div>
+            <div class="mod-row"><span class="mod-name">sample_tweaks</span><span class="mod-ver mono">0.2.0</span><span class="mod-meta">3 data patches, 1 system</span></div>
+            <div class="mod-row"><span class="mod-name">extra_props</span><span class="mod-ver mono">0.1.0</span><span class="mod-meta">2 prototypes</span></div>
+            <div class="sec-title">control scripts</div>
+            <div class="proto-row" id="row-crates-lua" title="double-click to open in the editor"><span class="proto-id mono">crates.lua</span><span class="proto-src">sample_tweaks</span></div>
+          </div>
+          <div class="proto-list">
+            <div class="sec-title">data-stage prototypes</div>
+            <div class="proto-row"><span class="proto-id mono">entity/crate</span><span class="proto-src">base</span></div>
+            <div class="proto-row"><span class="proto-id mono">entity/crate</span><span class="proto-src patched">patched by sample_tweaks</span></div>
+            <div class="proto-row"><span class="proto-id mono">entity/lamp</span><span class="proto-src">base</span></div>
+            <div class="proto-row"><span class="proto-id mono">entity/spawn_marker</span><span class="proto-src">base</span></div>
+            <div class="proto-row"><span class="proto-id mono">tile/ground</span><span class="proto-src">base</span></div>
+            <div class="proto-row"><span class="proto-id mono">tile/ground_worn</span><span class="proto-src patched">sample_tweaks</span></div>
+            <div class="proto-row"><span class="proto-id mono">item/plank</span><span class="proto-src">base</span></div>
+            <div class="proto-row"><span class="proto-id mono">entity/barrel</span><span class="proto-src">extra_props</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dock panel" id="dock-br">
+      <div class="tabs">
+        <button class="tab" data-panel="tab-console">Console</button>
+        <button class="tab" data-panel="tab-profiler">Profiler</button>
+        <button class="tab active" data-panel="tab-cmdlog">Command Log</button>
+        <button class="tab" data-panel="tab-debugger">Debugger</button>
+        <button class="collapse-btn" data-target="dock-br" title="collapse / expand panel" aria-label="collapse or expand bottom-right dock">&#9662;</button>
+      </div>
+
+      <div id="tab-console" class="tab-panel">
+        <div id="console-lines">
+          <div class="log-line"><span class="log-tag">info</span>platform ready: window 1280x720, device ok</div>
+          <div class="log-line"><span class="log-tag">info</span>resolving 3 mod manifests: base, sample_tweaks, extra_props</div>
+          <div class="log-line"><span class="log-tag">info</span>mod base 1.0.0 loaded (42 prototypes)</div>
+          <div class="log-line"><span class="log-tag">info</span>mod sample_tweaks 0.2.0 loaded (3 data patches)</div>
+          <div class="log-line"><span class="log-tag">info</span>mod extra_props 0.1.0 loaded (2 prototypes)</div>
+          <div class="log-line"><span class="log-tag ok">ok</span>scene scenes/sandbox_01.scene loaded: 7 entities, 4 chunks active</div>
+        </div>
+      </div>
+
+      <div id="tab-profiler" class="tab-panel">
+        <div class="prof-summary mono">sim tick p95 <span class="accent">3.9 ms</span> / budget 16.6 ms &middot; draw-list build p95 <span class="accent">0.8 ms</span> / budget 4.0 ms</div>
+        <div id="profiler-rows">
+          <div class="prof-row" data-base="0.08"><span class="prof-name mono">input_system</span><div class="prof-track"><div class="prof-bar"></div></div><span class="prof-ms mono">0.08</span></div>
+          <div class="prof-row" data-base="0.42"><span class="prof-name mono">movement_system</span><div class="prof-track"><div class="prof-bar"></div></div><span class="prof-ms mono">0.42</span></div>
+          <div class="prof-row" data-base="1.63"><span class="prof-name mono">physics_system</span><div class="prof-track"><div class="prof-bar"></div></div><span class="prof-ms mono">1.63</span></div>
+          <div class="prof-row" data-base="0.87"><span class="prof-name mono">script_systems</span><div class="prof-track"><div class="prof-bar"></div></div><span class="prof-ms mono">0.87</span></div>
+          <div class="prof-row" data-base="0.54"><span class="prof-name mono">render_extract</span><div class="prof-track"><div class="prof-bar"></div></div><span class="prof-ms mono">0.54</span></div>
+          <div class="prof-row" data-base="0.21"><span class="prof-name mono">audio_mix</span><div class="prof-track"><div class="prof-bar"></div></div><span class="prof-ms mono">0.21</span></div>
+        </div>
+      </div>
+
+      <div id="tab-cmdlog" class="tab-panel active">
+        <div id="cmd-lines"></div>
+      </div>
+
+      <div id="tab-debugger" class="tab-panel">
+        <div class="tabs sub">
+          <button class="tab active" data-panel="dbg-script">Script</button>
+          <button class="tab" data-panel="dbg-sim">Sim</button>
+        </div>
+        <div id="dbg-script" class="tab-panel active">
+          <div class="dbg-preview">
+            <div class="dbg-preview-head">
+              <span class="mono">crates.lua</span>
+              <button id="btn-open-editor" title="open crates.lua as a center document">open in editor</button>
+            </div>
+            <div id="lua-preview"></div>
+          </div>
+          <div class="dbg-side">
+            <div class="dbg-sec">
+              <div class="sec-title">call stack</div>
+              <div class="stack-row mono" data-line="6" title="open crates.lua at this frame">drift <span class="stack-loc">crates.lua:6</span></div>
+              <div class="stack-row mono" data-line="12" title="open crates.lua at this frame">&lt;on_tick handler&gt; <span class="stack-loc">crates.lua:12</span></div>
+              <div class="stack-row mono">dispatch_control <span class="stack-loc">[engine]</span></div>
+            </div>
+            <div class="dbg-sec">
+              <div class="sec-title">watch</div>
+              <div class="watch-row mono"><span class="watch-name">speed</span><span class="watch-val">0.25</span></div>
+              <div class="watch-row mono"><span class="watch-name">e</span><span class="watch-val">entity(crate_02)</span></div>
+              <div class="watch-row mono"><span class="watch-name">t.x</span><span class="watch-val">3.125</span></div>
+              <div class="watch-row mono"><span class="watch-name">tick</span><span class="watch-val" id="watch-tick">0</span></div>
+            </div>
+          </div>
+        </div>
+        <div id="dbg-sim" class="tab-panel">
+          <div class="sim-left">
+            <button id="btn-step-system" title="run the next system of this tick">&#8677; step system</button>
+            <div id="sys-list"></div>
+          </div>
+          <div class="sim-right">
+            <div class="sec-title">entity state diff (before &rarr; after)</div>
+            <div id="sim-diff" class="mono">press step system to walk one tick, system by system</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- status bar -->
+  <div id="statusbar">
+    <span id="st-session" title="play-in-editor session state">stopped</span>
+    <span id="st-tick" class="mono">tick 00000</span>
+    <span id="st-hash" class="mono" title="world hash (XXH3 in the real engine; faked deterministically here)"></span>
+    <span id="st-lang" class="mono" title="focused document language mode">scene</span>
+    <span id="st-parity" title="D72: one build, identical hashes headless and windowed">headless == windowed &#10003;</span>
+    <span class="st-spacer"></span>
+    <span id="st-gate" class="chip">check &#10003; green</span>
+  </div>
+
+  <!-- toasts + modal overlay -->
+  <div id="toasts" role="status" aria-live="polite"></div>
+  <div id="overlay" class="hidden">
+    <div id="overlay-box" role="dialog" aria-modal="true" aria-labelledby="overlay-title">
+      <div id="overlay-title"></div>
+      <div id="overlay-body"></div>
+      <button id="overlay-close">close</button>
+    </div>
+  </div>
+
+</div>
+<script src="mockup.js"></script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 # Carbon and SVSW successor-engine research
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 This directory is an evidence ledger and a proof-first design proposal for a
 new Odin/Lua/Go engine. It is deliberately outside all 33 Carbon repositories
 and outside SVSW. No cloned Carbon repository or SVSW source file was changed
@@ -156,7 +158,7 @@ implementation starts.
 
 The fresh-project decision supersedes one part of ROADMAP.md: the hard-cutover,
 deletion-commit, and gate-equivalence checklist machinery is obsolete, because
-nothing cuts over from SVSW. SVSW is now a donor codebase; its subsystems port
-into svsw3D test-first, and svsw3D stands up its own gate roster from scratch
+nothing cuts over from SVSW. SVSW is now the internal prototype; its subsystems
+port into svsw3D test-first, and svsw3D stands up its own gate roster from scratch
 (the spec index records both obligations). Everything else in the roadmap,
 including the stage ordering, the exit gates, and decisions D54–D72, stands.

@@ -1,10 +1,12 @@
 # Documentation
 
 All documentation lives in subdirectories of `docs/`. This file, the router,
-is the only markdown file at the top level of `docs/`. Each subdirectory
-holds one kind of document; new subdirectories (`docs/architecture`,
-`docs/decisions`, and others) arrive with their content, not ahead of it.
+and the style guide are the only markdown files at the top level of `docs/`.
+Each subdirectory holds one kind of document; new subdirectories
+(`docs/architecture`, `docs/decisions`, and others) arrive with their
+content, not ahead of it.
 
+- [docs/ODIN_STYLE.md](ODIN_STYLE.md) — the Odin engineering standard.
 - [docs/specs/README.md](specs/README.md) — the spec index and todo list.
 - [docs/decisions/README.md](decisions/README.md) — the decision log.
 - [docs/plans/claude-tooling-design.md](plans/claude-tooling-design.md) —

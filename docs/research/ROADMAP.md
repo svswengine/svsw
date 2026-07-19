@@ -1,5 +1,7 @@
 # Roadmap: the successor engine (SVSW → 3D, headless-first, editor-equipped, multiplayer)
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 Status: definitive dependency-ordered roadmap from the maintainer grilling
 session, revised against the two adversarial critique passes
 (sequencing/feasibility and completeness; dispositions in the Review notes
@@ -989,7 +991,7 @@ Canonical home: `docs/decisions/README.md` in this repository, as of
   engine repository's name being `svsw` shrinks the D66 rebrand ceremony
   further still, since the brand and the repo name already match.
 - **D77: Spec+course pairing, four paths, course after implementation.**
-  Course material builds beside the engine, as the SVSW experiment ran it.
+  Course material builds beside the engine, as the internal prototype ran it.
   Every implemented spec gets a course module in the `course` repo, authored
   after implementation; spec and course come in pairs, and the spec
   lifecycle extends to pending, brainstormed, grilled, spec written,
@@ -1082,15 +1084,15 @@ Canonical home: `docs/decisions/README.md` in this repository, as of
   This supersedes the choice locked in scripting-language-comparison.md; the
   maintainer fired that decision's own logged revisit trigger, typed-DX
   demand the annotation path cannot meet
-  (carbon/research/scripting-language-comparison.md, section 6;
-  carbon/research/typed-editor-scripts.md). The fork-and-merge Luau+5.4
+  (scripting-language-comparison.md, section 6;
+  typed-editor-scripts.md). The fork-and-merge Luau+5.4
   proposal, grafting Luau's type system onto the Lua 5.4 runtime without a
   full swap, is rejected as structurally infeasible: no shared code lineage,
   incompatible number models, grammar gaps Luau's parser cannot accept, a
   from-scratch C++ VM, two moving upstreams
-  (carbon/research/typed-editor-scripts.md's assessment). Timing: svsw3D has
+  (typed-editor-scripts.md's assessment). Timing: svsw3D has
   no code or golden hashes yet, so this is a respec, not a migration; nothing
-  ported yet needs re-porting. Donor Lua-boundary code (sandbox_strip, the
+  ported yet needs re-porting. Internal-prototype Lua-boundary code (sandbox_strip, the
   R1-R5 checklist, host.odin's shape) becomes adaptation rather than literal
   port, since Luau's C API stays 5.1-era-compatible; the patterns, whitelist
   construction, budget-quota-with-shared-pool, one-error-path containment,

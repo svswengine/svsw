@@ -1,5 +1,7 @@
 # Scripting language for svsw3D: JavaScript/TypeScript vs Lua 5.4
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 > **Decision outcome (2026-07-14):** this document's Lua 5.4 recommendation
 > is superseded. The maintainer fired the named revisit trigger on option 2
 > (Luau, close second: typed-DX demand the annotation path cannot meet) and
@@ -13,7 +15,7 @@ a multithreaded engine and games.
 
 ## 1. Question and context
 
-Why now: S14 has not started. S14 ports the donor's hardened Lua embedding
+Why now: S14 has not started. S14 ports the internal prototype's hardened Lua embedding
 (sandbox strip, allocator byte cap, shared instruction budget, R1–R5 longjmp
 discipline, schema parse, the svsw.* core). If the scripting language changes,
 S14 stops being a port and becomes a greenfield security project, so this
@@ -43,7 +45,7 @@ re-prove determinism", while the engine core underneath does not move.
 
 ## 2. Candidates
 
-- **Lua 5.4** (incumbent): the donor engine's scripting language; PUC-Rio,
+- **Lua 5.4** (incumbent): the internal prototype's scripting language; PUC-Rio,
   MIT, native integer/float subtypes, stackful coroutines.
 - **QuickJS-ng**: the maintained fork of Bellard's QuickJS; ES2023, MIT,
   single-header embedding (https://bellard.org/quickjs/quickjs.html,
@@ -61,10 +63,10 @@ re-prove determinism", while the engine core underneath does not move.
 ## 3. Comparison matrix
 
 Scores 1–5, 5 best for this engine. The matrix scores **design merit of the
-language and VM only**. Donor artifacts (the working sandbox, the recorded
+language and VM only**. Internal-prototype artifacts (the working sandbox, the recorded
 goldens, reload.odin) are implementation maturity, not language properties;
 they sit below the table as unscored context. This split answers the review
-blocker in §8: the earlier draft let donor code inflate five Lua cells.
+blocker in §8: the earlier draft let internal-prototype code inflate five Lua cells.
 
 Weights: determinism 5, sandbox design 5, multi-VM isolation 5, embeddability
 4, performance 3, hot reload 3, coroutines 3, modder DX 3, maintenance 3,
@@ -73,12 +75,12 @@ GC 2, ecosystem precedent 2, license 1. Weight sum 39; maximum score 195.
 | Dimension (weight) | Lua 5.4 | QuickJS-ng | Duktape | Luau | TS-on-QuickJS |
 |---|---|---|---|---|---|
 | **Determinism** (5) | **4.5**: native int/float subtypes; demerits: pairs() iteration order is unspecified and needs canonicalization; transcendental math.* delegates to platform libm, a hazard shared by every candidate (https://gafferongames.com/post/floating_point_determinism/) | 4: f64-only Number, BigInt separate and non-interchangeable; bitwise ops coerce through 32 bits; credit: Map/Set/object-key iteration order is spec-guaranteed (https://tc39.es/ecma262/), which removes the pairs() canonicalization class; libm and default-RNG hazards are shared, not charged (Math.random gets host-replaced the same way the engine seeds Lua's RNG; https://v8.dev/blog/math-random) | 3.5: same f64 number model on older semantics | 4: double-only (Lua 5.1 lineage, no 5.4 integer subtype); otherwise Lua-shaped | 3.5: QuickJS runtime plus the transpiler version as an added determinism input for distributed mods |
-| **Sandbox design** (5) | 4: stock Lua ships no sandbox; the primitives invite one (small stdlib to whitelist, lua_Alloc, debug hooks) but hardening is a retrofit; the donor's threat model is buggy-not-hostile per the S14 open questions, and its accepted pattern-backtracking budget gap is a tolerated standing risk of the same class Screeps carried in production (https://lobste.rs/s/uqfh4p/screeps_how_game_about_programming) | 3.5: real primitives (JS_SetMemoryLimit, JS_SetInterruptHandler, max stack; https://quickjs-ng.github.io/quickjs/developer-guide/intro/) but fuel is hand-rolled on the interrupt hook (https://github.com/justjake/quickjs-emscripten/issues/24), the ES2023 global surface (Proxy, Reflect, prototype chains, RegExp backtracking) is far larger to neuter, and the Figma precedent transfers weakened: Figma runs QuickJS compiled to WASM in a browser, where WASM's object-representation isolation supplies part of the boundary and does not transfer to a native quickjs.h embedding (https://www.figma.com/blog/how-we-built-the-figma-plugin-system/) | 3.5: first-class sandboxing doc, small ES surface (https://github.com/svaarala/duktape/blob/master/doc/sandboxing.rst); dormancy is charged once, under maintenance | **5**: the one sandbox-first VM: unsafe stdlib removed, VM-level read-only globals, mandatory interrupt hook, no bytecode loading (https://luau.org/sandbox/); its documented shallow-within-one-VM caveat is what the per-mod-VM model already answers | 3.5: the QuickJS story; TS types are authoring DX, not a security boundary |
+| **Sandbox design** (5) | 4: stock Lua ships no sandbox; the primitives invite one (small stdlib to whitelist, lua_Alloc, debug hooks) but hardening is a retrofit; the internal prototype's threat model is buggy-not-hostile per the S14 open questions, and its accepted pattern-backtracking budget gap is a tolerated standing risk of the same class Screeps carried in production (https://lobste.rs/s/uqfh4p/screeps_how_game_about_programming) | 3.5: real primitives (JS_SetMemoryLimit, JS_SetInterruptHandler, max stack; https://quickjs-ng.github.io/quickjs/developer-guide/intro/) but fuel is hand-rolled on the interrupt hook (https://github.com/justjake/quickjs-emscripten/issues/24), the ES2023 global surface (Proxy, Reflect, prototype chains, RegExp backtracking) is far larger to neuter, and the Figma precedent transfers weakened: Figma runs QuickJS compiled to WASM in a browser, where WASM's object-representation isolation supplies part of the boundary and does not transfer to a native quickjs.h embedding (https://www.figma.com/blog/how-we-built-the-figma-plugin-system/) | 3.5: first-class sandboxing doc, small ES surface (https://github.com/svaarala/duktape/blob/master/doc/sandboxing.rst); dormancy is charged once, under maintenance | **5**: the one sandbox-first VM: unsafe stdlib removed, VM-level read-only globals, mandatory interrupt hook, no bytecode loading (https://luau.org/sandbox/); its documented shallow-within-one-VM caveat is what the per-mod-VM model already answers | 3.5: the QuickJS story; TS types are authoring DX, not a security boundary |
 | **Multi-VM isolation** (5) | **5**: one lua_State per mod, no process-global runtime state | 4.5: one JSRuntime per OS thread, zero sharing, is the documented model; concurrent entry into one runtime is unsafe without external locking (https://github.com/genotrance/quickjs-ng/blob/main/docs/threading.md); os.Worker in quickjs-libc demonstrates the message-passing shape but lives in the runtime library, not the core quickjs.h API an engine links (https://bellard.org/quickjs/quickjs.html) | 4: same one-heap-per-thread shape | **5**: same per-VM model; per-mod VMs are its own docs' recommended isolation | 4.5: same as QuickJS |
 | **Embeddability via the C tier, D64** (4) | **5**: the reference stack API, ANSI C, with the known longjmp footgun the R1–R5 checklist exists for | 4: single quickjs.h, no deps, ~210KiB (https://bellard.org/quickjs/quickjs.html); trades longjmp for refcounted-JSValue leak and exception-as-return-value discipline, a new checklist to derive | 4.5: a Lua-like stack API by design, three-file drop-in (https://duktape.org/guide.html) | 3.5: near-5.1 C API, but the VM is C++, which strains the vendored-C framing of the D64 platform tier | 3.5: QuickJS embedding plus a TS toolchain; offline transpile keeps the runtime clean, load-time transpile drags a compiler into the engine |
 | **Performance, interpreter vs interpreter** (3) | 4: among the fastest non-JIT interpreters; the one cited benchmark ran Lua 5.3.6, not 5.4, on a single fannkuch workload its author calls non-conclusive (https://sabotage-linux.neocities.org/blog/9/) | 3.5: roughly par with Lua in that same single benchmark; unmeasured against 5.4 in this engine's workload; a decision-grade number would come from the project's own stress harness | 2.5: measured slower than QuickJS (https://news.ycombinator.com/item?id=31968265) | **5**: faster than 5.4 per vendor benchmarks; 16KB interpreter core (https://luau.org/performance/) | 3.5: QuickJS numbers |
 | **GC pauses, 16.6ms frame** (2) | 4: incremental and generational modes, tunable (general knowledge, PUC manual) | 4: refcount plus a localized cycle collector; avoids whole-heap stop-the-world spikes (https://medium.com/@landerlyoung/anatomy-of-quickjs-garbage-collection-algorithm-fc02f6813ba1) | 3: refcount plus mark-and-sweep, dated | 4.5: Warframe cites GC and memory efficiency as a migration motive (https://fluff.blog/2025/05/02/towards-dedicated-luau-development.html) | 4 |
-| **Hot reload** (3) | 4.5: cheap chunk compile, environment swap; the language design supports it, the donor's reload.odin is maturity, not design | 4: sub-300µs runtime lifecycle (https://rubenvannieuwpoort.nl/posts/a-first-look-at-quickjs); source reload works; bytecode serialization is version-unstable and lossy, same-build cache only, never a distribution format (https://github.com/bellard/quickjs/blob/master/doc/quickjs.texi, https://github.com/quickjs-ng/quickjs/issues/481) | 3.5 | 4.5: Lua-shaped, fast compile | 3: the transpile step sits inside the reload loop |
+| **Hot reload** (3) | 4.5: cheap chunk compile, environment swap; the language design supports it, the internal prototype's reload.odin is maturity, not design | 4: sub-300µs runtime lifecycle (https://rubenvannieuwpoort.nl/posts/a-first-look-at-quickjs); source reload works; bytecode serialization is version-unstable and lossy, same-build cache only, never a distribution format (https://github.com/bellard/quickjs/blob/master/doc/quickjs.texi, https://github.com/quickjs-ng/quickjs/issues/481) | 3.5 | 4.5: Lua-shaped, fast compile | 3: the transpile step sits inside the reload loop |
 | **Coroutines / scheduler APIs** (3) | 4.5: stackful coroutines suit budgeted, resumable mod-system scheduling; caveat: yielding across a C call needs lua_yieldk continuation plumbing, a known Lua-C-API pain | 3: stackless generators/async only; async implies a microtask queue the engine must drain at one deterministic point per tick; no yield across the C boundary (JS language semantics) | 3.5: nonstandard Duktape.Thread coroutines (https://duktape.org/guide.html) | 4.5: Lua coroutines; whether the mandatory interrupt hook fires across coroutine boundaries is unverified against Luau source and must be checked before the budget-sharing design point relies on it (https://luau.org/sandbox/) | 3: async/await over the same machinery |
 | **Modder DX and talent pool** (3) | 3: the modding lingua franca (Factorio, WoW); typed DX only via annotations (lua-language-server) | 4: the largest programmer population; no types without TS | 2.5: ES5.1-era JS plus a partial ES2015/2016 subset reads as a downgrade to modders (https://wiki.duktape.org/postes5features) | 4.5: gradual typing in the language, luau-lsp autocomplete (https://github.com/luau-lang/luau) | **5**: the strongest typing and tooling; Figma/Bitburner-style generated d.ts surfaces (https://developers.figma.com/docs/plugins/typescript/) |
 | **Ecosystem precedent** (2) | **5**: the default game-modding answer | 4: Figma's plugin sandbox (QuickJS-in-WASM, see sandbox row), txiki.js | 3: Aseprite; TIC-80 carries an open issue proposing a switch away over the ES ceiling (https://github.com/nesbox/TIC-80/issues/1191) | 4.5: Roblox, Alan Wake 2, Warframe, Farming Simulator 25, Second Life SLua (https://fluff.blog/2025/05/02/towards-dedicated-luau-development.html) | 4: typed-factorio and ts-defold prove the authoring pattern (https://github.com/GlassBricks/typed-factorio, https://ts-defold.dev/) |
@@ -91,7 +93,7 @@ implementation and double-only numbers, tsc's license, JS stackless-coroutine
 semantics); each checks out against primary documentation.
 
 **Implementation maturity (context, not scored).** Lua 5.4 is the only
-candidate with a working, engine-shaped boundary: the donor sandbox,
+candidate with a working, engine-shaped boundary: the internal-prototype sandbox,
 allocator cap, instruction budget, containment path, hot reload, and the
 golden-hash harness that proves bit-stable simulation exist as tested code.
 Every other candidate starts that work from zero. The maintainer ruled build
@@ -208,7 +210,7 @@ difficulty, under Lua 5.4, Luau, or QuickJS.
   hazard is shared by every candidate, Lua included
   (https://gafferongames.com/post/floating_point_determinism/); the number
   model is the JS-specific part.
-- The literal donor sandbox: sandbox_strip, the lua_Alloc byte cap, the
+- The literal internal-prototype sandbox: sandbox_strip, the lua_Alloc byte cap, the
   shared count-hook budget, and the R1–R5 discipline are Lua-C-API code with
   zero direct portability. Only the patterns transfer, and a new footgun
   taxonomy (refcounted JSValue leaks, exception-as-return-value discipline,
@@ -216,7 +218,7 @@ difficulty, under Lua 5.4, Luau, or QuickJS.
 - All hash-golden Lua fixtures and the script_accept gate family: the tests
   that define working software for S14, S15, S20, and S24 are Lua-VM-specific
   and re-record in full.
-- Stackful coroutines: scheduler-style mod APIs and the donor's
+- Stackful coroutines: scheduler-style mod APIs and the internal prototype's
   budget-sharing fix have no JS equivalent; async and generators are
   stackless, cannot suspend across the C boundary, and color every mod-facing
   API signature.
@@ -248,7 +250,7 @@ difficulty, under Lua 5.4, Luau, or QuickJS.
    language, heavyweight non-Roblox embeddings (Alan Wake 2, Warframe, FS25,
    SLua: https://fluff.blog/2025/05/02/towards-dedicated-luau-development.html).
    Costs: loses the 5.4 integer subtype (goldens re-record), the C++ VM
-   strains the vendored-C D64 tier, and the donor boundary still needs a
+   strains the vendored-C D64 tier, and the internal-prototype boundary still needs a
    real port. Named revisit triggers: measured interpreter-throughput pain
    in the stress harness, or typed-DX demand the annotation path cannot
    meet.
@@ -310,7 +312,7 @@ A runtime swap reopens, at minimum:
 - **D64**: the C-tier enumeration names Lua's C API as a sanctioned boundary
   and would re-word. quickjs.h substitutes; Luau's C++ VM strains the
   vendored-C framing.
-- **S14 in full**: defined as porting the donor's hardened Lua embedding,
+- **S14 in full**: defined as porting the internal prototype's hardened Lua embedding,
   and every listed artifact is Lua-C-API-literal.
 - **S17**: CLI scaffold templates emit Lua mod projects.
 - The spec-index gate roster item covering the hash-golden Lua game and the
@@ -320,7 +322,7 @@ A runtime swap reopens, at minimum:
 through the decision log) and D72 (the dual-mode parity gate, ROADMAP.md);
 threading and headless parity are language-neutral (§4).
 
-Donor writeoff, stated once as context per the maintainer's instruction: the
+Internal-prototype writeoff, stated once as context per the maintainer's instruction: the
 literal boundary code (sandbox.odin, host.odin, views.odin, the api and
 binding files, prelude.odin, reload.odin) and every Lua-specific fixture
 (hash-golden games, containment suites, budget tests) are forfeited as direct
@@ -338,9 +340,9 @@ with the minors compressed at the end.
 
 | # | Finding | Severity | Disposition |
 |---|---|---|---|
-| A1 | Sunk cost laundered into design scores: five Lua cells (20 of 39 weight points) rested on donor artifacts, contradicting the claim that the recommendation stood on design merits alone | Blocker | **Amended.** The matrix now scores design merit only; donor code moved to an unscored implementation-maturity note. Re-derived on design alone, Luau edges Lua 176 to 173.5, inside scoring noise, as the critique predicted. The recommendation re-worded: it rests on Lua-family-beats-JS plus incumbent-wins-ties, not on "design merits alone favor the incumbent". |
+| A1 | Sunk cost laundered into design scores: five Lua cells (20 of 39 weight points) rested on internal-prototype artifacts, contradicting the claim that the recommendation stood on design merits alone | Blocker | **Amended.** The matrix now scores design merit only; internal-prototype code moved to an unscored implementation-maturity note. Re-derived on design alone, Luau edges Lua 176 to 173.5, inside scoring noise, as the critique predicted. The recommendation re-worded: it rests on Lua-family-beats-JS plus incumbent-wins-ties, not on "design merits alone favor the incumbent". |
 | A2 | Determinism double standard: JS charged for libm transcendentals and unseedable Math.random, hazards Lua shares; JS's spec-ordered iteration named but not priced | Major | **Amended.** The row charges only the true deltas (integer subtype, 32-bit bitwise coercion, transpiler input); shared hazards are labeled shared in both the matrix and §5; the iteration-order win is priced into QuickJS's 4. |
-| A3 | Sandbox row inverted design merit: retrofit-sandboxed Lua outscored sandbox-first Luau; Lua's accepted backtracking gap framed neutrally while the JS analog got the Screeps dramatization | Major | **Amended.** Luau scores 5 and Lua 4 on sandbox design; the donor sandbox moved to the maturity note; the buggy-not-hostile threat model is named in the Lua cell; the Screeps framing now attaches to Lua's own accepted gap. |
+| A3 | Sandbox row inverted design merit: retrofit-sandboxed Lua outscored sandbox-first Luau; Lua's accepted backtracking gap framed neutrally while the JS analog got the Screeps dramatization | Major | **Amended.** Luau scores 5 and Lua 4 on sandbox design; the internal-prototype sandbox moved to the maturity note; the buggy-not-hostile threat model is named in the Lua cell; the Screeps framing now attaches to Lua's own accepted gap. |
 | A4 | The TSTL add-on escaped the scrutiny that killed TS-on-QuickJS and Duktape: transpiler-as-determinism-input, maintenance health, and f64-onto-int/float mapping all unexamined | Major | **Amended.** TSTL downgraded from recommended to "evaluate" with the three audit items listed in §6; the lua-language-server annotation half stands alone as the recommendation. |
 | B1 | The Figma precedent overextended: Figma runs QuickJS compiled to WASM in a browser, and the WASM object-representation isolation does not transfer to a native quickjs.h embedding | Major | **Amended.** Every Figma reference now carries the qualifier; the QuickJS sandbox score reflects the weakened precedent. The correction strengthens the keep-Lua verdict. |
 | B10 | D72 cited but unverifiable from the survey material | Minor | **Rebutted.** D72 exists in this corpus: ROADMAP.md defines the dual-mode parity gate as D72 and this directory's README indexes it. The citation stands. |

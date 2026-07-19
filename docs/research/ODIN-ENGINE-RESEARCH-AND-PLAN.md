@@ -1,5 +1,7 @@
 # The Successor Engine: Research and Plan
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 **Status:** definitive research + plan for the maintainer's new engine, superseding
 neither the SVSW decision log nor the maintainer's authority — every "decide now"
 item below is a proposed default awaiting a logged decision.

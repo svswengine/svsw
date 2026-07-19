@@ -1,5 +1,7 @@
 # Design review notes — critique dispositions
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 Three adversarial critique lenses were run against the draft plan before
 [ODIN-ENGINE-RESEARCH-AND-PLAN.md](ODIN-ENGINE-RESEARCH-AND-PLAN.md) was
 finalized: **A** (ponytail/YAGNI), **B** (shipping feasibility), **C**

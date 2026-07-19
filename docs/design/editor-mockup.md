@@ -15,7 +15,7 @@ The ceremony settled the eight questions M00's index entry left open.
    ImGui docking conventions rather than a custom layout language. Its hero
    features are the ones only a deterministic engine can show: tick-exact
    replay scrubbing, per-system stepping, world-hash visibility, and the
-   typed command log (D71).
+   typed command log (D21).
 2. **Panel set (v1).** Menu bar and toolbar; scene tree; central viewport
    with an optional second pane behind a split toggle; inspector; asset
    browser; mod/data browser; console; profiler; command log; debugger
@@ -83,7 +83,7 @@ The ceremony settled the eight questions M00's index entry left open.
   diff.
 - **Status bar.** Tick counter, world hash in monospace, the focused
   document's language mode, the parity indicator (`headless == windowed`,
-  D72 vocabulary), and a gate state chip.
+  D22 vocabulary), and a gate state chip.
 
 ## Behavior contract
 
@@ -125,11 +125,11 @@ The ceremony settled the eight questions M00's index entry left open.
 - Every menu item is selectable. Clicking appends the item's typed
   command to the command log; items marked live in the feature map also
   perform the action, and the rest raise a toast naming the owning spec.
-  Undo and redo stay pure log navigation (D71) and append nothing.
+  Undo and redo stay pure log navigation (D21) and append nothing.
 - Every user action appends a typed command to the command log:
   spawn_entity, set_transform, select, set_gizmo_mode, run_session,
   stop_session, step_back, open_document, toggle_panel, toggles, sim
-  controls. Undo and redo walk the log's edit commands (D71) and append
+  controls. Undo and redo walk the log's edit commands (D21) and append
   nothing; undone entries dim in the log.
 - **The deterministic fake hash rule.** The displayed world hash derives
   from two integers mixed into 16 hex characters: the tick number and the
@@ -163,7 +163,7 @@ marked none are mockup-only chrome.
 | File | Rebake All | toast | S12a |
 | File | Project Settings | toast | S17 |
 | File | Quit | toast | none |
-| Edit | Undo | live: walks the log back, appends nothing (D71) | S22 |
+| Edit | Undo | live: walks the log back, appends nothing (D21) | S22 |
 | Edit | Redo | live: walks the log forward | S22 |
 | Edit | Duplicate Entity | live: clones the selection, logs spawn_entity | S22 |
 | Edit | Delete Entity | live: removes the selection, logs delete_entity | S22 |

@@ -1,5 +1,7 @@
 # Ecosystem context: Carbon's open-sourcing and the 2026 Odin/Lua/Go landscape
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 Snapshot date: **2026-07-12**
 
 This file is a second, deeper research pass alongside the existing Codex

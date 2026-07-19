@@ -1,5 +1,7 @@
 # Carbon repository inventory
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 Snapshot date: **2026-07-12**
 
 ## Scope and verification method

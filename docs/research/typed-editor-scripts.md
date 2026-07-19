@@ -1,5 +1,7 @@
 # Typed editor scripts: fork-and-merge assessment and options
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 > **Decision outcome (2026-07-14):** the maintainer chose Luau everywhere,
 > not this document's recommended LuaLS+LuaCATS-on-Lua-5.4 baseline. The
 > fork-and-merge proposal stays rejected as assessed below; the maintainer

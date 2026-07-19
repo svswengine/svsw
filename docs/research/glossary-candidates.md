@@ -1,5 +1,7 @@
 # Ubiquitous-language candidates
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 Status: **unresolved candidates**
 
 These terms have not been accepted by the user. This file exists to expose

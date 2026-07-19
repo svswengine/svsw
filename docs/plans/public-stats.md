@@ -40,7 +40,7 @@ Hosted runners only, matching the S00 no-self-hosted-runner rule.
 |---|---|---|
 | Spec progress (`N/38 implemented`) | the spec index in `specs/README.md` | S00 (immediately) |
 | Test count | the Odin test runner | S02a |
-| Headless == windowed parity | the D72 parity gate | S04 |
+| Headless == windowed parity | the D22 parity gate | S04 |
 | Sim-tick p95 | the stress harness | S09 |
 | Gate-roster count | the S21 enumerated roster | S21 |
 | Course modules published | the course repo, C00 side | C00 |

@@ -1,5 +1,7 @@
 # SVSW carry-forward assessment (deep pass)
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 Inspected repository: `/Users/ivandrenjanin/projects/svsw` at commit
 `9e5b4e5` (per `git log` at survey time).
 

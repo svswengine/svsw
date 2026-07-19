@@ -1,5 +1,7 @@
 # Engine extensibility loop: editor-survives-engine-rebuild
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 > **Decision outcome (2026-07-14):** the maintainer adopted this document's
 > recommended shape: the process-restart loop, S22 amended to sit atop the
 > S08 split with the crash-only restart as an allowed first milestone inside
@@ -14,11 +16,9 @@ and keep the editor session (or reconstruct it fast) instead of losing
 everything and starting cold. This document maps what the svsw3D corpus
 already provides toward that loop, names the gaps, and lays out the options.
 
-All citations below marked `README.md` or `ROADMAP.md` refer to
-`/Users/ivandrenjanin/projects/svswengine/svsw/docs/specs/README.md` and
-`/Users/ivandrenjanin/projects/carbon/research/ROADMAP.md` respectively; the
-svsw3D corpus is a separate project from this session's working directory
-(the 2D Odin engine at `/Users/ivandrenjanin/projects/svsw`).
+All citations below marked `README.md` or `ROADMAP.md` refer to this
+project's own spec index and this document's own roadmap respectively; the
+svsw3D corpus is a separate project from the 2D Odin engine it succeeds.
 
 ## What the architecture already provides, spec by spec
 

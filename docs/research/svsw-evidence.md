@@ -1,5 +1,7 @@
 # SVSW evidence for the successor engine
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 Inspected commit: `9e5b4e54cdfce6e7d131aef23dd82c5439a0929b`
 
 Verification boundary: source and checked-in tests were inspected on 2026-07-12.

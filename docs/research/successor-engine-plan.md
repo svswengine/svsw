@@ -1,5 +1,7 @@
 # Successor engine: proof-first architecture and roadmap
 
+Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+
 Status: **proposed design, not accepted implementation plan**
 
 Evidence inputs:

@@ -149,19 +149,19 @@ Every spec below is **pending**, except M00, which is **spec written**.
 | S02b | simmath3d subset + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | pending |
 | S03 | SDL3 window + wgpu device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | pending |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
-| S05 | Protocol v0: versioned frames, two-process echo pair, arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | pending |
+| S05 | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | pending |
 | S06 | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | pending |
-| S07 | Milestone A: cascaded-shadow-mapped sun | CSM scene green on all four tiers (stage 1 exit) | S06 | pending |
-| S08 | Split-process topology: sim process + render client | `just split-smoke` green, hash-checkpointed agreement | S05, S06 | pending |
+| S07 | Milestone A: cascaded-shadow-mapped sun (stage 1 exit) | CSM scene green on all four tiers (stage 1 exit) | S06 | pending |
+| S08 | Split-process topology: sim process + render client over the protocol | `just split-smoke` green, hash-checkpointed agreement | S05, S06 | pending |
 | S09 | 3D stress harness with provisional budgets | `just stress` enforces provisional p95 budgets in CI | S06 | pending |
 | S10 | Milestone B: compute-shader clustered light culling | clustered scene green incl. cluster counts in skeleton hash + parity | S07 | pending |
 | S11a | Chunked world: worldgrid, per-chunk hashes, activation, default fill | `just chunk-golden-check` + parity on the chunk-crossing scenario | S02a, S04 | pending |
 | S11b | Floating origin: presentation-side re-basing | re-based far-from-origin scene, invariance test + parity green | S11a, S06 | pending |
-| S12a | Asset container + assetc: glTF to sectioned binary to goldens | glTF round-trip to rendered goldens + codec fuzz green | S04, S06 | pending |
+| S12a | Asset container + assetc: glTF to sectioned binary to rendered goldens | glTF round-trip to rendered goldens + codec fuzz green | S04, S06 | pending |
 | S12b | Runtime asset loader: worker-thread decode + hot reload | running scene hot-swaps assets with handle stability asserted | S12a | pending |
 | S13 | Deterministic collision v1, scoped by private product requirements | degenerate corpus + snapshot-resim + capsule-on-terrain golden green | S02a, S11a | pending |
 | S14 | Luau sandbox port: the scripting boundary, test-first | sandboxed Luau sample reproduces its world-hash golden headless | S01, S02a | pending |
-| S15 | Mod pipeline port: multi-mod shared world, mirroring test | prototype mod suites + skeletal second-mod mirroring test green | S14 | pending |
+| S15 | Mod pipeline port: multi-mod shared world, proven by the mirroring test | prototype mod suites + skeletal second-mod mirroring test green | S14 | pending |
 | S16 | Asset viewer: the minimal ImGui-on-SDL3/wgpu shell | viewer renders a container mesh (human checkpoint) + CI shell smoke | S01, S12a | pending |
 | S17 | svsw CLI: new/run/package with 3D scaffold templates | `just scaffold-check` green inside `just check` | S11a, S12b, S15 | pending |
 | S18 | SDL3 audio: mixer port, stream pump, spatialization, headless gate | mixer-output golden + spatialization invariance green; sound at the dev window (human checkpoint) | S03, S12a | pending |
@@ -172,14 +172,14 @@ Every spec below is **pending**, except M00, which is **spec written**.
 | S22b | Engine dev loop: rebuild, respawn, restore | dev-loop smoke gate green: scripted edit-rebuild-respawn-restore run ends with the session dev-diverged flag set and within-build checks passing | S02a, S08, S22 | pending |
 | S23 | Editor features: asset browser, gizmos, profiler panel | full `just editor-roundtrip-check` on a committed human-authored log | S22, S12b, S18 | pending |
 | S24 | Editor-Luau capability tier | hostile-editor-script containment gate green | S22, S14 | pending |
-| S25 | Animation runtime: sampler, blend, GPU skinning, sections | animated scene green on invariance/readback/skeleton/parity; S23 log re-recorded | S07, S12b | pending |
+| S25 | Animation runtime: sampler, blend, GPU skinning, container sections | animated scene green on invariance/readback/skeleton/parity; S23 log re-recorded | S07, S12b | pending |
 | S26 | Walking skeleton: Go supervisor, worker contract, envelope freeze | `just proto-conformance` green both sides; supervision tests green; v1 frozen | S05, S21 | pending |
 | S27a | Go gateway v1: QUIC, sessions, worker supervision | gateway smoke green: QUIC client authenticates, intents reach a worker | S26 | pending |
 | S27b | Go durability v1: Tick_Commit log, checkpoints, outbox | kill/respawn/resume with no hash divergence | S27a | pending |
 | S28 | Replication: chunk-scoped deltas, prediction, reconciliation | two clients through the real gateway under injected faults, tripwire trips | S27a, S11a | pending |
 | S29 | Two-client co-op harness: mods/nettest and coop-smoke | `just coop-smoke` green incl. fault and windowed-parity legs (stage 5 exit) | S27b, S28, S15 | pending |
-| S30 | Verification scene: a representative gameplay ruleset (base-as-mod + one second mod) | `just scene-accept` headless green; second mod changes the hash | S23, S15, S13, S11a | pending |
-| S31 | Camera continuum, first-person controller, presentation polish | scene with camera drop-in, animation, themed HUD green on parity | S30, S25, S20, S13, S19 | pending |
+| S30 | Verification scene: a representative gameplay ruleset as base-as-mod plus second mod | `just scene-accept` headless green; second mod changes the hash | S23, S15, S13, S11a | pending |
+| S31 | Camera continuum, first-person controller, client presentation polish | scene with camera drop-in, animation, themed HUD green on parity | S30, S25, S20, S13, S19 | pending |
 | S32 | Engine acceptance + residual sweep | `just engine-accept` green incl. coop leg; maintainer sign-off; residual sweep | S29, S30, S31, S17 | pending |
 
 ## Review notes
@@ -189,9 +189,11 @@ and gate discipline, and coverage fidelity against the roadmap. Every blocker
 and major finding is amended below; minors are folded in where the fix was
 cheap. Spec IDs stay stable against the draft; the four review-mandated splits
 use letter suffixes (S02a/b, S11a/b, S12a/b, S27a/b) so no other ID moves and
-no renumbering can reintroduce the cross-reference defect. M-prefixed specs
-(M00) are design mockups producing reviewable artifacts, not engine code, and
-sit outside this S/C-series numbering.
+no renumbering can reintroduce the cross-reference defect. S22b also carries
+a letter suffix, but under the separate mid-series-insertion use of the
+stable-identifier scheme described above, not as one of these review splits.
+M-prefixed specs (M00) are design mockups producing reviewable artifacts, not
+engine code, and sit outside this S/C-series numbering.
 
 Blockers and majors:
 

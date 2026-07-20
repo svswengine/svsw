@@ -61,7 +61,10 @@ None.
 ## Numbering continuity
 
 Documents under `docs/research/` use the research-era numbering; this table
-maps it. `D54` through `D86` map in order to `D4` through `D36`.
+maps it. `D54` through `D86` map in order to `D4` through `D36`; three
+earlier research numbers also map: `D11` to `D1`, `D15` to `D2`, and `D42`
+to `D3`. Those three are research tokens; despite the numeric collision,
+research `D11` and `D15` are unrelated to the current D11 and D15.
 
 | Research | Current | Research | Current | Research | Current |
 |----------|---------|----------|---------|----------|---------|

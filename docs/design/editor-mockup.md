@@ -55,7 +55,7 @@ The ceremony settled the eight questions M00's index entry left open.
 - **Left.** Two tabs, both labels visible even when the dock folds. Scene
   Tree holds expandable groups and generic entity names (crate_01,
   lamp_post, spawn_point). Files is a project explorer over mod scripts
-  (Lua), engine sources (Odin), and server sources (Go), each row with a
+  (Luau), engine sources (Odin), and server sources (Go), each row with a
   language badge and size; single-click selects and feeds the run target
   for runnable files, double-click opens the file as a center document.
 - **Center.** A tabbed document workspace. The Scene document holds the
@@ -66,7 +66,7 @@ The ceremony settled the eight questions M00's index entry left open.
   mod browser, a call-stack frame, or the debugger, are full-size editors
   with line numbers, breakpoint gutters, per-language syntax
   highlighting, an editable buffer, a find bar, and a reload-semantics
-  chip; crates.lua also carries the current-line highlight. The tab bar
+  chip; crates.luau also carries the current-line highlight. The tab bar
   scrolls when many documents are open. A timeline scrubber strip sits
   below the documents: a tick ruler, a playhead, and drag-to-scrub.
 - **Right.** The inspector: the selected entity's component list
@@ -99,16 +99,16 @@ The ceremony settled the eight questions M00's index entry left open.
   permanent; project files open as closable documents from a double-click
   in the Files explorer or the mod browser, a call-stack frame, or the
   debugger's open-in-editor button. Breakpoints and the current line are
-  one shared state per file; the crates.lua document and the debugger
+  one shared state per file; the crates.luau document and the debugger
   preview stay in sync.
 - **The script IDE surface.** Each open file is an editor at mockup
   fidelity: line numbers, a breakpoint gutter, fake per-language syntax
   highlighting (keywords, strings, comments, numbers as CSS token spans),
   an editable buffer that marks the tab with a dirty dot, a find bar that
   highlights matching lines with a count, and File > Save to clear the
-  dirty state and log save_file. Lua breakpoints share state with the
+  dirty state and log save_file. Luau breakpoints share state with the
   debugger; Odin and Go gutter clicks log set_breakpoint and toast that
-  native breakpoints land with S23. File > New Script scaffolds a Lua,
+  native breakpoints land with S23. File > New Script scaffolds a Luau,
   Odin, or Go file, adds it to the explorer, logs create_file, and opens
   it.
 - **Reload semantics stay visible.** Each editor shows a chip: Luau
@@ -155,7 +155,7 @@ marked none are mockup-only chrome.
 | File | Open Scene… | toast | S22 |
 | File | Save Scene | toast | S22 |
 | File | Recent Scenes (two entries) | toast | S22 |
-| File | New Script > Lua, Odin, Go | live: scaffolds a file, opens it, logs create_file | S22 |
+| File | New Script > Luau, Odin, Go | live: scaffolds a file, opens it, logs create_file | S22 |
 | File | Open File… | toast | S22 |
 | File | Save | live: clears the dirty flag, logs save_file | S22 |
 | File | Import Asset… | toast | S12a |
@@ -229,6 +229,7 @@ marked none are mockup-only chrome.
 - Real engine integration.
 - ImGui implementation detail: the mockup decides what the editor shows;
   S22 to S24 decide how ImGui renders it.
-- Renaming the mockup's `.lua` sample files, badges, and menu labels to
-  `.luau`: a cosmetic residual left for the next M00 touch, now that the
-  engine's scripting language is Luau.
+- Renaming the mockup artifact's `.lua` sample files, badges, and menu
+  labels (in `editor/index.html` and `editor/mockup.js`) to `.luau`: a
+  cosmetic residual left for the next M00 touch. This record already says
+  Luau.

@@ -1,6 +1,7 @@
 # D35: Number semantics on f64-only Luau
 
 Status: current
+Date: 2026-07
 
 Luau carries one 64-bit double for every number, with no integer/float dual
 subtype, so identity is never arithmetic: entity IDs and chunk coordinates

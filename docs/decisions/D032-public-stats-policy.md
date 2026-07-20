@@ -1,6 +1,7 @@
 # D32: Public stats policy
 
 Status: current
+Date: 2026-07
 
 The org profile (`.github`) displays live project stats keyed to real gates:
 a badge never lands before the thing it measures exists, the same no-fiction

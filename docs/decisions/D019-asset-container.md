@@ -1,6 +1,8 @@
 # D19: The asset container
 
 Status: current
+Date: 2026-07
+Rationale: docs/research/ODIN-ENGINE-RESEARCH-AND-PLAN.md
 
 Adopted from the research plan §4.4, promoted to the log. One versioned
 sectioned binary container: magic/kind/schema-version header; a section table

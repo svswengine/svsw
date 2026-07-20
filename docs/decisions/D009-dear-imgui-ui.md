@@ -1,6 +1,7 @@
 # D9: UI: Dear ImGui for editor and runtime HUD
 
 Status: current
+Date: 2026-07
 
 One UI substrate (cimgui + imgui_impl_sdl3 + imgui_impl_wgpu, platform tier;
 C++ enters Odin only through cimgui's generated C ABI, backend wrappers

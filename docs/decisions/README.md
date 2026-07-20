@@ -5,12 +5,22 @@ are settled; reopening one is a maintainer call.
 
 ## Lifecycle
 
-- Files are named `D<nnn>-<slug>.md` and carry a `Status` header.
+- Files are named `D<nnn>-<slug>.md` and carry `Status` and `Date` headers.
 - `Status: current` means the decision is in force. A partial supersession
   stays current: the amending decision names what it amended, and the amended
   text names the amender, both by current numbers.
-- A fully superseded decision is renamed `D<nnn>-<slug>.superseded.md` and
-  moves to the Past section; its replacement names it.
+- A fully superseded decision keeps its filename. Its `Status` line becomes
+  `Status: superseded by D<mmm>`, linking to the superseding decision, and
+  its index row moves from Current to Past.
+- `Date: YYYY-MM` records when the decision text first entered this repo's
+  history, backfilled from git log for decisions logged before the field
+  existed.
+- A decision that chose between real alternatives carries either one
+  sentence naming the rejected alternatives or a `Rationale:
+  docs/research/<file>` pointer line.
+- Citations of research-era decision numbers anywhere outside
+  `docs/research/` use the `R-D` prefix (for example `R-D11`, `R-D54`) to
+  avoid collision with the current log.
 - Numbers are never reused.
 
 ## Current

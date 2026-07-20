@@ -1,6 +1,7 @@
 # D21: Editor command stream
 
 Status: current
+Date: 2026-07
 
 Adopted from the research plan §4.6, promoted to the log. Every edit
 operation is a typed command on a command stream; undo/redo and edit

@@ -1,6 +1,7 @@
 # D18: Network transport: QUIC client<->gateway; loopback TCP gateway<->worker
 
 Status: current
+Date: 2026-07
 
 Client↔gateway runs QUIC (quic-go): reliable ordered streams for
 session/state traffic, unreliable QUIC datagrams for per-tick intents and

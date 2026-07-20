@@ -9,6 +9,9 @@ engine works. A real editor ships alongside the runtime. The engine
 completes stage by stage, proven by verification scenes. This repository is
 a monorepo: engine, CLI, runtime, samples, and services live together.
 
+Part of the [svswengine](https://github.com/svswengine) org; see the
+[course](https://github.com/svswengine/course) repo.
+
 ## Status
 
 Planning and spec phase. Code lands spec by spec; see

@@ -1,6 +1,7 @@
 # D17: Verification-scene world content is hand-authored; seeded worldgen is post-engine product work
 
 Status: current
+Date: 2026-07
 
 The engine verification scene's few chunks are hand-authored data-stage
 scenes (editor-authored, container-referenced); chunks without authored

@@ -1,6 +1,8 @@
 # D36: Engine dev loop
 
 Status: current
+Date: 2026-07
+Rationale: docs/research/engine-extensibility-loop.md
 
 Spec S22b ("Engine dev loop: rebuild, respawn, restore") covers rebuild
 orchestration, the editor-worker reconnect handshake, restore policy, and

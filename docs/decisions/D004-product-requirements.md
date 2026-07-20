@@ -1,6 +1,7 @@
 # D4: Gameplay requirements and the verification scene
 
 Status: current
+Date: 2026-07
 
 Private product requirements, maintained outside this repository, scope the
 gameplay-facing specs and supply the verification-scene content. Work

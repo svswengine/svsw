@@ -1,6 +1,7 @@
 # D14: The C interface tier
 
 Status: current
+Date: 2026-07
 
 C is the sanctioned interface tier between Odin, Luau, and Go where a
 boundary needs it: the C ABI is the FFI lingua franca; Luau's C API and its

@@ -1,6 +1,7 @@
 # D8: Lighting v1: Forward+ clustered PBR, staged
 
 Status: current
+Date: 2026-07
 
 glTF metallic-roughness materials as-authored; cascaded-shadow-mapped sun
 first, wgpu compute-shader light clustering second; engine-completion

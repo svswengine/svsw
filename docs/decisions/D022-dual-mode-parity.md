@@ -1,6 +1,7 @@
 # D22: Dual-mode parity
 
 Status: current
+Date: 2026-07
 
 The engine runs in headless mode and in regular windowed mode and produces
 the same results: same world hashes, same draw-list skeleton hashes,

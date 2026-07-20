@@ -1,6 +1,7 @@
 # D27: Spec+course pairing, four paths, course after implementation
 
 Status: current
+Date: 2026-07
 
 Course material builds beside the engine, a practice carried over from the
 internal prototype. Every implemented spec gets a course module in the

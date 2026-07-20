@@ -1,6 +1,7 @@
 # D29: Review cadence and toolchain verification
 
 Status: current
+Date: 2026-07
 
 Review runs in three layers: marker and citation hooks free on every edit and
 commit, the spec-review workflow once per spec draft, and the billed

@@ -135,6 +135,13 @@ carries one more exit item: re-verify and update the agents that reference
 this gate, so a refusal clause naming this spec is retired once the gate it
 pointed at exists.
 
+When a spec reaches **spec written**, its full document lives at
+`docs/specs/S<nn>-<slug>.md` as the normative text, and this index's entry
+for that spec collapses to the overview-table row plus a link to that
+document. M00 precedes this pattern: its design record already lives at
+`docs/design/editor-mockup.md` rather than under `docs/specs/`, so M00's
+index entry may stay as it is until its own collapse.
+
 Every spec below is **pending**, except M00, which is **spec written**.
 
 ## Overview
@@ -323,7 +330,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   S00 is implemented.
 - **Working software:** Setup spec. `just check` runs green on both CI
   platforms on every commit, initially composing type-check, an empty test
-  suite, tier-scan, the api-surface snapshot, and scan.
+  suite, tier-scan, the api-surface snapshot, and scan. The root README
+  gains toolchain prerequisites and the `just check`/`just run` quickstart
+  when the gate skeleton lands.
 - **Depends on:** none
 - **Decisions:** D14, D23, D24, D25, D26
 - **Course:** module S00; path tag engine; teaches the repo bootstrap and the
@@ -334,13 +343,16 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope in:** git repo and monorepo layout reflecting D25 (`engine/`,
   `cli/`, `tools/`, `protocol/`, `server/`, `runtime/`, `vendor/`, `mods/`,
   `samples/`, `docs/`, `tests/`); justfile with check/test/type-check/fmt/scan
-  recipes; TIGER_STYLE.md adopted with svsw carve-outs; tier-scan rule set
+  recipes plus `docs-check`, an offline internal-link checker over the
+  repo's markdown (for example lychee in offline mode) that blocks on
+  internal relative links and only reports external URLs; TIGER_STYLE.md
+  adopted with svsw carve-outs; tier-scan rule set
   including only-platform-tier-touches-C; api-surface snapshot machinery; CI
   workflows for macOS arm64 and Linux x86-64; decision-log doc seeded with
   D4-D22 plus D23-D25; research corpus and adopted roadmap committed under
-  `docs/research/`; beads init for the new repo; LICENSE (Apache-2.0) and
-  CONTRIBUTING.md shipped at repo root (already authored; S00 wires them
-  into the public repo); the docs/ layout convention (a router `docs/README.md`
+  `docs/research/`; beads init for the new repo; LICENSE (Apache-2.0),
+  CONTRIBUTING.md, and SECURITY.md shipped at repo root (already authored;
+  S00 wires them into the public repo); the docs/ layout convention (a router `docs/README.md`
   and every documentation markdown under a subdirectory of `docs/`); the
   PR-auto-close GitHub Action; the already-created
   `svswengine` GitHub org, `svsw` engine repo, and `course` sibling repo

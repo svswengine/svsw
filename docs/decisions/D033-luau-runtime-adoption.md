@@ -1,6 +1,8 @@
 # D33: Luau runtime adoption
 
 Status: current
+Date: 2026-07
+Rationale: docs/research/scripting-language-comparison.md, docs/research/typed-editor-scripts.md
 
 Luau replaces Lua 5.4 as the single script runtime everywhere: mods and the
 editor scripting tier (D10) share one VM. This supersedes the choice locked

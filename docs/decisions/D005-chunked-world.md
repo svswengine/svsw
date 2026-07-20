@@ -1,6 +1,7 @@
 # D5: Chunked unbounded world
 
 Status: current
+Date: 2026-07
 
 The world is chunked and unbounded in extent (the Factorio model):
 chunk-local sim coordinates plus a chunk index in hashed state; per-chunk

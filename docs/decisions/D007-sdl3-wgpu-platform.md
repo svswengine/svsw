@@ -1,6 +1,8 @@
 # D7: Platform: SDL3 + wgpu; sokol and Clay retire
 
 Status: current
+Date: 2026-07
+Rationale: docs/research/ROADMAP.md
 
 Full platform swap: SDL3 (window/input/audio) plus wgpu (vendored
 wgpu-native, checksum-pinned prebuilt releases; no Rust toolchain in dev/CI).

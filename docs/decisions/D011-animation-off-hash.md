@@ -1,6 +1,7 @@
 # D11: Animation is presentation-only, off-hash, client-side
 
 Status: current
+Date: 2026-07
 
 The sim carries deterministic capsules/AABBs for all combat/interaction;
 poses never enter `hash_world`. The upgrade path (deterministic per-joint

@@ -1,6 +1,7 @@
 # D28: Project Claude Code tooling architecture
 
 Status: current
+Date: 2026-07
 
 svsw's `.claude` tooling stages skills with the gate each depends on: S00
 ships the bootstrap core (root CLAUDE.md, paths-scoped rules, hooks,

@@ -1,6 +1,7 @@
 # D12: Mod machinery ports as-is
 
 Status: current
+Date: 2026-07
 
 Global component IDs, first-declarant-registers, schema mirroring,
 settings→data→control, and per-mod VM containment all port unchanged to the

@@ -1,6 +1,7 @@
 # D10: Editor Luau ships in v1
 
 Status: current
+Date: 2026-07
 
 An editor scripting host shares the mod sandbox's VM architecture (whitelist,
 alloc cap, instruction budget, R1-R5, disable-in-place) at an expanded

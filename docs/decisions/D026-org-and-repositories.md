@@ -1,6 +1,7 @@
 # D26: Org and repositories
 
 Status: current
+Date: 2026-07
 
 The GitHub org is `github.com/svswengine`. The engine lives in the `svsw`
 repository; the course lives in the sibling `course` repository, served

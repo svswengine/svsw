@@ -1,6 +1,8 @@
 # D6: Server-authoritative multiplayer
 
 Status: current
+Date: 2026-07
+Rationale: docs/research/ROADMAP.md
 
 The Odin sim runs headless on the server as the single world truth; clients
 send tick-quantized intents and render state deltas with client-side

@@ -1,6 +1,7 @@
 # D2: Layering discipline
 
 Status: current
+Date: 2026-07
 
 The engine is a strict one-way layer stack: scripts above the scripting
 boundary, the engine core below it, the platform tier at the bottom. Only the

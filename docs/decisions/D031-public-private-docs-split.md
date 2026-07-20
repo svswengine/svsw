@@ -1,6 +1,7 @@
 # D31: Public/private documentation split
 
 Status: current
+Date: 2026-07
 
 The public repositories stay agnostic to any private product's specifics: no
 mechanic, service name, or genre framing appears in their docs. Design and

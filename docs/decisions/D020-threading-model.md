@@ -1,6 +1,7 @@
 # D20: Threading model
 
 Status: current
+Date: 2026-07
 
 Adopted from the research plan §4.2, promoted to the log. The simulation is
 single-threaded per Session, deterministic by construction. Asset decode may

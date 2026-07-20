@@ -1,6 +1,7 @@
 # D15: Go<->engine boundary: versioned wire protocol over a process boundary
 
 Status: current
+Date: 2026-07
 
 The gateway and the headless sim worker are separate processes speaking a
 versioned, checksum-first, length-prefixed frame protocol with explicit

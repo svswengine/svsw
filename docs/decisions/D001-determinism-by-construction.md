@@ -1,6 +1,7 @@
 # D1: Determinism by construction
 
 Status: current
+Date: 2026-07
 
 The simulation is deterministic by construction: fixed timestep, ordered ECS
 iteration, engine-seeded RNG, no wall clock reachable from simulation code.

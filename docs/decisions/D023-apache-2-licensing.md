@@ -1,6 +1,7 @@
 # D23: Apache-2.0 licensing
 
 Status: current
+Date: 2026-07
 
 The repository is licensed under Apache-2.0 only (LICENSE-MIT is retired); a
 trademark carve-out lands at rebrand (D16). Code ported from the internal

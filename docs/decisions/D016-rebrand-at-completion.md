@@ -1,6 +1,7 @@
 # D16: Rebrand at engine completion
 
 Status: current
+Date: 2026-07
 
 svsw is already the settled brand (org `svswengine`, repo `svsw`, CLI `svsw`,
 `svsw.*` namespace final, per D26), so the engine-completion rebrand ceremony

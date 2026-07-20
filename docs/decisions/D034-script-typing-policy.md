@@ -1,6 +1,7 @@
 # D34: Script typing policy
 
 Status: current
+Date: 2026-07
 
 `--!strict` is gate-enforced for first-party scripts: base-as-mod, samples,
 editor scripts, and scaffold templates fail `just check` if they do not

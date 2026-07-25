@@ -42,9 +42,20 @@ the file you wrote it in.
 
 `docs/specs/README.md` carries a fixed per-spec schema: Stage, Status,
 Goal, Working software, Depends on, Decisions, Course, Prototype ports,
-Scope in, Scope out, Open questions. Any edit preserves every field of
-every entry. Dropping a field, or emptying one instead of marking it an
-open question, is a regression, and so is reordering the fields.
+Normative references, Scope in, Scope out, Open questions. Any edit
+preserves every field of every entry. Dropping a field, or emptying one
+instead of marking it an open question, is a regression, and so is
+reordering the fields.
+
+**Normative references** names artifacts a spec must match, rather than
+describing them in prose (D41). An entry names a committed, versioned
+artifact in this repository or the course repository, says what it is
+normative for, and takes `none` when there are none. Never a throwaway
+prototype branch, and never an external URL that can change under the
+spec. It is the opposite of Prototype ports, which names source to port
+*from*; this field names targets to match. Where a normative reference
+exists, prose in Goal and Scope in points at it instead of restating what
+it shows.
 
 ## `docs/research/` is closed
 

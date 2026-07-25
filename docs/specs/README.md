@@ -142,6 +142,26 @@ document. M00 precedes this pattern: its design record already lives at
 `docs/design/editor-mockup.md` rather than under `docs/specs/`, so M00's
 index entry may stay as it is until its own collapse.
 
+## Normative references
+
+A spec's `Normative references` field names the artifacts that spec must
+match: a committed mockup, a recorded corpus, a golden file (D41). An
+artifact answers a design question more exactly than prose about it can,
+and it cannot drift from itself, so where one exists the spec points at it
+instead of describing it. M00's editor mockup is the worked example, and
+it is why S22 through S24 name `docs/design/editor/index.html` in this
+field rather than restating what its panels look like.
+
+An entry names a committed, versioned artifact in this repository or the
+course repository, and says what it is normative *for*. Never a throwaway
+prototype branch, which is deleted by design and never cited, and never an
+external URL that can change under the spec. The field takes `none` where
+there are none, like every other field in the schema.
+
+Read it against `Prototype ports`, which sits directly above it and means
+the opposite: that field names source to port **from**, this one names
+targets to **match**.
+
 ## The ladder and the tracker
 
 The rungs above drive the work tracker as well as this table. A spec at
@@ -307,6 +327,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Depends on:** none (deliberately before S00; needs no toolchain)
 - **Decisions:** D21, D22, D9
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** static HTML, CSS, and vanilla JS only, no frameworks, no
   build step; the design record (`docs/design/editor-mockup.md`) explaining
   what the mockup is and is not; dark theme first; generic placeholder scene
@@ -363,6 +384,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Prototype ports:** justfile composition pattern; the style-guide
   structure now carried by `docs/ODIN_STYLE.md`; boundary-scan/tier-scan
   gates; api-surface snapshot-diff gate.
+- **Normative references:** none
 - **Scope in:** git repo and monorepo layout reflecting D25 (`engine/`,
   `cli/`, `tools/`, `protocol/`, `server/`, `runtime/`, `vendor/`, `mods/`,
   `samples/`, `docs/`, `tests/`); justfile with check/test/type-check/fmt/scan
@@ -466,6 +488,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   the prototype's Lua vendoring recipe, adapted for Luau (D33: Luau's C API
   stays 5.1-era-compatible so the recipe's patterns carry, but the C++
   toolchain and its build flags are new).
+- **Normative references:** none
 - **Scope in:** SDL3 source vendored and built by vendor-libs; wgpu-native
   prebuilt releases per target, checksum-pinned, upgrade procedure recorded;
   naga-cli prebuilt, checksum-pinned, wired into shader-check; Dear ImGui plus
@@ -510,6 +533,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Prototype ports:** the prototype course stack: VitePress shell, lesson
   components, references registry, embed-check, the full-build gate, the
   truth-verify authoring workflow.
+- **Normative references:** none
 - **Scope in:** the `course` repo scaffold and the Pages deploy; the prototype
   tooling port; the engine pin and embed resolution against it; per-lesson
   path tags, the generated path compositions, and the path-closure
@@ -564,6 +588,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   determinism pyramid.
 - **Prototype ports:** `engine/kernel`, `engine/ecs`, `engine/simrng`,
   `engine/save`, `engine/replay`, `engine/harness`, each with its test suite.
+- **Normative references:** none
 - **Scope in:** prototype packages ported with their suites, adapted only where
   the svsw layout demands; spall profiling zones compiled out of retail;
   `hash_world` injectivity and length-prefix discipline plus the
@@ -601,6 +626,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S02b; path tag engine; teaches simmath3d and cross-CPU
   determinism against the cross-platform hash gate.
 - **Prototype ports:** the simmath policed-surface pattern.
+- **Normative references:** none
 - **Scope in:** the minimal vec3/mat4/quat subset with allow-list and ban-list
   documentation; the FMA policing mechanism; the cross-CPU hash gate in CI.
 - **Scope out:** the wider simmath3d surface (grows one function at a time in
@@ -633,6 +659,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   the draw-list render core against the offscreen test frame.
 - **Prototype ports:** the D2 boundary pattern (backend-free core, thin GPU
   stratum, boundary-scan gate), rebuilt for wgpu.
+- **Normative references:** none
 - **Scope in:** `engine/platform_sdl` window/swapchain/event pump; the
   draw-list struct stream (pipeline id, bind sets, handles, instance ranges,
   uniform blocks); `engine/render3d` one opaque pass with depth buffer;
@@ -670,6 +697,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   parity gate against the textured-cube scenario.
 - **Prototype ports:** golden-hash gate discipline and the one-command re-record
   workflow.
+- **Normative references:** none
 - **Scope in:** the cube scenario as a Session-driven scene with a
   deterministic camera; the skeleton-hash definition (pipeline ids, resource
   handles, draw order, counts, pass structure, floats excluded); the readback
@@ -711,6 +739,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   design and hostile-input hardening against the two-process echo pair.
 - **Prototype ports:** the replay/save wire-format hardening pattern (checksum
   first, bound lengths, fail clean).
+- **Normative references:** none
 - **Scope in:** frame envelope (version, checksum, length prefix); version
   negotiation plus whitelist; `Canonical_Input_Set` and `Tick_Commit` types
   named at the seam; the two-process echo pair; the hostile-frame corpus and
@@ -748,6 +777,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S06; path tag engine; teaches renderer foundations and
   WGSL shading against the multi-object PBR scene.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** simmath3d growth one function at a time under the cross-CPU
   gate; pipeline cache plus permutation key; frustum culling;
   opaque/transparent pass structure; glTF metallic-roughness BRDF in WGSL
@@ -781,6 +811,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S07; path tag engine; teaches cascaded shadow mapping in
   WGSL against the Milestone A CSM scene.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** CSM cascade selection, split scheme, depth passes in the
   draw-list and the skeleton hash; shadow sampling and bias strategy in WGSL;
   readback goldens tolerant to the chosen filtering; perf iteration against
@@ -812,6 +843,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S08; path tag engine; teaches the split-process
   topology and the input seam against `just split-smoke`.
 - **Prototype ports:** the `engine/input` three-stage seam with its test suite.
+- **Normative references:** none
 - **Scope in:** process boot and handshake over protocol v0; per-tick intent
   frames and state transfer sufficient for the client to render; hash
   checkpoints in the stream; the `engine/input` port (seam only; SDL3 event
@@ -840,6 +872,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   p95 budget discipline against the CI-enforced 3D benchmark.
 - **Prototype ports:** the stress-benchmark recipe pattern with measured p95
   budgets.
+- **Normative references:** none
 - **Scope in:** a synthetic scene generator (hardcoded Odin scene, no
   scenario-file format); p95 measurement for sim tick and draw-list build; CI
   wiring and budget documentation. The sim-tick p95 badge ships here, per
@@ -869,6 +902,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S10; path tag engine; teaches compute-shader light
   clustering in WGSL against the Milestone B clustered scene.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** cluster grid plus compute assignment pass in WGSL; CPU-side
   reference computation of cluster counts feeding the skeleton hash; the
   N-point-light test scene; the parity leg.
@@ -905,6 +939,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Prototype ports:** `hash_world` primitives and injectivity discipline
   (consumed, not modified); the completeness-reflection test extended to
   chunk fields.
+- **Normative references:** none
 - **Scope in:** `engine/worldgrid` chunk index and coordinates; hash
   composition above the kernel primitives; activation and deactivation as
   deterministic sim state; a flat-terrain default fill, seeded by a trivial
@@ -934,6 +969,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S11b; path tag engine; teaches floating-origin
   re-basing against the invariance test and the far-from-origin parity run.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** floating-origin re-basing in render3d; the hash-neutrality
   invariance test; the far-from-origin test scene.
 - **Scope out:** any sim-side coordinate change (S11a owns the model).
@@ -963,6 +999,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   assetc against the glTF round-trip goldens.
 - **Prototype ports:** codec hostile-input hardening discipline; the atomic
   tmp-then-rename write pattern.
+- **Normative references:** none
 - **Scope in:** the container format (magic, kind, schema-version, section
   table, checksums, logical content IDs); the assetc CLI for static meshes,
   textures, materials; baked-output loading in the render path sufficient for
@@ -996,6 +1033,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S12b; path tag engine; teaches the runtime loader and
   hot reload against the hot-swap scene with handle stability asserted.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** the runtime loader; worker-thread decode and its single
   deterministic integration point; the per-kind hot-reload contract and its
   tests; handle-stability assertions.
@@ -1030,6 +1068,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   against the degenerate corpus and the capsule-on-terrain golden.
 - **Prototype ports:** the degenerate-corpus-before-solver and snapshot-resim
   test patterns.
+- **Normative references:** none
 - **Scope in:** primitive-versus-primitive tests and resolution;
   primitive-versus-heightfield/grid terrain proxies; the queries the editor
   and controller need (raycast, overlap, sweep of the supported primitives);
@@ -1073,6 +1112,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   budget, R1-R5) as patterns, not literal code, since Luau's C API, GC, and
   stdlib differ from Lua's (D33); the `runtime/` stdlib seed re-authored
   against Luau's stripped globals.
+- **Normative references:** none
 - **Scope in:** a Luau VM host per mod built on Luau's own sandbox primitives;
   the `svsw.*` core binding surface sufficient for a hash-golden Luau sample;
   R1-R5 as a standing review rule in `docs/ODIN_STYLE.md` and checklists,
@@ -1116,6 +1156,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   lessons (path structure defined in the course repository).
 - **Prototype ports:** `engine/mod` (manifests, dependency resolution, load
   pipeline, mirroring machinery) with its suites.
+- **Normative references:** none
 - **Scope in:** mod discovery, manifest, and dependency port with suites;
   `svsw.data` and `svsw.setting` surfaces; a minimal base mod plus a trivial
   second mod as test fixtures; scenes and prefabs as data-stage content
@@ -1149,6 +1190,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S16; path tag engine; teaches the ImGui shell against
   the asset viewer and its CI smoke test.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** ImGui platform and render backend wiring through cimgui,
   platform tier only; container browsing (section table, provenance,
   checksums); mesh and texture preview using render3d; a shell lifecycle
@@ -1181,6 +1223,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   course-path tagging on its mod-facing surface lessons (path structure
   defined in the course repository).
 - **Prototype ports:** the `cli/` structure and scaffold-check pattern.
+- **Normative references:** none
 - **Scope in:** CLI verbs new/run/package; 3D project templates using the
   base-mod convention and container assets; the scaffold-check recipe wired
   into `just check`.
@@ -1213,6 +1256,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S18; path tag engine; teaches the audio mixer and
   spatialization against the headless mixer-output golden.
 - **Prototype ports:** the `engine/audio` mixer core with its test suite.
+- **Normative references:** none
 - **Scope in:** the mixer core port; the SDL3 audio stream pump at the
   platform tier; 3D spatialization as an additive stage; an assetc or loader
   path for test audio data sufficient for the golden (full audio bake is
@@ -1243,6 +1287,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   and gamepad wiring against the input-seam determinism tests.
 - **Prototype ports:** the `engine/input` seam already ported in S08; this spec
   adds the SDL3 front.
+- **Normative references:** none
 - **Scope in:** SDL3 keyboard, mouse, and gamepad event translation into
   Raw_Input_Event; gamepad database wiring; mouse capture and relative mode
   for the first-person rig; recorded-stream regression tests.
@@ -1275,6 +1320,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   structure defined in the course repository).
 - **Prototype ports:** the `svsw.ui` gated-presentation pattern and containment
   discipline (the surface re-authored over ImGui).
+- **Normative references:** none
 - **Scope in:** the `svsw.ui` binding set over ImGui; off-hash gating outside
   systems per the prototype invariance pattern; containment tests for UI
   callbacks; the headless behavior definition (UI calls no-op or record
@@ -1317,6 +1363,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Prototype ports:** the api-coverage gate; golden record and re-record
   workflows; the svsw-sim MCP server and the headless-verify and
   golden-hashes skill patterns, rebuilt for the new tiers.
+- **Normative references:** none
 - **Scope in:** the numbered roster checklist with hard-gate or report-only
   marks; roster audit and missing-item closure against that enumeration;
   confirmed stress budgets; record/check/frame-diff CLI tooling; the MCP
@@ -1375,6 +1422,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S22; path tag engine; teaches the editor command stream
   and play-in-editor against `just editor-roundtrip-check`.
 - **Prototype ports:** the replay-codec discipline applied to the command log.
+- **Normative references:** `docs/design/editor/index.html`, the M00
+  mockup, normative for the panel set, the dock and collapse behaviour,
+  and the chrome this spec builds. Prose here points at it rather than
+  describing what it shows.
 - **Scope in:** the typed command schema plus serialized command log;
   undo/redo over the log; play/pause/step with hash display and replay
   scrubbing; scene tree and inspector panels; the headless command-log replay
@@ -1414,6 +1465,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Prototype ports:** the `engine/save` and `engine/replay` codec pieces
   already ported in S02a, reused here as the checkpoint and command-log-replay
   substrate; no new prototype surface.
+- **Normative references:** none
 - **Scope in:** rebuild orchestration (the `just` recipe the editor shells out
   to) and failure surfacing in the editor UI; the reconnect handshake, reusing
   the S05/S26 envelope and version whitelist rather than a new protocol;
@@ -1462,6 +1514,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S23; path tag engine; teaches the asset browser,
   gizmos, and profiler against the committed roundtrip-log gate.
 - **Prototype ports:** spall-zone plumbing surfaced as plain counters.
+- **Normative references:** `docs/design/editor/index.html`, the M00
+  mockup, normative for the asset browser, gizmo and profiler panel
+  chrome and their placement in the layout.
 - **Scope in:** the asset browser over container files; assetc audio bake
   (WAV/OGG sections); translate/rotate/scale gizmos emitting commands; ray
   picking against render AABBs (no physics dependency); the profiler panel.
@@ -1496,6 +1551,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   tier against the hostile-script containment gate.
 - **Prototype ports:** the mod-sandbox VM machinery instantiated at a second
   capability tier.
+- **Normative references:** `docs/design/editor/index.html`, the M00
+  mockup, normative for any editor surface this spec adds; the
+  capability tier itself has no visual reference.
 - **Scope in:** the capability tier as a whitelist diff against the mod
   sandbox; the project-scoped FS surface; the assetc invocation binding;
   editor UI bindings; the command-stream emission binding; the containment
@@ -1533,6 +1591,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S25; path tag engine; teaches the animation runtime and
   GPU skinning against the invariance and skinning goldens.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** the keyframe curve sampler; linear blend uniform plus
   per-bone mask; the GPU skinning path plus skinned pipeline permutations;
   container skeleton and animation sections in assetc; off-hash invariance
@@ -1571,6 +1630,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   worker contract against `just proto-conformance`; source material for the
   post-engine multiplayer modules.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** a Go module (path under github.com/svswengine, D26) with the
   supervisor;
   the worker three-call implementation on the Odin Session; Odin and Go
@@ -1604,6 +1664,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   sessions, and worker supervision against the gateway smoke test; source
   material for the post-engine multiplayer modules.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** the QUIC listener with streams plus datagrams; session token
   issue and validate, a minimal session store; worker lifecycle (spawn,
   watchdog, epoch CAS); the loopback TCP gateway-worker leg.
@@ -1633,6 +1694,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   log, checkpoints, outbox) against the kill/respawn/resume run; source
   material for the post-engine multiplayer modules.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** the durable Tick_Commit log; the opaque checkpoint store; the
   idempotent outbox; resume wiring into worker supervision.
 - **Scope out:** replication kinds (S28); multi-machine topology (S29).
@@ -1667,6 +1729,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   material for the post-engine multiplayer modules.
 - **Prototype ports:** the `engine/save` snapshot codec as the checkpoint
   format; the `engine/replay` harness as desync forensics.
+- **Normative references:** none
 - **Scope in:** interest subscription by chunk; delta encoding and
   application; prediction and reconciliation via checkpoint resim; chunk-hash
   checkpoint messages; the fault-injection test rig (netem/toxiproxy-style,
@@ -1703,6 +1766,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   harness against `just coop-smoke`; source material for the post-engine
   multiplayer modules.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** `mods/nettest` content; coop-smoke orchestration (netns or
   two machines in CI); the kill/respawn resume assertion over the Tick_Commit
   log; the windowed parity leg; the replication-kind freeze artifact.
@@ -1738,6 +1802,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S30; path tag engine; teaches the base-as-mod
   verification ruleset and the second mod against `just scene-accept`.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** `mods/base` ruleset systems and data; hand-authored chunk
   scenes via the editor (committed command logs plus data-stage content); the
   second mod; scene goldens across the tiers; the `scene-accept` recipe.
@@ -1772,6 +1837,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   first-person controller, and HUD theming against the polished verification
   scene.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** rig transition implementation and tuning; the first-person
   controller on collision v1; character animation hookup in the scene; HUD
   theming plus gamepad navigation.
@@ -1807,6 +1873,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S32; path tag engine; teaches engine acceptance and the
   residual sweep against `just engine-accept`.
 - **Prototype ports:** none
+- **Normative references:** none
 - **Scope in:** the engine-accept recipe composition over scene-accept; the
   coop harness re-run against the scene; the human checkpoint protocol; the
   residual sweep and its checklist; the post-engine roadmap revision

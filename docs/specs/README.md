@@ -129,6 +129,10 @@ are created now.
 | implemented | Working software delivered; the spec's gate runs green. |
 | course published | Course module authored after implementation; the course verification gate green against the pinned engine commit; module deployed to Pages. Regresses to implemented when an engine change breaks the module's gate. |
 
+M-series specs terminate at spec written: the committed, human-accepted
+artifact is the deliverable, so the implemented and course published
+rungs do not apply, and the D27 pairing rule exempts them.
+
 A spec that creates a gate referenced by a Claude Code agent's refusal
 clause (see `docs/plans/claude-tooling-design.md`) reaching **implemented**
 carries one more exit item: re-verify and update the agents that reference
@@ -219,11 +223,11 @@ written**.
 | S22 | Editor core: command stream, play-in-editor Session, scene tree | first `just editor-roundtrip-check` green | S08, S16, S21 | pending |
 | S22b | Engine dev loop: rebuild, respawn, restore | dev-loop smoke gate green: scripted edit-rebuild-respawn-restore run ends with the session dev-diverged flag set and within-build checks passing | S02a, S08, S22 | pending |
 | S23 | Editor features: asset browser, gizmos, profiler panel | full `just editor-roundtrip-check` on a committed human-authored log | S22, S12b, S18 | pending |
-| S24 | Editor-Luau capability tier | hostile-editor-script containment gate green | S22, S14 | pending |
+| S24 | Editor-Luau capability tier | capability-scoping gate green | S22, S14 | pending |
 | S25 | Animation runtime: sampler, blend, GPU skinning, container sections | animated scene green on invariance/readback/skeleton/parity; S23 log re-recorded | S07, S12b | pending |
 | S26 | Walking skeleton: Go supervisor, worker contract, envelope freeze | `just proto-conformance` green both sides; supervision tests green; v1 frozen | S05, S21 | pending |
 | S27a | Go gateway v1: QUIC, sessions, worker supervision | gateway smoke green: QUIC client authenticates, intents reach a worker | S26 | pending |
-| S27b | Go durability v1: Tick_Commit log, checkpoints, outbox | kill/respawn/resume with no hash divergence | S27a | pending |
+| S27b | Go durability v1: Tick_Commit log, checkpoints, outbox | kill/respawn/resume with no hash divergence | S27a, S22b | pending |
 | S28 | Replication: chunk-scoped deltas, prediction, reconciliation | two clients through the real gateway under injected faults, tripwire trips | S27a, S11a | pending |
 | S29 | Two-client co-op harness: mods/nettest and coop-smoke | `just coop-smoke` green incl. fault and windowed-parity legs (stage 5 exit) | S27b, S28, S15 | pending |
 | S30 | Verification scene: a representative gameplay ruleset as base-as-mod plus second mod | `just scene-accept` headless green; second mod changes the hash | S23, S15, S13, S11a | pending |
@@ -1425,14 +1429,17 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Normative references:** none
 - **Scope in:** rebuild orchestration (the `just` recipe the editor shells out
   to) and failure surfacing in the editor UI; the reconnect handshake, reusing
-  the S05/S26 envelope and version whitelist rather than a new protocol;
+  the S05 envelope and version whitelist (frozen as v1 at S26) rather than a
+  new protocol;
   restore policy per D36 (schema-hash match restores the last checkpoint, a
   mismatch falls back to full D21 command-log replay from session start, no
   migration functions run in this loop); dev-diverged session semantics per D36
   (within-build hash checks stay hard failures, cross-build hash diffs render
-  as first-divergent-tick/chunk forensics, never failures); the minimal
-  checkpoint machinery pulled forward for dev-loop use, with S27b named as the
-  full stage-5 durability owner this borrows from.
+  as first-divergent-tick/chunk forensics, never failures); the checkpoint
+  machinery built here as `engine/checkpoint` over the ported S02a save and
+  replay codecs (capture, cadence policy, a resim-forward driver), pulled
+  forward for dev-loop use, with S27b named as the stage-5 durability owner
+  that adopts and extends it.
 - **Scope out:** Odin dylib hot swap inside one process (rejected as the
   primary mechanism; recorded as a possible later render-client-only follow-up,
   scoped to presentation code that never touches sim state, and gated behind
@@ -1495,15 +1502,15 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   the mod sandbox (whitelist construction, alloc cap, instruction budget,
   R1-R5, disable-in-place) instantiated with an expanded capability tier:
   project-scoped filesystem, asset writes via assetc invocation, editor UI
-  bindings, command-stream emission. One embedding; containment preserved
-  verbatim; reviewed as a security boundary at high tier and never
-  re-sequenced into stage 6.
+  bindings, command-stream emission. One embedding; containment machinery
+  preserved verbatim; a capability tier rather than a security boundary
+  (D43), reviewed at high tier and never re-sequenced into stage 6.
 - **Working software:** Gate: an editor script reaches a running Session's
   sim state through the command stream and through nothing else;
-  hostile-editor-script containment tests (contained and disabled like a
-  hostile mod) green in `just check`.
+  capability-scoping tests (project-FS confinement with symlink escapes
+  denied, disable-in-place on a throwing script) green in `just check`.
 - **Depends on:** S22, S14
-- **Decisions:** D10, D33, D34
+- **Decisions:** D10, D33, D34, D43
 - **Course:** module S24; path tag engine; teaches the editor-Luau capability
   tier against the hostile-script containment gate.
 - **Prototype ports:** the mod-sandbox VM machinery instantiated at a second
@@ -1513,8 +1520,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   capability tier itself has no visual reference.
 - **Scope in:** the capability tier as a whitelist diff against the mod
   sandbox; the project-scoped FS surface; the assetc invocation binding;
-  editor UI bindings; the command-stream emission binding; the containment
-  test suite; `--!strict` gate-enforced on every editor script, the same
+  editor UI bindings; the command-stream emission binding; the
+  capability-scoping test suite; `--!strict` gate-enforced on every editor
+  script, the same
   first-party typing policy S14 applies to base-as-mod and samples (D34).
 - **Scope out:** any editor-Luau access path that bypasses the command
   stream; shipped-build exposure of editor capabilities.
@@ -1646,14 +1654,15 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Working software:** Durability smoke green: a killed worker respawns and
   resumes from the Tick_Commit log with no hash divergence, observed by a
   connected headless client across the kill.
-- **Depends on:** S27a
+- **Depends on:** S27a, S22b
 - **Decisions:** D6, D18, D15
 - **Course:** module S27b; path tag engine; teaches durability (Tick_Commit
   log, checkpoints, outbox) against the kill/respawn/resume run; source
   material for the post-engine multiplayer modules.
 - **Prototype ports:** none
 - **Normative references:** none
-- **Scope in:** the durable Tick_Commit log; the opaque checkpoint store; the
+- **Scope in:** the durable Tick_Commit log; the opaque checkpoint store,
+  adopting and extending the S22b `engine/checkpoint` machinery; the
   idempotent outbox; resume wiring into worker supervision.
 - **Scope out:** replication kinds (S28); multi-machine topology (S29).
 - **Open questions:**

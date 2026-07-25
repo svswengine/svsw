@@ -4,8 +4,9 @@
 
 svsw is an open-source (Apache-2.0) 3D game engine: Odin for the
 deterministic core, Luau for typed, sandboxed gameplay scripting and
-modding, Go for online services, WGSL shaders through SDL3 + wgpu, and a
-policed C interface tier at the platform boundary. One monorepo holds
+modding, Go for online services, Slang shaders through an in-house RHI
+over Vulkan, D3D12 and Metal (D42), and a policed C interface tier at the
+platform boundary. One monorepo holds
 engine, CLI, runtime, samples, and services; the `course` sibling repo
 teaches it, spec and course module landing in pairs (D27).
 
@@ -59,8 +60,9 @@ published course module breaks. One rule binds every session:
   iteration, engine-seeded RNG, no wall clock reachable from sim code.
   Golden world hashes enforce it; breaking it is a release blocker.
 - **Layering (D2) and the C tier (D14).** One-way tier stack; only the
-  platform tier and `engine/render3d/gpu` may touch SDL3, wgpu, or cimgui.
-  `vendor/` is quarantined, pinned, never hand-edited.
+  platform tier and `engine/render3d/gpu` may touch SDL3, cimgui, or a
+  graphics backend (Vulkan, D3D12, Metal; D42). `vendor/` is quarantined,
+  pinned, never hand-edited.
 - **Dual-mode parity (D22).** Headless and windowed runs share one render
   path into one offscreen target and must produce identical hashes; agents
   verify headless and trust the result.

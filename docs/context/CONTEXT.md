@@ -38,7 +38,7 @@ is `/grill-with-docs`' job, not a passing edit.
 | **simmath3d** | The policed deterministic 3D math surface (vec3, mat4, quat and the operations the renderer needs) that sim code uses instead of a general math library. | math lib, linalg, vector math |
 | **World hash** | The deterministic digest of authoritative simulation state after a committed tick, which detects divergence. | state hash, checksum, save, snapshot |
 | **Chunk hash** | One chunk's world hash, composing with its siblings into the world's root hash (D5). | partial hash, subhash, region hash |
-| **Golden** | A recorded expected value a gate compares a fresh run against, keyed by tier, platform, shader backend, and input track. | baseline, fixture, snapshot, reference |
+| **Golden** | A recorded expected value a gate compares a fresh run against. World, chunk, and skeleton goldens are platform-invariant, one committed value every platform verifies; readback goldens key by platform, shader backend, and input track. | baseline, fixture, snapshot, reference |
 | **Draw-list skeleton hash** | The render tier's determinism golden: a digest of a frame's draw-list structure that excludes floats, so it moves only when what is drawn changes. | frame hash, render hash, draw hash |
 | **Readback golden** | The offscreen-rendered image golden, compared with per-tier perceptual tolerance. | screenshot test, pixel test, image diff |
 | **Off-hash** | Of state excluded from `hash_world` because it is presentation-only and may differ run to run (D11, D5). | cosmetic, non-critical, client-side (bare) |
@@ -50,7 +50,7 @@ is `/grill-with-docs`' job, not a passing edit.
 | **Tier** | One band of the engine's one-way layer stack: the editor tier, scripts, engine core, platform, plus the C interface tier at the platform boundary (D2, D14, D43). | layer (bare), module, package |
 | **Editor tier** | The topmost band, `editor/`: the editor binary and the Extensions compiled into it. It depends downward on the engine and is never depended on; tier-scan enforces that from S00 (D43). | SDK tier, tools tier, editor layer |
 | **Layering** | The one-way rule that a tier may depend only downward, policed by the boundary-scan and tier-scan gates (D2, D14). | architecture, separation of concerns, structure |
-| **C interface tier** | The sanctioned C boundary through which SDL3, wgpu-native, cimgui, and Luau's C API enter Odin, reachable only from the platform tier (D14, D33). | FFI layer, native layer, glue tier |
+| **C interface tier** | The sanctioned C boundary through which SDL3, cimgui, and Luau's C API enter Odin, reachable only from the platform tier; the graphics backends enter through Odin's own vendored bindings instead (D14, D33, D42). | FFI layer, native layer, glue tier |
 | **Vendored** | Of third-party source or a prebuilt binary held under D14's quarantine policy: pinned by checksum or commit, provenance recorded, never hand-edited. | third-party, dependency, external |
 | **Sandbox** | The declared security boundary a mod's Luau VM runs behind, and the reason a mod can never crash the engine; whitelist, allocation cap, instruction budget, and one error path are its mechanisms (D33, D34). | VM (bare), jail, isolation, runtime (bare) |
 | **`svsw.*` surface** | The scripting API a mod may see, assembled from opt-in registrar binding packages (D3). | API (bare), stdlib, script library |

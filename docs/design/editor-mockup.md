@@ -233,3 +233,11 @@ marked none are mockup-only chrome.
   labels (in `editor/index.html` and `editor/mockup.js`) to `.luau`: a
   cosmetic residual left for the next M00 touch. This record already says
   Luau.
+- Three feature-map corrections, recorded here for that same next touch:
+  the behavior contract toasts that native breakpoints land with S23,
+  whose scope disowns them; the owner is the script-and-native-debugging
+  spec (S24b). The Reload Mods row and the Luau reload chip credit S14,
+  which owns no reload; S22b owns editor-era script reload. The
+  Mods > Editor Extensions row names Extensions (D43, native Odin) where
+  it means Luau editor scripts; it renames to Editor Scripts (S24), with
+  Extensions listed separately if at all.

@@ -30,7 +30,7 @@ spans `engine/`, `cli/`, and `tests/`; Luau spans `runtime/`, `mods/`, and
 `samples/`; Go spans `server/`, `protocol/`, and `tools/`. Nested CLAUDE.md
 is reserved for `server/` and the `course` sibling repo, the two areas with
 a separate toolchain. Hooks are graduated by cost: formatters warn and exit
-clean when the tool is missing; the marker scan and WGSL validation feed
+clean when the tool is missing; the marker scan and shader validation feed
 diagnostics back without blocking; one hook, the pre-commit marker scan,
 blocks.
 
@@ -47,6 +47,11 @@ in: the document authority hierarchy carrying the `docs/research` numbering
 trap, and three short pointers to the skill routing map, the tracker and
 the glossary. The original eight stay written out below, because the
 reasoning for each cut is only legible beside what was cut.
+
+**Amended by D42:** where sections 1 and 2 name the shader stack, read
+Slang through the in-house rendering interface over Vulkan, D3D12 and
+Metal in place of WGSL through SDL3 and wgpu, and read the C-tier rule's
+list as SDL3, cimgui, or a graphics backend.
 
 Root CLAUDE.md targets about 150 lines and stays always-loaded, holding
 only what every session needs:
@@ -118,6 +123,15 @@ carries over unchanged. StyLua replaces stylua as the formatter (it
 supports Luau natively); `luau-analyze` joins the gate tooling for the D34
 strict/nonstrict typecheck split.
 
+**Amendment (D41):** the `specs.md` row's schema list gains `Normative
+references` between Prototype ports and Scope in, the twelfth field.
+
+**Amendment (D42):** `wgsl.md` becomes `slang.md`, scoped to `**/*.slang`.
+Shaders validate through the checksum-pinned Slang compiler rather than
+naga-cli, and the cross-backend rules cover Slang compiling to SPIR-V,
+DXIL and MSL over the in-house rendering interface; the readback-golden
+and skeleton-hash rules carry over unchanged.
+
 Which two subsystems keep a nested CLAUDE.md, and the S00 task that
 verifies paths frontmatter against the installed Claude Code version, are
 under Multi-language routing below.
@@ -150,6 +164,12 @@ a skill names where truth lives and reads it, rather than carrying a copy
 that can go stale unnoticed, which is why check-triage defers to the
 justfile and spec-ceremony points at the spec schema instead of restating
 its field list.
+
+**Amendment (D42):** vendor-quarantine's checksum-pinned prebuilt-binary
+flow covers the Slang compiler per platform; wgpu-native and naga-cli
+leave the roster with wgpu. golden-hashes' third tier reads as the
+readback golden over the in-house rendering interface rather than a wgpu
+readback.
 
 ## Agents
 
@@ -201,6 +221,10 @@ is a sub-second grep of the staged diff.
 | PreToolUse | `Bash(git commit*)`\|`Bash(git merge*)` | `.claude/hooks/pre-commit-scan.sh` greps the staged diff for the same marker list plus trailing-whitespace-only lines | **Blocking** (exit 2); the one hook in the roster that stops a command before it runs. Sub-second, staged-diff-only. |
 | WorktreeRemove | `*` | `.claude/hooks/worktree-clean.sh` cleans the golangci-lint cache and prunes stale worktree entries | Async, non-blocking. |
 | SubagentStop | `spec-scribe\|course-writer` | `.claude/hooks/output-contract.sh` validates the declared output artifact: non-empty, no stub markers, citations resolve | Non-blocking on the completed turn; a violation signals the retry-once path in the reliability policy rather than undoing the subagent's work. |
+
+**Amendment (D42):** the `wgsl-validate.sh` row reads as
+`slang-validate.sh`, running the checksum-pinned Slang compiler over the
+same non-blocking posture and timeout.
 
 odinfmt is documented as a dev dependency in the S00 setup docs, installed
 beside odin, ols, just, and bd, only after the formula is confirmed

@@ -17,13 +17,17 @@ rung and nothing else duplicates it (D37).
   [D38](../decisions/D038-fresh-repository.md),
   [D39](../decisions/D039-webfetch-allowed.md),
   [D40](../decisions/D040-context-engineering.md),
-  [D41](../decisions/D041-normative-references.md)
+  [D41](../decisions/D041-normative-references.md),
+  [D42](../decisions/D042-in-house-rhi-slang.md),
+  [D43](../decisions/D043-editor-tier-extensions.md),
+  [D45](../decisions/D045-permissions-allow-only.md)
 - **Normative references:** the tooling design record at
   [`docs/plans/claude-tooling-design.md`](../plans/claude-tooling-design.md)
   is normative for the Claude Code tooling core this spec ships, as amended
   by D40 in its CLAUDE.md plan, its agent roster, and its reliability
-  policy. Read the amendment notes first wherever they conflict with the
-  text below them.
+  policy, by D42 in its shader-stack references, and by D45 in its
+  permissions posture. Read the amendment notes first wherever they
+  conflict with the text below them.
 
 ## Goal
 
@@ -59,7 +63,7 @@ work. These are done, and a ticket that re-does them is a defect:
 | The `docs/` layout convention and its router | D30; [`docs/README.md`](../README.md) |
 | The decision log, seeded and indexed | [`docs/decisions/`](../decisions/README.md) |
 | The research corpus, a closed corpus | `docs/research/`, commit `fc246c0` |
-| Committed permission posture in `.claude/settings.json` | D28 as amended by D39 |
+| Committed permission posture in `.claude/settings.json` | D28 as amended by D39 and D45 |
 | The `docs-conventions` skill, and 25 vendored skills pinned by `skills-lock.json` | `.claude/skills/` |
 | All ten tracker labels | `wayfinder:*` and the five triage roles |
 | An interim root `CLAUDE.md` | replaced by this spec's own CLAUDE.md |
@@ -119,7 +123,7 @@ read with D40's amendments.
 
 - Root `CLAUDE.md` on the rule from D40, landing near 100 lines across
   seven sections.
-- Six paths-scoped rules files: odin, luau, go, c-tier, wgsl, specs.
+- Six paths-scoped rules files: odin, luau, go, c-tier, slang, specs.
 - The graduated hook set: non-blocking formatters and diagnostics, plus the
   one blocking PreToolUse marker scan on `git commit` and `git merge`.
 - Five skills: `spec-ceremony`, `check-triage`, `merge-prune`,
@@ -182,13 +186,13 @@ in maintainer grilling sessions, and each answer comment says so.
    site.
 3. **T1 extends to the GPU boundary.** Anything crossing it carries
    explicit widths plus `#assert` on `size_of` and on the offset of every
-   field, because WGSL layout rules disagree with natural Odin struct
-   layout silently. The float width follows the hash boundary: sim state
+   field, because cross-backend shader layout rules (D42) disagree with
+   natural Odin struct layout silently. The float width follows the hash boundary: sim state
    uses the sim math module's type and is never bypassed, render state is
    `f32` and off-hash by D11.
 4. **S3 and A7 widen** from script VM callbacks to every `proc "c"`
-   callback, wgpu's included. The longjmp clause stays specific to the
-   script VM.
+   callback, the platform and graphics-backend ones included. The longjmp
+   clause stays specific to the script VM.
 
 Two of these are gate-checkable and belong in the scan skeleton rather
 than in review: the F1 control-flow rule, and the presence of `#assert` on

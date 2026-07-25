@@ -595,7 +595,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   the same frame on the dev machine: this is a human checkpoint, not a CI
   assertion.
 - **Depends on:** S01, S02b
-- **Decisions:** D2, D7, D14, D22, D42
+- **Decisions:** D2, D7, D14, D22, D42, D47, D48
 - **Course:** module S03; path tag engine; teaches the SDL3 platform layer,
   the in-house rendering interface, and the draw-list render core against
   the offscreen test frame.
@@ -606,7 +606,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   draw-list struct stream (pipeline id, bind sets, handles, instance ranges,
   uniform blocks); `engine/render3d` one opaque pass with depth buffer;
   `engine/render3d/gpu` carrying the rendering interface and walking the
-  list into backend calls with an offscreen attachment; tier-scan rules
+  list into backend calls with an offscreen attachment; Vulkan and Metal
+  implemented per D48's sequencing, the interface designed against all
+  three APIs' constraints with D3D12 arriving through its own spec;
+  tier-scan rules
   extended so only the platform tier and render3d/gpu touch a graphics
   backend or SDL3; the first Slang shader under shader-check.
 - **Scope out:** goldens and the parity gate (S04); textures and materials
@@ -614,10 +617,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   Ray tracing, mesh shaders, bindless and async compute: D42 exists so the
   interface can reach them later, and none is drawn here.
 - **Open questions:**
-  - **Which backends land at S03.** All three, or one to prove the shape
-    with the others following, and if one, which. The CI legs are macOS
-    arm64 and Linux x86-64, so Metal and Vulkan are the reachable pair and
-    D3D12 is only exercisable on the Windows rig.
+  - **Viewport surface transport as a named RHI capability (D47).** The
+    shape of cross-process offscreen-target export per backend (IOSurface,
+    dma-buf external memory, NT shared handles) and where it sits in the
+    interface, designed in rather than bolted on.
   - **How much of the interface S03 defines.** A resource and command
     vocabulary that never needs breaking later, or the minimum to draw one
     triangle, accepting a redesign when ray tracing and bindless arrive.
@@ -647,7 +650,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   (the Linux CI windowed leg under a virtual display); the window shows the
   cube on the dev machine and a human confirms appearance (human checkpoint).
 - **Depends on:** S02b, S03
-- **Decisions:** D22, D7
+- **Decisions:** D22, D7, D48, D54
 - **Course:** module S04; path tag engine; teaches the golden tiers and the
   parity gate against the textured-cube scenario.
 - **Prototype ports:** golden-hash gate discipline and the one-command re-record
@@ -658,7 +661,17 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   handles, draw order, counts, pass structure, floats excluded); the readback
   golden with perceptual tolerance and a re-record recipe; the parity runner
   including the virtual-display CI leg; a full-byte draw-list hash as an
-  optional same-machine golden. The parity-verify skill ships here
+  optional same-machine golden; the golden axes stated: readback goldens
+  key per platform and shader backend, world and skeleton goldens stay
+  platform-invariant, cross-backend visual equivalence belongs to the S21
+  comparison gate (D48), and re-record ownership is recorded per axis;
+  the cube goldens record ahead of the D54 resolve chain and are accepted
+  as a one-time re-record when S06 lands it; a validation-debt item on the
+  S00 pattern: demonstrate a readback golden surviving the macos-26
+  runner's paravirtual Metal device and lavapipe on ubuntu-24.04 before
+  any readback or parity gate is declared a hard CI item, with
+  skeleton-only degradation recorded as the fallback. The parity-verify
+  skill ships here
   (`docs/plans/claude-tooling-design.md`). The headless == windowed parity
   badge ships here, per `docs/plans/public-stats.md`.
 - **Scope out:** asset loading (S12a); lighting (S06, S07); multi-object
@@ -843,17 +856,23 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   sim tick p95 on a synthetic multi-chunk-shaped scene, budgets marked
   provisional until S21 confirms them, so perf-critical renderer and world
   code never goes gate-dark.
-- **Working software:** `just stress` runs the 3D benchmark in CI with
-  provisional p95 budgets enforced; a budget regression fails the recipe.
+- **Working software:** `just stress` runs the 3D benchmark report-only on
+  hosted CI, whose shared runners drift in CPU class, and hard-enforced on
+  the dev machine and the win rig; where enforcement is hard, a budget
+  regression fails the recipe.
 - **Depends on:** S06
-- **Decisions:** none
+- **Decisions:** D4 (the scene scale)
 - **Course:** module S09; path tag engine; teaches the stress harness and
   p95 budget discipline against the CI-enforced 3D benchmark.
 - **Prototype ports:** the stress-benchmark recipe pattern with measured p95
   budgets.
 - **Normative references:** none
 - **Scope in:** a synthetic scene generator (hardcoded Odin scene, no
-  scenario-file format); p95 measurement for sim tick and draw-list build; CI
+  scenario-file format), pinned to the D4 few-chunks scale so the budgets
+  defend the bar the engine promises; p95 measurement for sim tick and
+  draw-list build; a Luau-system-heavy scenario with its own sim-tick p95
+  budget, pricing script-heavy ticks two stages before S30 commits the
+  ruleset to Luau, confirmed at S21; CI
   wiring and budget documentation. The sim-tick p95 badge ships here, per
   `docs/plans/public-stats.md`.
 - **Scope out:** budget confirmation (S21); GPU-time measurement (skeleton
@@ -1050,7 +1069,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   test scene with a capsule controller sliding on default-fill terrain
   reproduces its world-hash golden.
 - **Depends on:** S02a, S11a
-- **Decisions:** D4; D11 (hitboxes are sim colliders).
+- **Decisions:** D4; D11 (hitboxes are sim colliders); D55.
 - **Course:** module S13; path tag engine; teaches deterministic collision
   against the degenerate corpus and the capsule-on-terrain golden.
 - **Prototype ports:** the degenerate-corpus-before-solver and snapshot-resim
@@ -1069,6 +1088,20 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     authoring path.
   - Solver iteration and ordering rules that keep resolution deterministic
     across entity orderings.
+  - Whether the S11a chunk grid is the broadphase, and how cross-chunk
+    pairs order deterministically.
+  - Collision layers and masks as a hashed component field, and the
+    query-filter surface mods see.
+  - Surface-response constants (friction-like slide parameters): hashed
+    components mods can set, or code.
+  - The terrain authoring source behind the proxies: an assetc heightmap
+    bake (reflected into S12a), a Luau data-stage grid, or flat-only for
+    engine scope, recorded in D17's amendment trail if flat-only wins.
+  - Whether the query set must serve deterministic grid pathfinding, and
+    whether the chunk grid exposes a walkability view (D55: encounter
+    movement is mod-side over these queries).
+  - Debug-draw emission for colliders, contacts, and sweeps through the
+    S06 layer, off-hash by the D11 invariance pattern.
 
 ### S14 — Luau sandbox port: the scripting boundary, test-first
 
@@ -1890,7 +1923,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   dropped in, changes gameplay and the world hash; the scene passes
   parity-check.
 - **Depends on:** S23, S15, S13, S11a
-- **Decisions:** D4, D17, D12
+- **Decisions:** D4, D17, D12, D55
 - **Course:** module S30; path tag engine; teaches the base-as-mod
   verification ruleset and the second mod against `just scene-accept`.
 - **Prototype ports:** none
@@ -1908,6 +1941,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     single hostile).
   - Whether verification content development feeds gap-fix work back through
     the normal spec process or lands within this spec.
+  - Where encounter movement lives: mod-side Luau over `svsw.*` queries
+    under the instruction budget (D55's default), or a small engine-side
+    deterministic grid-search service if the private envelope demands it.
+  - Whether the encounter needs minimal impact or feedback VFX, or the
+    D55 deferral holds through engine completion.
 
 ### S31 — Camera continuum, first-person controller, client presentation polish
 

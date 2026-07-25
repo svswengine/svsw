@@ -1,6 +1,12 @@
 # Carbon and SVSW successor-engine research
 
-Research-era record. Decision numbers here use the research-era scheme; docs/decisions/README.md carries the mapping to the current log.
+> **Closed corpus.** This directory is the research-era record and takes no
+> new documents. Its decision numbers use the research-era scheme, mapped to
+> the current log in [../decisions/README.md](../decisions/README.md).
+> New research lives on a throwaway `research/<name>` branch, linked from
+> its ticket; durable findings graduate into a decision file, a spec's
+> `Open questions` field, or the glossary at
+> [../context/CONTEXT.md](../context/CONTEXT.md).
 
 This directory is an evidence ledger and a proof-first design proposal for a
 new Odin/Lua/Go engine. It is deliberately outside all 33 Carbon repositories

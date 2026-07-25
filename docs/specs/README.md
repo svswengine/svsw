@@ -31,26 +31,25 @@ Ground rules carried from the roadmap:
   the first rendered scene onward.
 - The engine completes stage by stage, proven by verification scenes.
   Private product requirements scope the gameplay-facing specs.
-- Prototype ports are test-first: a port lands with its suite green, never bare.
-- The fresh-repo decision supersedes the roadmap's hard-cutover, deletion-
+- Prototype ports are test-first: a port lands with its suite green, never
+  bare. The internal prototype is a source to port from, not a target to
+  converge with (D38).
+- The fresh-repo decision (D38) voids the roadmap's hard-cutover, deletion-
   commit, and gate-equivalence machinery. Nothing cuts over; the obligation
   reappears as S00's gate skeleton and S21's full gate roster, and prototype
   subsystems port test-first in S02a, S08, S14, S15, and S18 (S19 adds the
   SDL3 front on the seam S08 ports; S20 re-authors the prototype UI surface over
   ImGui rather than porting it).
-- Kernel-freeze mechanics in D5 are moot: there is no second target to freeze
-  against. Per-chunk hashing still composes over the ported `hash_world`
-  primitives unchanged.
+- Kernel-freeze mechanics in D5 are moot, D38 amending D5 in that clause:
+  there is no second target to freeze against. Per-chunk hashing still
+  composes over the ported `hash_world` primitives unchanged.
 - The name is settled (D26): svsw is the brand, the org is svswengine, the
   repo is svsw, the CLI is `svsw`, and the `svsw.*` Luau namespace is final.
   The D16 ceremony at S32 shrinks to residual sweeps.
-- Spec and course come in pairs (D27). A spec's course module is authored
-  after its implementation gate is green, lives in the `course` sibling repo
-  (D26), and the spec reaches course published only when the course
-  verification gate (embed-check against the pinned engine commit, reference
-  cross-check, path closure, full site build) passes. An engine change that
-  breaks a published module returns that spec to implemented until the module
-  is fixed.
+- Spec and course come in pairs (D27): a spec's course module is authored
+  after its implementation gate is green and lives in the `course` sibling
+  repo (D26). Course strategy and paths below carries the verification gate
+  and the regression rule.
 
 Stage shape: stage 0 has eight specs, stage 1 five, stage 2 nine, stage 3
 four, stage 4 five, stage 5 five, stage 6 three. C00, the course platform
@@ -82,8 +81,9 @@ repo pins the engine at a commit (submodule or recorded-commit checkout,
 settled in C00's grilling) and every embed resolves against that pin.
 Bumping the pin reruns the course verification gate, and failures enumerate
 the modules the engine change reopened; a report-only probe builds the
-course against engine HEAD so drift surfaces before a pin bump. Nothing in
-either repo goes public until S00 is implemented.
+course against engine HEAD so drift surfaces before a pin bump. Both repos
+are public already (D38); S00 still owes that surface configuration work,
+enabling Pages on `course` above all, rather than a launch.
 
 Spec and course come in pairs (D27): a spec's course module is authored
 after that spec is implemented, never before and never in parallel with
@@ -136,11 +136,31 @@ this gate, so a refusal clause naming this spec is retired once the gate it
 pointed at exists.
 
 When a spec reaches **spec written**, its full document lives at
-`docs/specs/S<nn>-<slug>.md` as the normative text, and this index's entry
+`docs/specs/<id>-<slug>.md` as the normative text, and this index's entry
 for that spec collapses to the overview-table row plus a link to that
 document. M00 precedes this pattern: its design record already lives at
 `docs/design/editor-mockup.md` rather than under `docs/specs/`, so M00's
 index entry may stay as it is until its own collapse.
+
+## The ladder and the tracker
+
+The rungs above drive the work tracker as well as this table. A spec at
+**pending** gets a `/wayfinder` map whose child issues are seeded from that
+spec's `Open questions` field, which makes that field load-bearing rather
+than decorative: an open question left out of it never becomes a map
+child. `/wayfinder` closes each child as its decision lands, and closing
+the last one is where it edits that spec's `Status` here to **grilled**.
+The ladder records **brainstormed** between the two rungs, but no tracker
+event marks it: with several grilling children in flight, no single moment
+is the crossing. The maintainer moves the two rungs above **grilled** by
+hand until the spec-ceremony skill lands at S00. Reaching **spec written**
+is what lets `/to-tickets` open the spec's tracking ticket and the child
+tickets that carry its implementation, so no ticket precedes the document
+it builds from. The decomposition behind that split is
+[D37](../decisions/D037-work-decomposition.md); which skill drives which
+rung, and what each may read and write, is
+[`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
+here: no tracker records it.
 
 Every spec below is **pending**, except M00, which is **spec written**.
 
@@ -315,19 +335,21 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Status:** pending
 - **Goal:** Create the `svsw` repository with the internal prototype's tooling
   discipline from the first commit: a justfile with a `just check` composition
-  gate, TIGER_STYLE adoption, boundary/tier-scan scaffolding enforcing the
-  C-tier policy (D14), an api-surface snapshot gate skeleton, a report-only
-  security scan, and CI on macOS arm64 and Linux x86-64. The repository is
-  public and open source from the first push, dual-licensed MIT + Apache-2.0
-  (D23; amended: Apache-2.0 single, per the maintainer's repo setup) and closed
-  to external contributions until a DCO-based inbound=outbound mechanism is
-  announced (D23, D24); the directory skeleton reflects the monorepo layout
-  decision (D25). The maintainer has already created the public surface per D26
-  — the `svswengine` GitHub org, the `svsw` engine repo, and the `course`
-  sibling repo — so S00's step there is configuration, not creation: GitHub
-  Pages enabled on `course`; branch protection on both repos; the
-  closed-contribution posture (D24) applied org-wide; nothing goes public until
-  S00 is implemented.
+  gate, the `docs/ODIN_STYLE.md` standard, boundary/tier-scan scaffolding
+  enforcing the C-tier policy (D14), an api-surface snapshot gate skeleton,
+  a report-only security scan, and CI on macOS arm64 and Linux x86-64. The
+  repository is public and open source from the first push, dual-licensed
+  MIT + Apache-2.0 (D23; amended: Apache-2.0 single, per the maintainer's
+  repo setup) and closed to external contributions until a DCO-based
+  inbound=outbound mechanism is announced (D23, D24); the directory
+  skeleton reflects the monorepo layout decision (D25). The maintainer has
+  already created the public surface per D26 — the `svswengine` GitHub org,
+  the `svsw` engine repo, and the `course` sibling repo — so S00's step
+  there is configuration, not creation: GitHub Pages enabled on `course`;
+  branch protection on both repos; the closed-contribution posture (D24)
+  applied org-wide; and the PR-auto-close Action wired up. The repository
+  is public already, with issues enabled (D38), so none of this is a launch
+  step.
 - **Working software:** Setup spec. `just check` runs green on both CI
   platforms on every commit, initially composing type-check, an empty test
   suite, tier-scan, the api-surface snapshot, and scan. The root README
@@ -338,21 +360,23 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S00; path tag engine; teaches the repo bootstrap and the
   `just check` gate skeleton against the two-platform CI run; also seeds the
   shared Setup track.
-- **Prototype ports:** justfile composition pattern; TIGER_STYLE.md structure;
-  boundary-scan/tier-scan gates; api-surface snapshot-diff gate.
+- **Prototype ports:** justfile composition pattern; the style-guide
+  structure now carried by `docs/ODIN_STYLE.md`; boundary-scan/tier-scan
+  gates; api-surface snapshot-diff gate.
 - **Scope in:** git repo and monorepo layout reflecting D25 (`engine/`,
   `cli/`, `tools/`, `protocol/`, `server/`, `runtime/`, `vendor/`, `mods/`,
   `samples/`, `docs/`, `tests/`); justfile with check/test/type-check/fmt/scan
   recipes plus `docs-check`, an offline internal-link checker over the
   repo's markdown (for example lychee in offline mode) that blocks on
-  internal relative links and only reports external URLs; TIGER_STYLE.md
-  adopted with svsw carve-outs; tier-scan rule set
+  internal relative links and only reports external URLs; the svsw
+  carve-outs added to the existing `docs/ODIN_STYLE.md`; tier-scan rule set
   including only-platform-tier-touches-C; api-surface snapshot machinery; CI
-  workflows for macOS arm64 and Linux x86-64; decision-log doc seeded with
-  D4-D22 plus D23-D25; research corpus and adopted roadmap committed under
-  `docs/research/`; beads init for the new repo; LICENSE (Apache-2.0),
-  CONTRIBUTING.md, and SECURITY.md shipped at repo root (already authored;
-  S00 wires them into the public repo); the docs/ layout convention (a router `docs/README.md`
+  workflows for macOS arm64 and Linux x86-64; the decision-log doc seeded
+  with the decisions settled by then; research corpus and adopted roadmap
+  committed under `docs/research/`; beads init for the new repo; LICENSE
+  (Apache-2.0), CONTRIBUTING.md, and SECURITY.md shipped at repo root
+  (already authored; S00 wires them into the public repo); the docs/ layout
+  convention (a router `docs/README.md`
   and every documentation markdown under a subdirectory of `docs/`); the
   PR-auto-close GitHub Action; the already-created
   `svswengine` GitHub org, `svsw` engine repo, and `course` sibling repo
@@ -375,10 +399,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   Linux/WSL2. CI itself uses hosted runners only: macOS arm64, Linux
   x86-64, and hosted Windows runners for CPU-only determinism legs. No
   self-hosted runners: a self-hosted runner attached to a public repository
-  executes forked code on the owner's machine; nothing public until S00 is
-  implemented. S00 also ships the Claude Code tooling bootstrap core; the
+  executes forked code on the owner's machine, and this repository is
+  public now (D38), so that hazard is live rather than deferred. S00 also
+  ships the Claude Code tooling bootstrap core; the
   full design record is `docs/plans/claude-tooling-design.md`. In scope: root
-  CLAUDE.md; the six paths-scoped rules files (odin, lua, go, c-tier, wgsl,
+  CLAUDE.md; the six paths-scoped rules files (odin, luau, go, c-tier, wgsl,
   specs); the graduated hook set (non-blocking formatters and diagnostics
   plus the one blocking PreToolUse marker scan on `git commit`/`merge`);
   committed shared permissions in `.claude/settings.json`; the
@@ -402,7 +427,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Sanitizer story: which sanitizers run where, decided and validated before
     CI grows (the internal prototype's cut ASan job is the cautionary tale).
   - Beads prefix for the fresh repo: new prefix or continue `svsw-`.
-  - TIGER_STYLE carve-outs that change for a 3D engine.
+  - `docs/ODIN_STYLE.md` carve-outs that change for a 3D engine.
   - Which parts of the carbon corpus copy into `docs/research/` and which
     stay reference-only in the carbon tree.
   - Windows gates split: which gates run on hosted CPU-only Windows CI
@@ -533,7 +558,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   committed world-hash golden, neutral-input regression) passes green inside
   `just check` on both CI platforms.
 - **Depends on:** S00
-- **Decisions:** D20; the D1-lineage determinism law.
+- **Decisions:** D1, D20
 - **Course:** module S02a; path tag engine; teaches the deterministic kernel,
   ECS, and harness in Odin against the headless N-tick sim and the
   determinism pyramid.
@@ -572,7 +597,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   versus Linux x86-64) passes green on both CI legs inside `just check`; the
   determinism pyramid from S02a stays green with simmath3d types in play.
 - **Depends on:** S02a (the harness)
-- **Decisions:** D20; the D1-lineage determinism law.
+- **Decisions:** D1, D20
 - **Course:** module S02b; path tag engine; teaches simmath3d and cross-CPU
   determinism against the cross-platform hash gate.
 - **Prototype ports:** the simmath policed-surface pattern.
@@ -603,7 +628,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   the same frame on the dev machine: this is a human checkpoint, not a CI
   assertion.
 - **Depends on:** S01, S02b
-- **Decisions:** D7, D14, D22; the D2-lineage layering.
+- **Decisions:** D2, D7, D14, D22
 - **Course:** module S03; path tag engine; teaches the SDL3/wgpu stack and
   the draw-list render core against the offscreen test frame.
 - **Prototype ports:** the D2 boundary pattern (backend-free core, thin GPU
@@ -1038,7 +1063,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   sandbox containment, disable-in-place, and budget-enforcement tests green in
   `just check` on both platforms.
 - **Depends on:** S01, S02a
-- **Decisions:** D12, D14, D33, D34, D35
+- **Decisions:** D3, D12, D14, D33, D34, D35
 - **Course:** module S14; path tag engine; teaches the Luau sandbox boundary
   and the `svsw.*` core API against the hash-golden Luau sample; candidate for
   additional course-path tagging on its mod-facing surface lessons (path
@@ -1050,14 +1075,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   against Luau's stripped globals.
 - **Scope in:** a Luau VM host per mod built on Luau's own sandbox primitives;
   the `svsw.*` core binding surface sufficient for a hash-golden Luau sample;
-  R1-R5 as a standing review rule in TIGER_STYLE and checklists, re-verified
-  against Luau's C API; atomic persistence for `svsw.storage`; `--!strict`
-  gate-enforced for base-as-mod and samples, nonstrict and advisory-only for
-  third-party mods, the sandbox remaining the safety boundary either way (D34);
-  the `.d.luau` declaration generator over the binding registry plus its `just
-  check` drift gate (D34). The lua-binding skill and the binding-dev agent's
-  gate-availability re-verification ship here
-  (`docs/plans/claude-tooling-design.md`).
+  R1-R5 as a standing review rule in `docs/ODIN_STYLE.md` and checklists,
+  re-verified against Luau's C API; atomic persistence for `svsw.storage`;
+  `--!strict` gate-enforced for base-as-mod and samples, nonstrict and
+  advisory-only for third-party mods, the sandbox remaining the safety
+  boundary either way (D34); the `.d.luau` declaration generator over the
+  binding registry plus its `just check` drift gate (D34). The lua-binding
+  skill and the binding-dev agent's gate-availability re-verification ship
+  here (`docs/plans/claude-tooling-design.md`).
 - **Scope out:** the multi-mod pipeline and mirroring (S15); UI bindings
   (S20); the editor capability tier (S24).
 - **Open questions:**
@@ -1267,17 +1292,17 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 
 - **Stage:** 3 — Platform completion + gate roster
 - **Status:** pending
-- **Goal:** The fresh-repo successor to the cutover checklist: enumerate the
-  full gate roster as a numbered checklist artifact in the spec, mark each
-  item hard-gate or report-only, and make every enumerated item present and
-  green in one `just check` the acceptance wording. Roster candidates:
-  determinism goldens (world plus per-chunk), skeleton goldens, readback
-  goldens, boundary and tier scans including the C-tier scan, api-surface
-  snapshots, the api-coverage threshold, stress budgets confirmed from
-  provisional, scaffold-check, the script and mod gate family, the headless
-  audio gate, and the parity gate. Finish the verification tooling that lets
-  agents drive the engine headless: golden record/check/frame-diff tooling
-  and an svsw-sim-style MCP successor over the new tiers.
+- **Goal:** The fresh-repo successor (D38) to the cutover checklist:
+  enumerate the full gate roster as a numbered checklist artifact in the
+  spec, mark each item hard-gate or report-only, and make every enumerated
+  item present and green in one `just check` the acceptance wording. Roster
+  candidates: determinism goldens (world plus per-chunk), skeleton goldens,
+  readback goldens, boundary and tier scans including the C-tier scan,
+  api-surface snapshots, the api-coverage threshold, stress budgets confirmed
+  from provisional, scaffold-check, the script and mod gate family, the
+  headless audio gate, and the parity gate. Finish the verification tooling
+  that lets agents drive the engine headless: golden record/check/frame-diff
+  tooling and an svsw-sim-style MCP successor over the new tiers.
 - **Working software:** `just check` is the one gate for the whole engine and
   runs green on both CI platforms with every enumerated roster item present;
   `just stress` budgets re-baselined from provisional to confirmed; the
@@ -1286,7 +1311,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   stage: the split-process test scene runs headless and then windowed with
   sound and gamepad together at the dev window.
 - **Depends on:** S09, S11b, S12b, S13, S15, S17, S18, S19, S20
-- **Decisions:** D22, D14
+- **Decisions:** D22, D14, D38
 - **Course:** module S21; path tag engine; teaches the gate roster and the
   headless verification tooling against the completed `just check`.
 - **Prototype ports:** the api-coverage gate; golden record and re-record
@@ -1307,10 +1332,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Which roster items are hard gates versus report-only at this point.
   - MCP successor scope: which svsw-sim tools carry forward for 3D and which
     die with the 2D oracle.
-  - Asset MCP servers (glTF/assetc, the D19 container) are deferred to their
-    owning specs (S12a, the container spec); the internal prototype's proven
+  - Asset MCP servers (glTF/assetc, the D19 container) are deferred to
+    S12a, their owning spec; the internal prototype's proven
     single-format-server pattern (svsw-ldtk, svsw-aseprite) is recorded here
-    as a standing pattern to decide against once those specs exist.
+    as a standing pattern to decide against once that spec exists.
 
 ## Stage 4 — Editor + animation
 
@@ -1777,8 +1802,8 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   including the coop leg; scaffold-check green; the human checkpoint signed
   off. This gate is engine completion.
 - **Depends on:** S29, S30, S31, S17
-- **Decisions:** D16 as amended, D4, D22; D13 remnant (beads and the
-  decision log continue).
+- **Decisions:** D16 as amended, D4, D22, D38 (beads and the decision log
+  continue across the rebrand).
 - **Course:** module S32; path tag engine; teaches engine acceptance and the
   residual sweep against `just engine-accept`.
 - **Prototype ports:** none

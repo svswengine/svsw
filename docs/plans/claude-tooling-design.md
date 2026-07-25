@@ -5,8 +5,8 @@ CLAUDE.md, the paths-scoped rules files, skills, agents, hooks, workflows,
 the reliability policy, multi-language routing, permissions, and the review
 cadence. It amends the original tooling design with the maintainer's
 grilling decisions of 2026-07-12, listed in substance in the closing
-section. `specs/README.md` cross-references this document from S00 and from
-every spec that adds a gate-dependent piece of tooling.
+section. `docs/specs/README.md` cross-references this document from S00
+and from every spec that adds a gate-dependent piece of tooling.
 
 ## Overview
 
@@ -26,12 +26,13 @@ CLAUDE.md; every workflow and agent references it instead of restating it.
 
 Per-language guidance loads through paths-scoped rules files, not nested
 CLAUDE.md, because svsw's languages cross directory boundaries: Odin
-spans `engine/` and `cli/`; Luau spans `runtime/`, `mods/`, and `samples/`;
-Go spans `server/`, `protocol/`, and `tools/`. Nested CLAUDE.md is reserved
-for `server/` and the `course` sibling repo, the two areas with a separate
-toolchain. Hooks are graduated by cost: formatters warn and exit clean when
-the tool is missing; the marker scan and WGSL validation feed diagnostics
-back without blocking; one hook, the pre-commit marker scan, blocks.
+spans `engine/`, `cli/`, and `tests/`; Luau spans `runtime/`, `mods/`, and
+`samples/`; Go spans `server/`, `protocol/`, and `tools/`. Nested CLAUDE.md
+is reserved for `server/` and the `course` sibling repo, the two areas with
+a separate toolchain. Hooks are graduated by cost: formatters warn and exit
+clean when the tool is missing; the marker scan and WGSL validation feed
+diagnostics back without blocking; one hook, the pre-commit marker scan,
+blocks.
 
 ## Root CLAUDE.md plan
 
@@ -41,8 +42,7 @@ only what every session needs:
 1. **Project.** svsw is the successor engine: Odin core, Luau sandbox,
    Go services, a policed C tier (D14), WGSL through SDL3 and wgpu. The
    engine completes stage by stage; verification scenes prove each stage.
-   `specs/README.md` is
-   the lifecycle source of truth.
+   `docs/specs/README.md` is the lifecycle source of truth.
 2. **Layer rules.** The one-way tier stack; the D14 C-tier import rule
    (only the platform tier and `engine/render3d/gpu` touch SDL3, wgpu, or
    cimgui); D1 determinism-by-construction; D11 animation stays off-hash;
@@ -53,9 +53,11 @@ only what every session needs:
    parity-check, proto-conformance, stress, scaffold-check, win-check);
    triage detail lives in the check-triage skill.
 4. **Spec ceremony pointer.** Specs are produced one at a time through
-   brainstorm and grilling; invoke the spec-ceremony skill; never write
-   implementation code for a spec whose status is not "spec written"; never
-   reopen a logged decision without maintainer instruction.
+   brainstorm and grilling, which `/wayfinder` and `/grill-with-docs`
+   drive (D37); `docs/specs/README.md` records where each one stands, and
+   `docs/agents/skills.md` maps rung to skill. Never write implementation
+   code for a spec below "spec written" on the ladder; never reopen a
+   logged decision without maintainer instruction.
 5. **Agentic operation.** The karpathy-guidelines and ponytail mandate
    applies to every coding turn and every dispatched coding subagent, since
    a subagent does not inherit skills and the parent must instruct it
@@ -68,7 +70,9 @@ only what every session needs:
 7. **Toolchain policy.** Tools come from PATH or vendored pins; verify a
    binary exists before wiring it into a recipe or claiming it ran;
    formatter hooks warn instead of failing.
-8. **Beads block.** bd is the system of record for tasks and spec status.
+8. **Beads block.** bd is the slice tracker one level below a GitHub
+   ticket, engaged only when a ticket overruns a session; it holds no spec
+   status, which lives in `docs/specs/README.md` alone (D37).
 
 Everything else loads lazily: per-language conventions live in
 `.claude/rules/*.md`; `server/CLAUDE.md` carries Go module conventions,
@@ -80,8 +84,7 @@ commands, registrar patterns, win-rig SSH mechanics) lives exclusively in
 skills, not in CLAUDE.md.
 
 Permissions live in committed `.claude/settings.json`, detailed under
-Permissions posture below. Worktree sessions read the checked-out root
-settings, so every deny rule lives at root rather than per-package.
+Permissions posture below.
 
 ## Rules files
 
@@ -90,12 +93,12 @@ each scoped by paths rather than by directory placement:
 
 | File | Paths scope | Content summary |
 |---|---|---|
-| `odin.md` | `**/*.odin` | TIGER_STYLE essentials as checkable items: the 70-line proc ceiling, asserting engine invariants versus `L_error`-ing on mod input, explicit allocator discipline, no hidden control flow. `odin check` with the pinned vet flag set. Determinism constraints for `engine/`: no wall clock, no unordered map iteration into sim state, RNG only through engine-seeded simrng, sim-code float ops through simmath3d. `proc "c"` callbacks reconstruct the Odin context before allocator-dependent work. Format through odinfmt; the hook handles it. |
+| `odin.md` | `**/*.odin` | `docs/ODIN_STYLE.md` essentials as checkable items: the 70-line proc ceiling, asserting engine invariants versus `L_error`-ing on mod input, explicit allocator discipline, no hidden control flow. `odin check` with the pinned vet flag set. Determinism constraints for `engine/`: no wall clock, no unordered map iteration into sim state, RNG only through engine-seeded simrng, sim-code float ops through simmath3d. `proc "c"` callbacks reconstruct the Odin context before allocator-dependent work. Format through odinfmt; the hook handles it. |
 | `luau.md` | `**/*.luau`, `runtime/**`, `mods/**`, `samples/**` | The sandbox contract: mod Luau sees only the `svsw.*` boundary, never engine internals, the platform, the network, or `os`/`io`. Load order settings, then data, then control; the three-file mod layout. Project-relative asset paths. Load-order-deterministic asset handles, never content-derived. Hot-path Luau instruction budgets affect world hashes, so a `control.luau` hot-loop change is determinism-sensitive. StyLua formats through the hook; `luau-analyze` validates against the D34 strict/nonstrict split when installed. Editor Luau (D10) runs the same VM at an expanded capability tier; the mod tier never widens to accommodate editor code. |
 | `go.md` | `server/**`, Go files under `protocol/**` and `tools/**` | Module path `github.com/svswengine/...` (D25). gofmt runs through the hook. golangci-lint is the meta-linter, installed as a prebuilt binary rather than `go install`. The known trap: golangci-lint cache staleness after worktree removal; run `golangci-lint cache clean` before trusting a red lint in a fresh worktree. Protocol code (D15): wire frames are versioned, checksum-first, length-prefixed; the Odin and Go codecs both pass `just proto-conformance` over the shared recorded corpus; a frozen envelope field change is a decision-log reopen. QUIC connects client and gateway; loopback TCP connects gateway and worker (D18). The server is authoritative (D6); no sim logic duplicates into Go. |
 | `c-tier.md` | `vendor/**`, `engine/render3d/gpu/**`, `engine/platform_sdl/**` | D14: this is the only tier that may include C headers or call SDL3, wgpu, or cimgui; tier-scan enforces it, and a C capability needed elsewhere gets an Odin-facing seam here instead. FFI edge rules: document ownership at every boundary proc, explicit struct layout matched to the C ABI, no Odin slices or strings crossing the edge without length and lifetime notes, calling convention stated. `vendor/` is quarantined, untrusted source: pinned by checksum or commit with provenance in VENDOR.md, never hand-edited, added only through the vendor-quarantine skill. |
 | `wgsl.md` | `**/*.wgsl` | Every shader validates through the pinned naga-cli (`just shader-check`); the PostToolUse hook runs it per file and feeds errors back. Cross-backend rules: WGSL compiles to SPIR-V, MSL, and HLSL through wgpu, so backend-divergent constructs (implicit derivatives in non-uniform control flow, precision-sensitive reductions) are avoided. Anything a shader writes into a readback golden is tolerance-compared per tier, platform, shader backend, and input track (see the golden-hashes skill). Draw-list skeleton hashes exclude floats by design; a skeleton-hash mismatch is not fixed by rounding. D22: the render path never forks by headless or windowed mode; both render into one offscreen target. |
-| `specs.md` | `docs/**` | The specs/README.md schema is fixed (Stage, Status, Goal, Working software, Depends on, Decisions, Course, Prototype ports, Scope in, Scope out, Open questions); an edit preserves every field. Status transitions go through the spec-ceremony skill, which updates the bead and the README table together. The decision log D4-D29 is settled; a change contradicting a decision number requires the maintainer to reopen it explicitly. A published course module regressing (embed-check red against the pinned engine commit) demotes its spec to "implemented"; the transition is recorded, not hidden. Docs PRs from adversarial reviews follow the review-to-docs-pr format. |
+| `specs.md` | `docs/**` | The `docs/specs/README.md` schema is fixed (Stage, Status, Goal, Working software, Depends on, Decisions, Course, Prototype ports, Scope in, Scope out, Open questions); an edit preserves every field. A status transition edits that table, the sole record of spec status (D37). The decision log is settled; a change contradicting a decision number requires the maintainer to reopen it explicitly. A published course module regressing (embed-check red against the pinned engine commit) demotes its spec to "implemented"; the transition is recorded, not hidden. Docs PRs from adversarial reviews follow the review-to-docs-pr format. |
 
 **Amendment (D33):** `lua.md` becomes `luau.md`, scoped to `**/*.luau`
 plus `runtime/**`, `mods/**`, `samples/**`; its sandbox-contract content
@@ -103,31 +106,25 @@ carries over unchanged. StyLua replaces stylua as the formatter (it
 supports Luau natively); `luau-analyze` joins the gate tooling for the D34
 strict/nonstrict typecheck split.
 
-Nested CLAUDE.md applies only where a subsystem carries a genuinely
-different toolchain: `server/CLAUDE.md` (Go module conventions, lint
-config, freeze rules, loading only when server files are read) and the
-`course` sibling repo's own root CLAUDE.md and `.claude` tree (a separate
-repo, a separate Node and VitePress toolchain, C00 scope). S00 carries a
-verification task ahead of relying on this design: confirm the installed
-Claude Code version supports paths frontmatter and the rules and CLAUDE.md
-composition behavior empirically, with nested CLAUDE.md documented as the
-fallback if it misbehaves.
+Which two subsystems keep a nested CLAUDE.md, and the S00 task that
+verifies paths frontmatter against the installed Claude Code version, are
+under Multi-language routing below.
 
 ## Skills
 
 | Name | Trigger | Purpose | Source | Owning spec |
 |---|---|---|---|---|
-| spec-ceremony | "start spec S0X", "brainstorm S0X", "grill this spec", "write the spec", "mark S0X implemented", any spec status transition | Drives the per-spec lifecycle: claims the bead, runs brainstorm then grilling, captures dispositions into the spec doc, writes the spec from the fixed schema, and updates beads and the specs/README.md table in the same step. Refuses to let implementation start on a spec that is not yet "spec written". | new | S00 |
+| spec-ceremony | "start writing spec S0X", "write the spec", "mark S0X implemented", any spec status transition | Two steps and no more (D37): authors the spec document from the fixed schema, folding in the grilling dispositions it is handed, and moves that spec's row in the `docs/specs/README.md` table, which is the sole record of spec status. The brainstorm-and-grilling phase ahead of it belongs to other skills; see `docs/agents/skills.md`. Refuses to let implementation start on a spec that is not yet "spec written". | new | S00 |
 | check-triage | "just check failed", "gate is red", "CI red", pasted gate failure output | A gate-name-to-fix-flow table seeded at S00 with the bootstrap gates and extended by each spec that adds a gate. Carries the internal prototype's false-green-traps category verbatim: explicit exit-code capture instead of piping, worktree-local green versus root green, golangci-lint cache staleness. Defers to the justfile as source of truth on drift. | ported from the internal prototype's check-triage skill | S00 |
-| merge-prune | "merge and clean up", "land this PR", "ship it", "merge this and delete the branch" | Ordered PR-merge hygiene: confirm green checks before merging, merge and delete the branch, return to main, pull, verify cleanup, clean the golangci-lint cache. A wave-merge appendix sequences multiple worktree lanes through the gate one at a time. | ported from svsw's merge-prune skill, unchanged | S00 |
+| merge-prune | "merge and clean up", "land this PR", "ship it", "merge this and delete the branch" | Ordered PR-merge hygiene: confirm green checks before merging, merge and delete the branch, return to main, pull, verify cleanup, clean the golangci-lint cache. A wave-merge appendix sequences multiple worktree lanes through the gate one at a time. | ported from the internal prototype's merge-prune skill, unchanged | S00 |
 | review-to-docs-pr | "write up the review", "review findings to docs", "file the adversarial review", after any adversarial-review run the maintainer wants persisted | Turns adversarial-review output into themed docs, one file per lens, on a docs-only branch opened as a docs-only PR. Enforces the output contract: no doc ships with an empty section or a stub marker, and every citation is re-verified against the tree at write time. | new | S00 |
 | win-rig | "run on Windows", "win-check", "win-run", "windows golden", "remote rig" | The usage procedure for the remote Windows rig: config from a gitignored local file, SSH sync plus a native build plus the headless gate suite (win-check), the windowed interactive-desktop launch (win-run, a human checkpoint), and how Windows-recorded goldens flow back if S02b promotes Windows to a third golden platform. | new | S00 |
 | vendor-quarantine | "vendor a library", "add a dependency", "update SDL3/wgpu/cimgui/Luau", "new C dep" | The quarantine-first dependency procedure as a checkable flow: check `core:`/`vendor:` stdlib first, propose and wait for maintainer review, pin by checksum or commit, record provenance in VENDOR.md, treat unreviewed source as untrusted, never hand-edit vendored files. Includes the checksum-pinned prebuilt-binary flow for wgpu-native and naga-cli. | new | S01 |
-| golden-hashes | "golden drifted", "hash mismatch", "re-record golden", "determinism failure", "parity hash differs" | A triage-first protocol for the three golden tiers (world hash including per-chunk-to-root composition, draw-list skeleton hash, wgpu readback golden): the intended-change-versus-regression decision gate, sanctioned re-record flows, per-tick bisection, and the four-axis key of tier, platform, shader backend, and input track. | ported from svsw's golden-hashes skill | S02a |
-| parity-verify | "verify without a window", "headless QA", "did the render change", "parity check", "visual check" | Successor to headless-verify, built on D22: headless and windowed runs share one offscreen target, so verification means running headless and comparing the world hash, skeleton hash, and readback golden, then frame-diffing. Documents the explicit human-only carve-out (real-GPU visuals per backend, audio, present or resize) that gets handed off, never claimed. | ported from svsw's headless-verify skill | S04 |
-| lua-binding | "add a Luau API", "new svsw.* function", "expose to mods", "binding" | The D3 registrar pattern, longjmp safety rules read fresh from `host.odin` rather than paraphrased, `proc "c"` context reconstruction, the `L_error`-versus-assert split, the D10 capability-tier note for editor Luau, and the completion checklist (accept test, api-coverage, api-surface regen, .d.luau declarations). | ported from svsw's lua-binding skill, near-verbatim | S14 |
+| golden-hashes | "golden drifted", "hash mismatch", "re-record golden", "determinism failure", "parity hash differs" | A triage-first protocol for the three golden tiers (world hash including per-chunk-to-root composition, draw-list skeleton hash, wgpu readback golden): the intended-change-versus-regression decision gate, sanctioned re-record flows, per-tick bisection, and the four-axis key of tier, platform, shader backend, and input track. | ported from the internal prototype's golden-hashes skill | S02a |
+| parity-verify | "verify without a window", "headless QA", "did the render change", "parity check", "visual check" | Successor to headless-verify, built on D22: headless and windowed runs share one offscreen target, so verification means running headless and comparing the world hash, skeleton hash, and readback golden, then frame-diffing. Documents the explicit human-only carve-out (real-GPU visuals per backend, audio, present or resize) that gets handed off, never claimed. | ported from the internal prototype's headless-verify skill | S04 |
+| lua-binding | "add a Luau API", "new svsw.* function", "expose to mods", "binding" | The D3 registrar pattern, longjmp safety rules read fresh from `host.odin` rather than paraphrased, `proc "c"` context reconstruction, the `L_error`-versus-assert split, the D10 capability-tier note for editor Luau, and the completion checklist (accept test, api-coverage, api-surface regen, .d.luau declarations). | ported from the internal prototype's lua-binding skill, near-verbatim | S14 |
 | proto-conformance | "protocol change", "wire frame", "envelope", "proto-conformance failed", "version negotiation" | Working the versioned Odin-to-Go wire protocol (D15): frame layout invariants, running `proto-frame-check` with the hostile-frame fuzz corpus, the two-stage freeze (v0 at S05, the v1 envelope and three-call worker contract at S26), and the rule that conformance runs from both codecs over one recorded corpus; a change green on one side only is red. | new | S05, extended at S26 |
-| course-pairing | "write the course module", "embed-check", "truth-verify", "lesson drift", "publish the module" | The D27 spec-course pairing procedure: author the module only after "implemented", pass embed-check against the pinned engine commit, the reference cross-check, the path-closure check across the consumable paths, and the full site build; a regression demotes the paired spec. | ported from svsw's course-embeds skill | C00 |
+| course-pairing | "write the course module", "embed-check", "truth-verify", "lesson drift", "publish the module" | The D27 spec-course pairing procedure: author the module only after "implemented", pass embed-check against the pinned engine commit, the reference cross-check, the path-closure check across the consumable paths, and the full site build; a regression demotes the paired spec. | ported from the internal prototype's course-embeds skill | C00 |
 
 ## Agents
 
@@ -142,7 +139,7 @@ spec SNN".
 | golden-recorder | Re-records goldens across the three tiers only when the requester states the drift is an intended content change, and refuses otherwise. Locates the owning define, records, pastes the exact constant, re-runs clean to confirm green, and never commits. States the four-axis key it recorded under. | Bash, Read, Grep, Glob, Edit | haiku | "Gate not yet present; see spec S02a" until the determinism pyramid lands; the render-tier goldens carry the same clause pointing at S04. |
 | win-rig-runner | Mechanical remote-Windows execution over the win-rig skill: sync, build, run the named headless gate over SSH, report exit codes and log excerpts. Never launches win-run, the interactive-desktop path; that hands back as a human checkpoint. | Bash, Read, Grep, Glob | haiku | None; the win-check and win-run recipes ship with S00. |
 | determinism-reviewer | A single-lens, read-only D1 review: wall-clock reachability, unordered iteration into sim state, float nondeterminism including simmath3d bypasses and cross-backend GPU float concerns, RNG misuse, allocation-visible behavior, hot-path Luau budget changes, D11 animation state leaking on-hash, D22 mode-forked render paths. Every finding carries a file:line citation and a concrete failure scenario; an explicit "no findings" verdict is a valid output. | Bash, Read, Grep, Glob | opus (extended reasoning) | None; it reviews spec drafts and general diffs from S00, and sharpens against the determinism pyramid once S02a lands. |
-| spec-scribe | Supports the spec-ceremony skill: drafts the spec document from the brainstorm and grilling transcript into the fixed specs/README.md schema, records grilling dispositions verbatim, updates the status table and the spec's bead. Write access limited to `specs/` and beads. Every schema field must be non-empty or explicitly marked "open question". | Bash, Read, Grep, Glob, Edit, Write | sonnet | None; the spec-ceremony skill it supports ships with S00. |
+| spec-scribe | Supports the spec-ceremony skill: drafts the spec document from the brainstorm and grilling transcript into the fixed `docs/specs/README.md` schema, records grilling dispositions verbatim, and updates the status table, the one place a spec's rung moves (D37). Write access limited to `docs/specs/`. Every schema field must be non-empty or explicitly marked "open question". | Bash, Read, Grep, Glob, Edit, Write | sonnet | None; the spec-ceremony skill it supports ships with S00. |
 | binding-dev | Scoped implementer for `svsw.*` bindings: its prompt mandates karpathy-guidelines, ponytail, and the lua-binding skill before any edit, follows the approved plan verbatim, works test-first, and hands verification back rather than re-recording a golden itself. | Bash, Read, Grep, Glob, Edit, Write | sonnet | "Gate not yet present; see spec S14" until the scripting boundary lands. |
 | go-services-dev | Scoped implementer for `server/` and `protocol/` Go code: mandates karpathy-guidelines, ponytail, and the proto-conformance skill, runs gofmt, `go vet`, and golangci-lint locally before handoff, never changes a frozen envelope, and hands cross-codec conformance verification to gate-runner. | Bash, Read, Grep, Glob, Edit, Write | sonnet | "Gate not yet present; see spec S26" (and S27a for the gateway) until the Go services surface lands. |
 | course-writer | Authors course modules through the course-pairing skill; lives in the `course` sibling repo's own `.claude` tree once that repo exists. Mandates truth-verify of every embed and reference against the pinned engine commit before claiming a module done. | Bash, Read, Grep, Glob, Edit, Write | sonnet | "Gate not yet present; see spec C00" until the course platform bootstraps. |
@@ -160,7 +157,7 @@ is a sub-second grep of the staged diff.
 
 | Event | Matcher | Command | Posture |
 |---|---|---|---|
-| SessionStart | `startup\|resume` | `.claude/hooks/session-start.sh` runs `bd prime --hook-json` | Non-blocking, kept fast; loads beads and spec-status context only. |
+| SessionStart | `startup\|resume` | `.claude/hooks/session-start.sh` runs `bd prime --hook-json` when a beads database exists, and exits clean when none does | Non-blocking, kept fast; loads slice context only. Beads engages at ticket overrun (D37), so most sessions find no database and the hook is a no-op; spec status is never loaded here, it lives in `docs/specs/README.md`. |
 | PostToolUse | Edit/Write on `*.odin` | `.claude/hooks/fmt.sh odin` runs odinfmt, warning and exiting clean if odinfmt is missing | Non-blocking, warn-if-missing, 10s timeout. |
 | PostToolUse | Edit/Write on `*.luau` | `.claude/hooks/fmt.sh luau` runs StyLua if present, warns and skips otherwise | Non-blocking, warn-if-missing, 10s timeout. |
 | PostToolUse | Edit/Write on `*.go` | `.claude/hooks/fmt.sh go` runs gofmt, then goimports if present | Non-blocking, 10s timeout; gofmt ships with the toolchain, so no guard is needed. |
@@ -321,8 +318,12 @@ These amend the original tooling design where they conflict with it.
 6. **Spec ceremony as a skill.** The spec-ceremony skill wraps the
    brainstorm-and-grilling flow. Beads is the status record: one bead per
    spec, a fresh database initialized at S00. The skill updates the
-   specs/README.md table in the same step as each bead transition, so the
-   two records cannot drift apart.
+   docs/specs/README.md table in the same step as each bead transition, so the
+   two records cannot drift apart. **Amended by D37:** there is only one
+   record now, the `docs/specs/README.md` table, so no pairing is needed;
+   beads tracks slices below a GitHub ticket instead of a bead per spec,
+   and the skill's own scope narrows to authoring the spec document and
+   moving that spec's row.
 7. **Three-layer review cadence.** Marker and citation hooks run free on
    every edit and commit; the spec-review workflow runs once per spec
    draft; the billed adversarial-review workflow runs pre-merge. A house
@@ -334,7 +335,7 @@ These amend the original tooling design where they conflict with it.
    regardless. The formula is re-verified on the actual machine during S00
    before the docs line is written.
 9. **Asset MCP servers deferred.** Per-format asset MCP servers (glTF and
-   assetc, the D19 container work) are deferred to their owning specs, S12a and
-   the container spec. The internal prototype's proven single-format-server
-   pattern is recorded as an open question in S21, the spec that defines the
-   sim and render MCP surface.
+   assetc, the D19 container work) are deferred to S12a, their owning
+   spec. The internal prototype's proven single-format-server pattern is
+   recorded as an open question in S21, the spec that defines the sim and
+   render MCP surface.

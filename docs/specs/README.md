@@ -55,8 +55,8 @@ Ground rules carried from the roadmap:
   repo (D26). Course strategy and paths below carries the verification gate
   and the regression rule.
 
-Stage shape: stage 0 has eight specs, stage 1 five, stage 2 nine, stage 3
-four, stage 4 five, stage 5 five, stage 6 three. C00, the course platform
+Stage shape: stage 0 has eight specs, stage 1 six, stage 2 nine, stage 3
+five, stage 4 eight, stage 5 six, stage 6 four. C00, the course platform
 bootstrap, is stage 0's addition and the third setup spec: it ends with
 tooling, deploy, and gates green rather than engine software. The guidance
 band was roughly two to five per stage; stage 0 exceeds it because setup,
@@ -65,7 +65,11 @@ there, and stage
 2 exceeds it because it is the roadmap's fattest stage and the review split
 its two largest specs. Each spec stays sized for one brainstorm, grilling, and
 implementation cycle; the stage totals follow from that, and the material
-decided them.
+decided them. The 2026-07 review revision added S03b, S16b, S22c, S22d,
+S24b, S29b and S33 on the mid-series letter-suffix scheme, widening
+stages 1 and 3 through 6; S16b is the deliberate early-validation slice
+for the editor's load-bearing bets (D43, D44, D47), pulled ahead of the
+editor core the way M00 was pulled ahead of S00.
 
 ## Course strategy and paths
 
@@ -211,6 +215,7 @@ written**.
 | S08 | Split-process topology: sim process + render client over the protocol | `just split-smoke` green, hash-checkpointed agreement | S05, S06 | pending |
 | S09 | 3D stress harness with provisional budgets | `just stress` enforces provisional p95 budgets in CI | S06 | pending |
 | S10 | Milestone B: compute-shader clustered light culling | clustered scene green incl. cluster counts in skeleton hash + parity | S07 | pending |
+| S03b | D3D12 backend: the third RHI implementation on the win rig | `just win-check` runs skeleton + readback tiers on D3D12, report-only | S04 | pending |
 | S11a | Chunked world: worldgrid, per-chunk hashes, activation, default fill | `just chunk-golden-check` + parity on the chunk-crossing scenario | S02a, S04 | pending |
 | S11b | Floating origin: presentation-side re-basing | re-based far-from-origin scene, invariance test + parity green | S11a, S06 | pending |
 | S12a | Asset container + assetc: glTF to sectioned binary to rendered goldens | glTF round-trip to rendered goldens + codec fuzz green | S04, S06 | pending |
@@ -223,20 +228,26 @@ written**.
 | S18 | SDL3 audio: mixer port, stream pump, spatialization, headless gate | mixer-output golden + spatialization invariance green; sound at the dev window (human checkpoint) | S03, S12a | pending |
 | S19 | SDL3 input completion: event translation and gamepad | input determinism tests green; keyboard/gamepad steering (human checkpoint) | S08 | pending |
 | S20 | Luau UI over ImGui: the mod-facing svsw.ui surface | Luau HUD in a windowed run; invariance + containment tests green | S14, S16 | pending |
+| S16b | Editor walking skeleton: shell, one worker, viewport transport proof | editor-skeleton smoke green; shared-surface viewport at the dev window (human checkpoint) | S08, S16 | pending |
 | S21 | Gate roster completion: the svsw equivalence obligation | enumerated roster green in one `just check`; tooling roundtrip green; composite windowed checkpoint | S09, S11b, S12b, S13, S15, S17, S18, S19, S20 | pending |
-| S22 | Editor core: command stream, play-in-editor Session, scene tree | first `just editor-roundtrip-check` green | S08, S16, S21 | pending |
+| S22 | Editor core: command stream, play-in-editor Session, scene tree | first `just editor-roundtrip-check` green | S08, S16, S16b, S21 | pending |
 | S22b | Engine dev loop: rebuild, respawn, restore | dev-loop smoke gate green: scripted edit-rebuild-respawn-restore run ends with the session dev-diverged flag set and within-build checks passing | S02a, S08, S22 | pending |
+| S22c | Time-travel debugger core: snapshot ring, seek, inspection family | scripted scrub gate green: revisited hashes match within the seek budget | S22, S02a, S08 | pending |
+| S22d | Extension seam proof: sample Extension, editor-build recipe | with/without-Extension gate green: registration, tier-scan, identical Session behavior | S22 | pending |
 | S23 | Editor features: asset browser, gizmos, profiler panel | full `just editor-roundtrip-check` on a committed human-authored log | S22, S12b, S18 | pending |
 | S24 | Editor-Luau capability tier | capability-scoping gate green | S22, S14 | pending |
+| S24b | Script and native debugging: Luau breakpoints, DAP attach | breakpoint gate green: suspend mid-system, inspect, resume to an unchanged hash | S22c, S14, S24 | pending |
 | S25 | Animation runtime: sampler, blend, GPU skinning, container sections | animated scene green on invariance/readback/skeleton/parity; S23 log re-recorded | S07, S12b | pending |
 | S26 | Walking skeleton: Go supervisor, worker contract, envelope freeze | `just proto-conformance` green both sides; supervision tests green; v1 frozen | S05, S21 | pending |
 | S27a | Go gateway v1: QUIC, sessions, worker supervision | gateway smoke green: QUIC client authenticates, intents reach a worker | S26 | pending |
 | S27b | Go durability v1: Tick_Commit log, checkpoints, outbox | kill/respawn/resume with no hash divergence | S27a, S22b | pending |
 | S28 | Replication: chunk-scoped deltas, prediction, reconciliation | two clients through the real gateway under injected faults, tripwire trips | S27a, S11a | pending |
 | S29 | Two-client co-op harness: mods/nettest and coop-smoke | `just coop-smoke` green incl. fault and windowed-parity legs (stage 5 exit) | S27b, S28, S15 | pending |
+| S29b | Server attach and desync replay | attach-and-replay gate green: server timeline scrubbed, desync reproduced to first divergent tick | S29, S22c | pending |
 | S30 | Verification scene: a representative gameplay ruleset as base-as-mod plus second mod | `just scene-accept` headless green; second mod changes the hash | S23, S15, S13, S11a | pending |
 | S31 | Camera continuum, first-person controller, client presentation polish | scene with camera drop-in, animation, themed HUD green on parity | S30, S25, S20, S13, S19 | pending |
-| S32 | Engine acceptance + residual sweep | `just engine-accept` green incl. coop leg; maintainer sign-off; residual sweep | S29, S30, S31, S17 | pending |
+| S33 | Player save/load v1: versioned reader, autosave | save/load gate green: save at T, fresh-process load, resim matches golden | S17, S13, S30 | pending |
+| S32 | Engine acceptance + residual sweep | `just engine-accept` green incl. coop and save/load legs; maintainer sign-off; residual sweep | S29, S30, S31, S33, S17 | pending |
 
 ## Review notes
 
@@ -913,6 +924,39 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     only.
   - Compute-pass viability on the Linux software-Vulkan CI path.
 
+### S03b — D3D12 backend: the third RHI implementation on the win rig
+
+- **Stage:** 1 — Renderer, Forward+ staged
+- **Status:** pending
+- **Goal:** The third backend per D48: the RHI's D3D12 implementation,
+  exercised on the Windows rig because no hosted runner carries a D3D12
+  GPU. Its gate story grows `just win-check` with the skeleton and
+  readback tiers, report-only until the rig loop is demonstrated, and
+  S21's roster carries the D3D12 axis marked report-only. Nothing
+  downstream depends on this spec, so it floats: it can land any time
+  after S04 without blocking or being blocked.
+- **Working software:** `just win-check` runs the cube and multi-object
+  scenarios on D3D12: skeleton hashes match the committed
+  platform-invariant goldens, readback goldens record on the rig under
+  the S04 axes, and results are recorded per the S21 win-check cadence,
+  report-only.
+- **Depends on:** S04
+- **Decisions:** D42, D48
+- **Course:** module S03b; path tag engine; teaches the D3D12 backend
+  against the win-check tiers.
+- **Prototype ports:** none
+- **Normative references:** none
+- **Scope in:** the D3D12 RHI implementation behind the S03 seam; the
+  win-check growth to skeleton and readback tiers; the descriptor-heap
+  and barrier specifics the S03 interface shape reserved for this
+  backend.
+- **Scope out:** any hosted-CI obligation (no Windows GPU runner exists
+  at zero budget); D3D12-only features beyond the S03 interface.
+- **Open questions:**
+  - What triggers scheduling the floating spec, and how long the
+    interface may drift before the third implementation gets expensive.
+  - Whether readback tolerance bands differ on the rig's GPU class.
+
 ## Stage 2 — World structure + assets
 
 ### S11a — Chunked world: worldgrid, per-chunk hashes, activation, default fill
@@ -1376,6 +1420,46 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Does the draw-list skeleton hash include ImGui draw data or is UI
     excluded from parity's skeleton tier.
 
+### S16b — Editor walking skeleton: shell, one worker, viewport transport proof
+
+- **Stage:** 3 — Platform completion + gate roster
+- **Status:** pending
+- **Goal:** The deliberate early-validation slice for the editor's
+  load-bearing bets, pulled two stages ahead of the editor core the way
+  M00 was pulled ahead of S00: worker supervision (D44), the D47 shared
+  offscreen-target viewport, and protocol-mediated editing all meet
+  reality here instead of at spec twenty-four. A docked ImGui shell on
+  the S16 lifecycle supervises one Session worker over the S05 envelope,
+  shows a scene tree over the typed command stream, runs play, pause,
+  step and naive replay scrubbing, and embeds the worker's shared
+  offscreen target as its viewport. S22 grows this shell into the editor
+  core rather than starting fresh.
+- **Working software:** An editor-skeleton smoke gate green in `just
+  check`: boot the shell headless, spawn a worker, replay a small
+  committed command log, step N ticks, assert the world hash. On the dev
+  machine the shell presents the D47 shared-surface viewport (human
+  checkpoint).
+- **Depends on:** S08, S16
+- **Decisions:** D21, D44, D47, D49
+- **Course:** module S16b; path tag engine; teaches the editor walking
+  skeleton against its smoke gate.
+- **Prototype ports:** none
+- **Normative references:** `docs/design/editor/index.html`, normative
+  for the dock layout the shell sketches; the full chrome stays with
+  S22 through S24.
+- **Scope in:** the docked shell on the S16 lifecycle; one-worker spawn,
+  supervision and reconnect over the S05 envelope; the scene tree over
+  typed commands; play, pause, step, and replay-from-start scrubbing;
+  the D47 viewport transport proven on macOS and Linux; the smoke gate
+  S22 later grows into `just editor-roundtrip-check`.
+- **Scope out:** the inspector, undo/redo, and persistence (S22); every
+  S23 feature; editor Luau (S24); multi-worker supervision (S22).
+- **Open questions:**
+  - How much shell code S16 and this spec deliberately share.
+  - Whether the smoke gate exercises the D47 transport headless on CI or
+    only skeleton-deep, with the transport itself a dev-machine
+    checkpoint.
+
 ### S21 — Gate roster completion: the svsw equivalence obligation
 
 - **Stage:** 3 — Platform completion + gate roster
@@ -1467,7 +1551,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   and matches its world-hash golden; editor tier-scan rules green. The
   committed log includes a segment that interleaves scrubbing and edits,
   so the D57 truncate-and-resim semantics sit under the gate.
-- **Depends on:** S08, S16, S21
+- **Depends on:** S08, S16, S16b, S21
 - **Decisions:** D21, D22, D36, D43, D44, D47, D49, D57
 - **Course:** module S22; path tag engine; teaches the editor command stream
   and play-in-editor against `just editor-roundtrip-check`.
@@ -1580,6 +1664,89 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     declares a new session start, so replay-from-session-start replays a
     bounded suffix; automatic or manual, and surfaced how.
 
+### S22c — Time-travel debugger core: snapshot ring, seek, inspection family
+
+- **Stage:** 4 — Editor + animation
+- **Status:** pending
+- **Goal:** The vision's rewind machinery as one owned system instead of
+  a phrase scattered across four specs: the snapshot ring inside the
+  Session worker (cadence, memory budget, eviction), seek-to-tick as
+  nearest-snapshot restore plus resimulation under a stated seek-cost
+  budget, the pause and resume contract against the D1 accumulator
+  (accumulator frozen, input-capture policy, presentation behavior while
+  paused), per-system stepping between Session.step's system boundaries
+  with mid-tick inspection semantics stated (uncommitted command
+  buffers, no hash claims between systems), and the inspection message
+  family in the D49 range: entity and component reads schema-generated
+  from the mod component mirror, per-chunk hashes, RNG stream state,
+  watch subscriptions, and a two-tick state diff, under a
+  query-not-full-world bandwidth posture. S22's transport UI wires to
+  these verbs; this spec makes them real.
+- **Working software:** A scripted scrub gate green in `just check`: run
+  N ticks, scrub to several earlier ticks, resim forward, and assert
+  every revisited world hash equals its recorded value with seek cost
+  inside the stated budget; inspection reads over the protocol against a
+  known scene match committed goldens.
+- **Depends on:** S22, S02a, S08
+- **Decisions:** D1, D21, D47, D49, D57
+- **Course:** module S22c; path tag engine; teaches the snapshot ring,
+  seek, and the inspection family against the scrub gate.
+- **Prototype ports:** none; consumes the S22b `engine/checkpoint`
+  substrate and the S02a per-system boundary hook if its open question
+  lands it there.
+- **Normative references:** `docs/design/editor/index.html`, normative
+  for the Sim debugger tab, the timeline scrubber, and the chunk-overlay
+  hash chips this spec's data feeds serve.
+- **Scope in:** the snapshot ring with cadence, budget and eviction
+  policy; seek-to-tick; the pause and resume contract; per-system
+  stepping and its mid-tick inspection semantics; the inspection schema
+  and watch subscriptions; the debugger-panel and timeline data feeds;
+  the debug-suspended protocol events (D47).
+- **Scope out:** script breakpoints and native debugging (S24b); server
+  attach (S29b); the transport UI chrome itself (S22 ships it).
+- **Open questions:**
+  - Snapshot cadence and ring-budget defaults, and how they compose with
+    the S22b checkpoint cadence over one substrate.
+  - The seek-cost budget number and the scene scale it assumes.
+  - Watch-subscription delivery cadence while paused and while
+    scrubbing.
+
+### S22d — Extension seam proof: sample Extension, editor-build recipe
+
+- **Stage:** 4 — Editor + animation
+- **Status:** pending
+- **Goal:** D43's static Extension seam proven from outside `editor/`:
+  a sample Extension at `samples/extensions/hello_panel`, native Odin
+  registering an editor panel and a command through the D3-style seam,
+  compiled into an editor build by a named recipe (`just editor-build`),
+  with the compatibility posture recorded: the seam joins the S21
+  api-surface snapshots, and no stability is promised before S32. D43's
+  claim that starting static proves the seam before a loader depends on
+  it gets its scheduled proof here.
+- **Working software:** A gate builds the editor with and without the
+  sample Extension and asserts registration (the panel and command
+  appear), tier-scan compliance, and identical Session behavior across
+  both builds, since a Session never loads an Extension (D43).
+- **Depends on:** S22
+- **Decisions:** D3, D43
+- **Course:** module S22d; path tag engine; teaches the Extension seam
+  against the with/without-Extension gate.
+- **Prototype ports:** the D3 registrar pattern, instantiated at the
+  editor seam.
+- **Normative references:** none
+- **Scope in:** the sample Extension; the `just editor-build` recipe and
+  the Extension-source project layout it reads; the with/without gate;
+  the seam's api-surface snapshot entry; SECURITY.md's trusted-code
+  wording verified against D43.
+- **Scope out:** dynamic loading, a later spec whose first requirement
+  is D43's layout-CRC refusal gate; third-party distribution, which
+  needs its own decision per D43.
+- **Open questions:**
+  - Where Extension sources live relative to a game project versus the
+    engine checkout (D56's metadata may carry the answer).
+  - Whether the editor-build recipe takes an arbitrary extension list or
+    exactly the project's declared set.
+
 ### S23 — Editor features: asset browser, gizmos, profiler panel
 
 - **Stage:** 4 — Editor + animation
@@ -1668,6 +1835,49 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     directory, a manifest).
   - Lifecycle of script-registered UI when its script is disabled in
     place: torn down, tombstoned, or restored on re-enable.
+
+### S24b — Script and native debugging: Luau breakpoints, DAP attach
+
+- **Stage:** 4 — Editor + animation
+- **Status:** pending
+- **Goal:** The debugger's language half, the owner the M00 mockup's
+  breakpoint gutters were missing: Luau breakpoints, single-step, call
+  stack and locals built on Luau's own break and interrupt debugging
+  API at both capability tiers, with the S14 instruction budget and the
+  D50 watchdog debug-aware, suspended while a VM sits at a breakpoint
+  and the worker holds the D47 debug-suspended condition; the whole
+  surface compiled only into editor-tier builds through D43's
+  absent-call-site rule, so a shipped game carries no debug hooks; and
+  Odin and Go native debugging as a DAP client attaching from the
+  editor to worker and gateway processes.
+- **Working software:** A breakpoint gate green in `just check`: a Luau
+  breakpoint in a mod suspends the tick mid-system, locals and the call
+  stack read over the S22c inspection family, and continue resumes to a
+  world hash identical to an uninterrupted run of the same inputs; a
+  budget-enforcement test proves the watchdog re-arms after continue. A
+  DAP attach to a live worker on the dev machine is a human checkpoint.
+- **Depends on:** S22c, S14, S24
+- **Decisions:** D43, D47, D50; D10's two capability tiers.
+- **Course:** module S24b; path tag engine; teaches script debugging and
+  the DAP attach against the breakpoint gate.
+- **Prototype ports:** none
+- **Normative references:** `docs/design/editor/index.html`, normative
+  for the Script debugger tab, the breakpoint gutters, and the
+  call-stack-to-document flow.
+- **Scope in:** Luau breakpoint, single-step, call stack, and locals via
+  Luau's interrupt API; debug-aware budget and watchdog; editor-tier-only
+  compilation of every debug hook; the debug verbs inside the D49 range;
+  the DAP client for Odin and Go processes.
+- **Scope out:** shipped-build debugging of any kind; remote attach
+  beyond S29b's trusted-network story; the profiler (S23 owns the
+  panel).
+- **Open questions:**
+  - What single-step means when a Luau call crosses into a native
+    binding and back.
+  - DAP adapter choice per language, and how the editor surfaces a mixed
+    Luau-and-Odin stack.
+  - Whether a breakpoint in one worker of a multi-worker session pauses
+    its siblings.
 
 ### S25 — Animation runtime: sampler, blend, GPU skinning, container sections
 
@@ -1903,6 +2113,43 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Open questions:**
   - How the windowed leg runs in CI (virtual display reuse from S04).
 
+### S29b — Server attach and desync replay
+
+- **Stage:** 5 — Multiplayer
+- **Status:** pending
+- **Goal:** The debugger meets the server. D44's one-binary rule means a
+  gateway-supervised Session worker is the same program the editor
+  debugs locally, and S27b's Tick_Commit log is a durable timeline, so
+  the editor attaches read-only to a live or finished server session,
+  drives the S22c seek machinery over that log, and reproduces a
+  reported desync locally in one step by resimulating from checkpoint
+  plus logged inputs. S28's replay-as-forensics gets its workflow and
+  its surface.
+- **Working software:** An attach-and-replay gate green in `just check`:
+  a coop-smoke run records its Tick_Commit log; a headless editor driver
+  attaches read-only, scrubs the server timeline, and reproduces the
+  run's chunk hashes locally from checkpoint plus inputs; an injected
+  desync is reproduced to its first divergent tick through the
+  `svsw_explain` forensics path.
+- **Depends on:** S29, S22c
+- **Decisions:** D44, D47, D49, D57; D6's authority model unchanged.
+- **Course:** module S29b; path tag engine; teaches server attach and
+  desync replay against the attach-and-replay gate; source material for
+  the post-engine multiplayer modules.
+- **Prototype ports:** none; the S02a replay harness is already the
+  forensics substrate.
+- **Normative references:** none
+- **Scope in:** read-only attach and the gateway's mediation of it;
+  log-backed seek over a server session; one-step local reproduction;
+  first-divergent-tick surfacing through `svsw_explain`.
+- **Scope out:** write access of any kind to server sessions;
+  internet-facing hardening of the attach path (D52's posture holds).
+- **Open questions:**
+  - Attach mediation: through the gateway, or direct to the worker on
+    the trusted network.
+  - Retention: how much Tick_Commit history a server keeps for attach,
+    against S27b's cadence and retention question.
+
 ## Stage 6 — Engine-completion verification + rebrand
 
 ### S30 — Verification scene: a representative gameplay ruleset as base-as-mod plus second mod
@@ -1980,6 +2227,41 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     excluded or off-hash?).
   - HUD theming scope: one shipped theme or a theme system.
 
+### S33 — Player save/load v1: versioned reader, autosave
+
+- **Stage:** 6 — Engine-completion verification + rebrand
+- **Status:** pending
+- **Goal:** The shipped-save owner D55 assigns and D36's amendment
+  trail points at: a player-facing save of a running world to a file,
+  a load into a fresh process, autosave hooks, and the versioned
+  snapshot reader D36 deferred, with the compatibility promise D53
+  defines (saves are release-scoped until this reader lands, versioned
+  from it on). Dev checkpoints and replays already exist; this spec is
+  what makes a player's world survive the engine that made it.
+- **Working software:** A save/load gate green on both CI platforms:
+  save at tick T, load in a fresh process, resimulate N ticks, and the
+  world hash equals the uninterrupted run's golden; `just engine-accept`
+  (S32) gains the save/load leg.
+- **Depends on:** S17, S13, S30
+- **Decisions:** D53, D55; D36 as amended.
+- **Course:** module S33; path tag engine; teaches player save/load and
+  the versioned reader against the save/load gate.
+- **Prototype ports:** the `engine/save` codecs already ported in S02a,
+  extended with the versioned reader.
+- **Normative references:** none
+- **Scope in:** the save and load surface at CLI and `svsw.*` level;
+  autosave hooks; the versioned snapshot reader; the S32 engine-accept
+  leg.
+- **Scope out:** cloud or synced saves; migration beyond the versioned
+  reader's window; save-compatibility matrices across mod sets.
+- **Open questions:**
+  - Save location conventions per platform, and what a save carries
+    beyond the snapshot (mod list, engine release, command-log tail).
+  - Autosave cadence and its composition with the S22b checkpoint
+    cadence on one substrate.
+  - How a load with missing or version-shifted mods degrades: refuse,
+    load-with-disabled, or prompt.
+
 ### S32 — Engine acceptance + residual sweep
 
 - **Stage:** 6 — Engine-completion verification + rebrand
@@ -1995,18 +2277,21 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   retiring the working-name hedges. The container is untouched
   (brand-neutral since S12a).
 - **Working software:** `just engine-accept` green on both platforms
-  including the coop leg; scaffold-check green; the human checkpoint signed
+  including the coop leg and the S33 save/load leg; scaffold-check green;
+  the human checkpoint signed
   off. This gate is engine completion.
-- **Depends on:** S29, S30, S31, S17
+- **Depends on:** S29, S30, S31, S33, S17
 - **Decisions:** D16 as amended, D4, D22, D38 (beads and the decision log
-  continue across the rebrand).
+  continue across the rebrand), D53.
 - **Course:** module S32; path tag engine; teaches engine acceptance and the
   residual sweep against `just engine-accept`.
 - **Prototype ports:** none
 - **Normative references:** none
 - **Scope in:** the engine-accept recipe composition over scene-accept; the
   coop harness re-run against the scene; the human checkpoint protocol; the
-  residual sweep and its checklist; the post-engine roadmap revision
+  residual sweep and its checklist; the D53 release dry-run (cut a tag,
+  build the artifacts, scaffold a project against the tag); the
+  post-engine roadmap revision
   kickoff note.
 - **Scope out:** the reserved message-kind implementations; seeded
   procedural world generation.

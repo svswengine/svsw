@@ -47,15 +47,18 @@ is `/grill-with-docs`' job, not a passing edit.
 
 | Term | Definition | Aliases to avoid |
 | --- | --- | --- |
-| **Tier** | One band of the engine's one-way layer stack: scripts, engine core, platform, plus the C interface tier at the platform boundary (D2, D14). | layer (bare), module, package |
+| **Tier** | One band of the engine's one-way layer stack: the editor tier, scripts, engine core, platform, plus the C interface tier at the platform boundary (D2, D14, D43). | layer (bare), module, package |
+| **Editor tier** | The topmost band, `editor/`: the editor binary and the Extensions compiled into it. It depends downward on the engine and is never depended on; tier-scan enforces that from S00 (D43). | SDK tier, tools tier, editor layer |
 | **Layering** | The one-way rule that a tier may depend only downward, policed by the boundary-scan and tier-scan gates (D2, D14). | architecture, separation of concerns, structure |
 | **C interface tier** | The sanctioned C boundary through which SDL3, wgpu-native, cimgui, and Luau's C API enter Odin, reachable only from the platform tier (D14, D33). | FFI layer, native layer, glue tier |
 | **Vendored** | Of third-party source or a prebuilt binary held under D14's quarantine policy: pinned by checksum or commit, provenance recorded, never hand-edited. | third-party, dependency, external |
 | **Sandbox** | The declared security boundary a mod's Luau VM runs behind, and the reason a mod can never crash the engine; whitelist, allocation cap, instruction budget, and one error path are its mechanisms (D33, D34). | VM (bare), jail, isolation, runtime (bare) |
 | **`svsw.*` surface** | The scripting API a mod may see, assembled from opt-in registrar binding packages (D3). | API (bare), stdlib, script library |
 | **Binding package** | An opt-in Odin package that registers one tier of the `svsw.*` table through the single locked seam (D3). | glue, wrapper, API module |
-| **Mod** | One Luau package loaded into the shared world through the mod machinery, first-party or third-party alike; a mod never crashes the engine. | plugin, addon, extension, script (bare) |
+| **Mod** | One Luau package loaded into the shared world through the mod machinery, first-party or third-party alike; a mod never crashes the engine. | plugin, addon, script (bare) |
 | **Base-as-mod** | The engine's own gameplay content shipped as a mod, so first-party and third-party content travel one path (D12). | core game, built-in content, default mod |
+| **Extension** | Native Odin source compiled into a user's own editor build, registering through the same locked seam a binding package uses. It is trusted code outside the security model, and it never loads into a Session (D43). | plugin, addon, mod (for this), native module |
+| **Editor script** | Luau running in the editor at the expanded capability tier: project-scoped filesystem, asset writes, editor UI bindings, command-stream emission. A capability tier, not a containment boundary (D10, D43). | editor mod, tool script, macro |
 
 ## Simulation runtime
 
@@ -63,7 +66,9 @@ is `/grill-with-docs`' job, not a passing edit.
 | --- | --- | --- |
 | **Session** | One running deterministic simulation of one world: a tick advances it, a world hash describes it, and one worker process runs one (D20, D21, D22). | game, match, world (bare), instance |
 | **Chunk** | One cell of the unbounded chunked world, carrying chunk-local coordinates and its own world hash (D5). | region, tile, sector, cell |
-| **Worker** | The headless process that runs a Session under Go supervision, addressed over the versioned wire protocol (D15, D36). | server, node, job, background process |
+| **Worker** | The umbrella for a supervised child process addressed over the versioned wire protocol. It has exactly two kinds, below, and the bare word is used only where both are meant (D15, D44). | server, node, background process |
+| **Session worker** | The headless process that runs a Session. Owns user state, so a crash surfaces and waits rather than restarting silently. Supervised by the Go gateway online, or by the editor locally, from one binary either way (D15, D36, D44). | worker (bare), sim process, game process |
+| **Job worker** | A pooled process doing derived-state work such as asset import, shader compilation, or a bake. Owns nothing the user has not already saved, so it is killed and restarted freely (D44). | task runner, build process, helper |
 | **Gateway** | The Go process that terminates client QUIC connections and routes them to workers (D6, D18). | server (bare), proxy, backend, host |
 | **Command stream** | The typed log of editor edit operations backing undo, redo, persistence, and headless replay (D21). | history, journal, event log, undo stack |
 | **Dev-diverged** | The flag a Session carries once a rebuild has landed code changes into it, marking its cross-build hash diffs as forensics rather than failures (D36). | dirty, stale, invalid |
@@ -107,11 +112,16 @@ is `/grill-with-docs`' job, not a passing edit.
   cover several specs' scenarios.
 - One **Session** owns N **Chunks**; each **Chunk** contributes one
   **Chunk hash** to that Session's root **World hash**.
-- One **Worker** process runs one **Session**; one **Gateway** supervises
-  N **Workers**.
+- One **Session worker** runs one **Session**. A **Gateway** supervises N
+  of them online; the **Editor** supervises N of them locally, and the
+  same binary serves both.
 - A **Mod** reaches the engine only through the **`svsw.*` surface**,
   behind the **Sandbox**; a **Binding package** contributes one tier of
   that surface.
+- A **Mod** and an **Editor script** are Luau and load into a running
+  process; an **Extension** is Odin and is compiled into a build. Only a
+  **Mod** runs inside a **Session**, and only a **Mod** is behind the
+  **Sandbox**.
 - **Parity** compares a **Headless run** and a **Windowed run** of one
   build; a **Golden** is what either run is compared against.
 - Every implemented **Spec** pairs with exactly one **Course module**.
@@ -183,6 +193,16 @@ is `/grill-with-docs`' job, not a passing edit.
   corpus's "authority checkpoint" (resumable state, now covered by D36's
   snapshot-and-replay restore) are three unrelated things. Never write a
   bare "checkpoint".
+- **worker** — two kinds now, a **Session worker** and a **Job worker**,
+  and two supervisors for the first: the **Gateway** online and the
+  **Editor** locally. The bare word is used only where both kinds are
+  meant; anywhere the failure semantics matter, name the kind, because
+  one owns user state and the other does not (D44).
+- **extension** — the word was barred as an alias for **Mod** until D43
+  gave it a definition of its own. It now means native Odin compiled into
+  an editor build, and never a Luau package. An **Editor script** is the
+  Luau thing that runs in the editor; calling it an extension is the
+  drift the old bar existed to prevent.
 - **runtime** — `runtime/` is a directory, "the Luau runtime" is the
   script VM (D33), and the research corpus used "engine runtime" for all
   code active while a game runs. Use "Luau runtime" or name the tier;

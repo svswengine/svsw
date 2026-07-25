@@ -13,4 +13,7 @@ and `engine/render3d/gpu`, D2's thin GPU-submission stratum, touch C
 (extends D2's layering discipline, policed by boundary-scan); everything
 above stays pure Odin. Amended by D33 to name Luau's C API in place of
 Lua's. Wording corrected to name both tiers, matching the rule as stated in
-`docs/specs/README.md` and `docs/plans/claude-tooling-design.md`.
+`docs/specs/README.md` and `docs/plans/claude-tooling-design.md`. Amended by
+D42: wgpu-native and naga-cli leave the vendored tier and the Slang binaries
+enter it under the same checksum-pinned prebuilt policy; SDL3, cimgui and
+Luau are untouched.

@@ -67,6 +67,9 @@ are settled; reopening one is a maintainer call.
 | D39 | WebFetch is allowed; shell network commands stay ask | [D039-webfetch-allowed.md](D039-webfetch-allowed.md) |
 | D40 | Context engineering: what the always-loaded prompt carries | [D040-context-engineering.md](D040-context-engineering.md) |
 | D41 | Normative references are a first-class spec field | [D041-normative-references.md](D041-normative-references.md) |
+| D42 | In-house RHI over Vulkan, D3D12 and Metal; Slang shaders | [D042-in-house-rhi-slang.md](D042-in-house-rhi-slang.md) |
+| D43 | The editor tier, Extensions, and Editor scripts | [D043-editor-tier-extensions.md](D043-editor-tier-extensions.md) |
+| D44 | Worker topology: two kinds, split by state ownership | [D044-worker-topology.md](D044-worker-topology.md) |
 
 ## Past
 

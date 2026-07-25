@@ -32,4 +32,7 @@ specs/README.md table in the same step as each bead transition. Full design
 record: `docs/plans/claude-tooling-design.md`. Amended by D37:
 `docs/specs/README.md` becomes the sole spec-status record in place of
 beads, and the planned spec-ceremony skill narrows to authoring the spec
-document and moving the ladder row.
+document and moving the ladder row. Amended by D39: the committed `ask` on
+the `WebFetch` tool is dropped while shell network commands keep theirs,
+and personal loosening in `settings.local.json` is corrected to reach only
+what the committed file leaves silent.

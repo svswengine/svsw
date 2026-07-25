@@ -64,6 +64,7 @@ are settled; reopening one is a maintainer call.
 | D36 | Engine dev loop | [D036-engine-dev-loop.md](D036-engine-dev-loop.md) |
 | D37 | Work decomposition: specs, tickets, and slices | [D037-work-decomposition.md](D037-work-decomposition.md) |
 | D38 | Fresh repository: no cutover, public from the first push | [D038-fresh-repository.md](D038-fresh-repository.md) |
+| D39 | WebFetch is allowed; shell network commands stay ask | [D039-webfetch-allowed.md](D039-webfetch-allowed.md) |
 
 ## Past
 

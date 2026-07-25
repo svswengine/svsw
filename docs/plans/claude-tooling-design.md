@@ -248,9 +248,21 @@ lives in the root settings file where worktree sessions still see it.
 Committed in `.claude/settings.json`: allow `just *`, `odin *`, `go
 test`/`vet`/`build`, `gofmt`, read-only git, and bd; deny reads into
 `vendor/**` except VENDOR.md manifests, `**/build/**`, and
-`**/*.generated.*`; network-touching commands stay ask, matching the
-no-network-beyond-plan-pins policy. Personal loosening goes in gitignored
+`**/*.generated.*`; network-touching shell commands stay ask, matching the
+no-network-beyond-plan-pins policy. The `WebFetch` tool is the one carve-out
+and carries no rule at all (D39): `curl`, `wget`, the git network verbs,
+`go get` and `go install` still ask, because they write into the working
+tree where a fetch does not. Personal loosening goes in gitignored
 `settings.local.json`, never in the committed file.
+
+That last sentence has a limit worth stating, because it is not obvious and
+it decides how every future entry is written. Permission rules resolve deny
+over ask over allow, and the two settings files merge into one rule set
+rather than the local file shadowing the committed one. A local `allow`
+therefore cannot cancel a committed `ask`; it only reaches what the
+committed file leaves silent. Anything meant to be loosenable per machine
+has to be absent from the committed lists, not present with a stricter
+verb.
 
 Because D24 closes the repo to external contributions, the committed
 settings serve the maintainer's own sessions first. The deny rules double
@@ -315,6 +327,10 @@ These amend the original tooling design where they conflict with it.
    `gofmt`, read-only git, and bd; deny reads into `vendor/**` except
    VENDOR.md, build output, and generated files; network commands stay
    ask. Personal loosening lives in gitignored `settings.local.json`.
+   **Amended by D39:** the `WebFetch` tool carries no committed rule, while
+   network-touching shell commands keep their ask; and personal loosening
+   reaches only what the committed file leaves silent, since a local
+   `allow` cannot cancel a committed `ask`.
 6. **Spec ceremony as a skill.** The spec-ceremony skill wraps the
    brainstorm-and-grilling flow. Beads is the status record: one bead per
    spec, a fresh database initialized at S00. The skill updates the

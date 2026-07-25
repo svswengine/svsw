@@ -1,14 +1,16 @@
 # Documentation
 
-All documentation lives in subdirectories of `docs/`. This file, the router,
-and the style guide are the only markdown files at the top level of `docs/`.
-Each subdirectory holds one kind of document; new subdirectories
-(`docs/architecture`, `docs/decisions`, and others) arrive with their
-content, not ahead of it.
+All documentation lives in subdirectories of `docs/`. This router and the
+style guide are the only markdown files at the top level of `docs/`. Each
+subdirectory holds one kind of document, and a new subdirectory such as
+`docs/architecture` arrives with its content, not ahead of it.
 
 - [docs/ODIN_STYLE.md](ODIN_STYLE.md) — the Odin engineering standard.
 - [docs/specs/README.md](specs/README.md) — the spec index and todo list.
 - [docs/decisions/README.md](decisions/README.md) — the decision log.
+- [docs/context/CONTEXT.md](context/CONTEXT.md) — the glossary and domain
+  model: the terms this repo uses, the ones it bars, and the ambiguous
+  words it pins.
 - [docs/plans/claude-tooling-design.md](plans/claude-tooling-design.md) —
   design and planning records, starting with the Claude Code tooling design.
 - [docs/plans/public-stats.md](plans/public-stats.md) — the org profile's
@@ -21,6 +23,9 @@ content, not ahead of it.
 - [docs/design/editor-mockup-qa.md](design/editor-mockup-qa.md) — the M00
   mockup's QA sweep: findings, fixes, contrast ratios, and re-verification.
 - [docs/research/README.md](research/README.md) — the research corpus index.
+- [docs/agents/](agents/) — the per-repo configuration the engineering
+  skills read: the skill routing map, issue tracker, triage labels, and
+  domain doc rules.
 
 ## Layout
 
@@ -28,6 +33,8 @@ content, not ahead of it.
 |---|---|
 | `docs/specs/` | The spec index and future spec documents. |
 | `docs/decisions/` | The decision log. |
+| `docs/context/` | The glossary and domain model. |
 | `docs/plans/` | Design and planning records, such as `claude-tooling-design.md`. |
 | `docs/design/` | Design records and browsable design artifacts, such as the M00 editor mockup. |
 | `docs/research/` | The research corpus. |
+| `docs/agents/` | Per-repo configuration for the engineering skills. |

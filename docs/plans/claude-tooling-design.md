@@ -36,6 +36,18 @@ blocks.
 
 ## Root CLAUDE.md plan
 
+**Amended by D40.** The target is a rule, not a number: content stays only
+if a reader needs it without a lookup to avoid making a wrong decision, and
+everything else becomes a pointer. Applied, that lands near 100 lines
+across seven sections. Of the eight below, section 5 is cut in full,
+section 6 reduces to one sentence, sections 3 and 8 reduce to a pointer,
+and sections 1, 2, 4 and 7 survive, with 2 kept in full because those
+invariants decide reviews. Two sections the list never had earned their way
+in: the document authority hierarchy carrying the `docs/research` numbering
+trap, and three short pointers to the skill routing map, the tracker and
+the glossary. The original eight stay written out below, because the
+reasoning for each cut is only legible beside what was cut.
+
 Root CLAUDE.md targets about 150 lines and stays always-loaded, holding
 only what every session needs:
 
@@ -126,7 +138,30 @@ under Multi-language routing below.
 | proto-conformance | "protocol change", "wire frame", "envelope", "proto-conformance failed", "version negotiation" | Working the versioned Odin-to-Go wire protocol (D15): frame layout invariants, running `proto-frame-check` with the hostile-frame fuzz corpus, the two-stage freeze (v0 at S05, the v1 envelope and three-call worker contract at S26), and the rule that conformance runs from both codecs over one recorded corpus; a change green on one side only is red. | new | S05, extended at S26 |
 | course-pairing | "write the course module", "embed-check", "truth-verify", "lesson drift", "publish the module" | The D27 spec-course pairing procedure: author the module only after "implemented", pass embed-check against the pinned engine commit, the reference cross-check, the path-closure check across the consumable paths, and the full site build; a regression demotes the paired spec. | ported from the internal prototype's course-embeds skill | C00 |
 
+**Amended by D40: when a skill splits.** A skill splits when a section
+grows per spec, or is needed only after a branch point. Length alone is not
+the trigger. Of the five at S00 only check-triage qualifies, on both counts
+at once: its gate-name-to-fix-flow table gains a row per gate-adding spec,
+and only the row for the gate that is red is wanted in a given session. Its
+`SKILL.md` keeps the triage method and the false-green traps, which are
+judgement and do not grow, and loads the table from a separate file once it
+knows the gate name. The other four stay whole. One rule binds all of them:
+a skill names where truth lives and reads it, rather than carrying a copy
+that can go stale unnoticed, which is why check-triage defers to the
+justfile and spec-ceremony points at the spec schema instead of restating
+its field list.
+
 ## Agents
+
+**Amended by D40.** The exception is withdrawn and agents stage with their
+gates. Four ship at S00, because their subject exists there: gate-runner,
+win-rig-runner, spec-scribe, and determinism-reviewer, the last of which
+never had a gate dependency. golden-recorder lands at S02a, binding-dev at
+S14, go-services-dev at S26, and course-writer at C00. Refusal clauses go
+with the exception, so the `Refusal clause` column below now reads as the
+owning spec each staged agent waits on. The table stays whole: it is where
+the roster's intent is visible, which is the one job the shipped-but-
+refusing definitions were doing.
 
 The full agent roster ships at S00 as an exception to gate-staged
 placement (grilled decision 2). Every agent whose gate does not exist yet
@@ -183,6 +218,17 @@ odinfmt on a fresh clone never blocks an edit.
 | truth-verify | C00 (course repo) | For a course module, extracts every embed, reference, and claim, re-validates each against the pinned `svsw` engine commit (embed line ranges exist and match, reference keys resolve, prose claims about code behavior are spot-checked by a skeptic agent reading the actual source), then runs path-closure over the consumable paths. Output is a pass or a per-violation drift report. | Every verification step emits a claim, its source file:line at the pinned commit, and a verdict; a step returning empty or unresolvable evidence retries once, then the item is marked FAILED-UNVERIFIED rather than passed. A module cannot reach "course published" with any unverified item, and the no-stub rule applies to the drift report itself. |
 
 ## Reliability policy
+
+**Amended by D40.** The policy splits on whether a clause has a mechanical
+enforcer. Clauses 1 and 2 move into the workflow validator and the agent
+definitions that already enforce them. Clause 3 is documentation of the
+system and stays here. Clause 4 stops being prompt text entirely and
+becomes a sourcing rule: `.claude/hooks/marker-scan.sh` holds the canonical
+list, every validator and hook reads it from there, and no workflow, agent
+or skill restates it, which is strictly stronger than asking a model to
+keep copies in step. Root CLAUDE.md keeps one sentence, covering the only
+path none of the above reaches: validate a subagent's output before using
+it when the dispatch is ad hoc rather than through a workflow.
 
 Stated once, in root CLAUDE.md's Reliability section; every workflow,
 agent definition, and the spec-ceremony and review-to-docs-pr skills
@@ -309,7 +355,12 @@ These amend the original tooling design where they conflict with it.
    does not exist yet carries an explicit refusal clause ("gate not yet
    present; see spec SNN"), and every gate-owning spec's exit checklist
    gains the item "re-verify and update the agents that reference this
-   gate".
+   gate". **Amended by D40:** the exception is withdrawn. gate-runner,
+   win-rig-runner, spec-scribe and determinism-reviewer ship at S00;
+   golden-recorder, binding-dev, go-services-dev and course-writer land
+   with S02a, S14, S26 and C00. Refusal clauses go with it, and the
+   exit-checklist item changes verb, from retiring a clause to adding the
+   agent that gate owns.
 3. **Graduated hooks.** Format-on-edit hooks (odinfmt, StyLua, gofmt) are
    PostToolUse and non-blocking, with warn-if-missing guards. The marker
    scan and the WGSL naga validation feed diagnostics back non-blocking.

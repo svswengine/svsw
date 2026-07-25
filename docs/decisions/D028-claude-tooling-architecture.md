@@ -35,4 +35,7 @@ beads, and the planned spec-ceremony skill narrows to authoring the spec
 document and moving the ladder row. Amended by D39: the committed `ask` on
 the `WebFetch` tool is dropped while shell network commands keep theirs,
 and personal loosening in `settings.local.json` is corrected to reach only
-what the committed file leaves silent.
+what the committed file leaves silent. Amended by D40: the full-roster
+exception is withdrawn and agents stage with their gates, four at S00 and
+the rest with their owning specs, so the exit-checklist item changes from
+retiring a refusal clause to adding the agent that gate owns.

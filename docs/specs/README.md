@@ -71,8 +71,8 @@ real engine source through `<<<` snippet imports; the embedded code is the
 answer key and the engine's real tests are the checker; no parallel skeleton or
 solution copy exists. The lesson skeleton, references registry, embed-check
 gate, and truth-verify authoring discipline port from the internal prototype.
-The material teaches Odin plus WGSL for the render specs, Go for the stage 5
-specs, and Luau against the scripting boundary.
+The material teaches Odin plus Slang for the render specs, Go for the
+stage 5 specs, and Luau against the scripting boundary.
 
 The course lives in the `course` repository under the `svswengine` org,
 served through GitHub Pages (D26); the engine lives in `svsw`. The repo
@@ -195,7 +195,7 @@ written**.
 | C00 | Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates | deployed course shell with the S00 and S01 modules live (setup) | S00, S01 | pending |
 | S02a | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | pending |
 | S02b | simmath3d subset + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | pending |
-| S03 | SDL3 window + wgpu device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | pending |
+| S03 | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | pending |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
 | S05 | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | pending |
 | S06 | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | pending |
@@ -210,7 +210,7 @@ written**.
 | S13 | Deterministic collision v1, scoped by private product requirements | degenerate corpus + snapshot-resim + capsule-on-terrain golden green | S02a, S11a | pending |
 | S14 | Luau sandbox port: the scripting boundary, test-first | sandboxed Luau sample reproduces its world-hash golden headless | S01, S02a | pending |
 | S15 | Mod pipeline port: multi-mod shared world, proven by the mirroring test | prototype mod suites + skeletal second-mod mirroring test green | S14 | pending |
-| S16 | Asset viewer: the minimal ImGui-on-SDL3/wgpu shell | viewer renders a container mesh (human checkpoint) + CI shell smoke | S01, S12a | pending |
+| S16 | Asset viewer: the minimal ImGui-on-SDL3 shell | viewer renders a container mesh (human checkpoint) + CI shell smoke | S01, S12a | pending |
 | S17 | svsw CLI: new/run/package with 3D scaffold templates | `just scaffold-check` green inside `just check` | S11a, S12b, S15 | pending |
 | S18 | SDL3 audio: mixer port, stream pump, spatialization, headless gate | mixer-output golden + spatialization invariance green; sound at the dev window (human checkpoint) | S03, S12a | pending |
 | S19 | SDL3 input completion: event translation and gamepad | input determinism tests green; keyboard/gamepad steering (human checkpoint) | S08 | pending |
@@ -365,20 +365,22 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Stage:** 0 — New-stack proof
 - **Status:** pending
 - **Goal:** One quarantine pass vendors the full C-tier dependency set: SDL3 as
-  source, wgpu-native and naga-cli as checksum-pinned prebuilt binaries per
-  platform, Dear ImGui plus cimgui wrappers (backend wrappers included), Luau
+  source, the Slang compiler as checksum-pinned prebuilt binaries per
+  platform, Dear ImGui plus cimgui wrappers, Luau
   as source (its C++ implementation, entering the vendored C tier behind its
   C-compatible boundary per D33's amendment to D14), and the asset-pipeline
   libs cgltf, bc7enc, and astcenc (both encoders pinned per the roadmap;
   runtime ASTC use held for mobile). VENDOR.md records provenance and the
   binary-versus-source posture per dependency; `just vendor-libs` builds it
-  all; `just shader-check` validates WGSL through pinned naga. First consumers:
-  S03 (SDL3, wgpu, naga), S12a (cgltf, bc7enc, astcenc), S14 (Luau), S16
+  all; `just shader-check` compiles a seed shader through Slang to all three
+  targets. Vulkan, D3D12 and Metal are reached through Odin's own vendored
+  bindings and are not vendored here (D42). First consumers:
+  S03 (SDL3, Slang), S12a (cgltf, bc7enc, astcenc), S14 (Luau), S16
   (ImGui).
 - **Working software:** Setup spec. `just vendor-libs` and `just shader-check`
-  (naga over a seed WGSL file) green on both CI platforms; VENDOR.md complete.
+  green on both CI platforms; VENDOR.md complete.
 - **Depends on:** S00
-- **Decisions:** D7, D9, D14, D33
+- **Decisions:** D7, D9, D14, D33, D42
 - **Course:** module S01; path tag engine; teaches the C-tier vendoring
   ceremony against `just vendor-libs` and `just shader-check`; also seeds the
   shared Setup track.
@@ -387,23 +389,32 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   stays 5.1-era-compatible so the recipe's patterns carry, but the C++
   toolchain and its build flags are new).
 - **Normative references:** none
-- **Scope in:** SDL3 source vendored and built by vendor-libs; wgpu-native
-  prebuilt releases per target, checksum-pinned, upgrade procedure recorded;
-  naga-cli prebuilt, checksum-pinned, wired into shader-check; Dear ImGui plus
-  cimgui generated C wrappers including imgui_impl_sdl3 and imgui_impl_wgpu
-  wrappers, C++ compiled inside vendor-libs; Luau source vendored, C++ compiled
-  inside vendor-libs alongside cimgui (D33); cgltf, bc7enc, astcenc vendored
-  and pinned; hostile-input posture recorded per dependency. The
+- **Scope in:** SDL3 source vendored and built by vendor-libs; the Slang
+  compiler prebuilt per target, checksum-pinned, upgrade procedure recorded,
+  wired into shader-check; Dear ImGui plus cimgui generated C wrappers
+  including imgui_impl_sdl3, with the render backend wrapper deferred to S16
+  now that there is no single imgui_impl to wrap; Luau source vendored, C++
+  compiled inside vendor-libs alongside cimgui (D33); cgltf, bc7enc, astcenc
+  vendored and pinned; hostile-input posture recorded per dependency. The
   vendor-quarantine skill ships here (`docs/plans/claude-tooling-design.md`).
 - **Scope out:** quic-go and Go dependencies (Go modules, S26 and S27a); any
-  consumer code of these libraries.
+  consumer code of these libraries. The Vulkan, D3D12 and Metal bindings,
+  which come from Odin's vendor collection rather than this quarantine pass.
 - **Open questions:**
-  - Exact wgpu-native release to pin and its API stability outlook.
+  - Which Slang release to pin, and whether its Metal target is mature
+    enough to depend on. D42 requires a demonstrated real-shader-to-working
+    MSL compile before anything relies on it; this is where that
+    demonstration happens, and the fallback is Slang to SPIR-V to MSL
+    through SPIRV-Cross, which would add SPIRV-Cross to this pass.
+  - Whether `shader-check` compiles the seed shader to all three targets on
+    every run or one target per CI leg.
   - cimgui generation: upstream-generated wrappers as-is or regenerated, and
     how backend-wrapper gaps get shimmed per D14.
-  - Does Linux CI need lavapipe/software Vulkan installed at this stage or
-    deferred to S04.
-  - SDL3 build configuration surface (which subsystems compiled).
+  - Does Linux CI need lavapipe or another software Vulkan device installed
+    at this stage or deferred to S04.
+  - SDL3 build configuration surface (which subsystems compiled), including
+    whether window reparenting for editor viewport embedding (D44) needs
+    anything enabled here.
 
 ### C00 — Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates
 
@@ -436,7 +447,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   tooling port; the engine pin and embed resolution against it; per-lesson
   path tags, the generated path compositions, and the path-closure
   check; the S00 and S01 modules; the language-slicing audit for Odin, Luau,
-  WGSL, and Go embeds; the Odin Shiki grammar vendored with provenance; the
+  Slang, and Go embeds; the Odin Shiki grammar vendored with provenance; the
   CI heap budget set with the first module. The course-pairing skill and
   the truth-verify workflow ship here, primarily in the course repo's own
   `.claude` tree (`docs/plans/claude-tooling-design.md`). The course-modules
@@ -449,8 +460,8 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     course CI, and who bumps the pin.
   - Embed slicing audit for the new language mix: Odin regions port as-is; does
     the internal prototype's Lua range slicer port unchanged for Luau sources,
-    and what do WGSL and Go embeds need (Shiki grammar coverage, region versus
-    range support).
+    and what do Slang and Go embeds need (Shiki grammar coverage,
+    region versus range support).
   - Path composition mechanism: build-time sidebar generation from
     frontmatter tags versus hand-maintained per-path sidebars, and where the
     path-picker state lives.
@@ -536,14 +547,18 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - What the cross-CPU gate hashes: raw op results, a fixed op-sequence
     transcript, or both.
 
-### S03 — SDL3 window + wgpu device + draw-list render core
+### S03 — SDL3 window + RHI device + draw-list render core
 
 - **Stage:** 0 — New-stack proof
 - **Status:** pending
 - **Goal:** The new render stack's skeleton: `engine/platform_sdl` (window,
   event pump, swapchain surface), `engine/render3d` (backend-free CPU core
-  emitting a plain draw-list), `engine/render3d/gpu` (the single wgpu-native
-  consumer with an offscreen attachment). Both modes drive one render path
+  emitting a plain draw-list), `engine/render3d/gpu` (the in-house rendering
+  interface and the only consumer of a graphics backend, with an offscreen
+  attachment). D42 makes that stratum a real abstraction over three
+  backends rather than a thin pass-through to one, so its shape is now this
+  spec's central design problem rather than a detail. Both modes drive one
+  render path
   into the same offscreen target; the window presents from that target, so a
   mode fork cannot hide.
 - **Working software:** A headless run renders a test frame offscreen with no
@@ -552,26 +567,40 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   the same frame on the dev machine: this is a human checkpoint, not a CI
   assertion.
 - **Depends on:** S01, S02b
-- **Decisions:** D2, D7, D14, D22
-- **Course:** module S03; path tag engine; teaches the SDL3/wgpu stack and
-  the draw-list render core against the offscreen test frame.
+- **Decisions:** D2, D7, D14, D22, D42
+- **Course:** module S03; path tag engine; teaches the SDL3 platform layer,
+  the in-house rendering interface, and the draw-list render core against
+  the offscreen test frame.
 - **Prototype ports:** the D2 boundary pattern (backend-free core, thin GPU
-  stratum, boundary-scan gate), rebuilt for wgpu.
+  stratum, boundary-scan gate), rebuilt over the in-house interface.
 - **Normative references:** none
 - **Scope in:** `engine/platform_sdl` window/swapchain/event pump; the
   draw-list struct stream (pipeline id, bind sets, handles, instance ranges,
   uniform blocks); `engine/render3d` one opaque pass with depth buffer;
-  `engine/render3d/gpu` walking the list into wgpu calls with an offscreen
-  attachment; tier-scan rules extended so only the platform tier and
-  render3d/gpu touch wgpu/SDL3; the first WGSL shader under shader-check.
+  `engine/render3d/gpu` carrying the rendering interface and walking the
+  list into backend calls with an offscreen attachment; tier-scan rules
+  extended so only the platform tier and render3d/gpu touch a graphics
+  backend or SDL3; the first Slang shader under shader-check.
 - **Scope out:** goldens and the parity gate (S04); textures and materials
   beyond the minimum to draw; input translation (S08, S19); audio (S18).
+  Ray tracing, mesh shaders, bindless and async compute: D42 exists so the
+  interface can reach them later, and none is drawn here.
 - **Open questions:**
+  - **Which backends land at S03.** All three, or one to prove the shape
+    with the others following, and if one, which. The CI legs are macOS
+    arm64 and Linux x86-64, so Metal and Vulkan are the reachable pair and
+    D3D12 is only exercisable on the Windows rig.
+  - **How much of the interface S03 defines.** A resource and command
+    vocabulary that never needs breaking later, or the minimum to draw one
+    triangle, accepting a redesign when ray tracing and bindless arrive.
+  - Explicit-barrier and resource-state model: tracked automatically inside
+    the interface, or declared by callers.
   - Swapchain surface format and color-space handling so presented and
-    readback pixels stay comparable.
+    readback pixels stay comparable across three backends.
   - Present mechanism from the offscreen target: blit versus a
     fullscreen-triangle pass.
-  - wgpu adapter/device selection policy across CI and dev machines.
+  - Adapter and device selection policy across CI and dev machines, now per
+    backend.
   - How the draw-list uniform-block ABI stays monomorphic per the Trinity
     RenderJob shape.
 
@@ -581,7 +610,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Status:** pending
 - **Goal:** The stage 0 exit: a textured cube with hardcoded vertices orbited
   by a deterministic camera inside a real Session, stepped N ticks headless.
-  Stand up `render3d-golden-check` (world hash, draw-list skeleton hash, wgpu
+  Stand up `render3d-golden-check` (world hash, draw-list skeleton hash,
   offscreen readback golden with perceptual tolerance) and `just
   parity-check`, which runs the scenario headless and through a real window
   and asserts identical world and skeleton hashes plus a matching readback.
@@ -611,7 +640,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - GPU-less Linux CI: is lavapipe the readback fallback, and what does the
     skeleton-only degraded mode look like on headless-only runners.
   - Virtual display mechanism for the CI windowed leg (Xvfb, weston) and its
-    wgpu surface support.
+    surface support per backend.
   - N ticks and camera-orbit parameters that make the goldens sensitive
     without being brittle.
 
@@ -673,14 +702,15 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Depends on:** S04
 - **Decisions:** D8
 - **Course:** module S06; path tag engine; teaches renderer foundations and
-  WGSL shading against the multi-object PBR scene.
+  Slang shading against the multi-object PBR scene.
 - **Prototype ports:** none
 - **Normative references:** none
 - **Scope in:** simmath3d growth one function at a time under the cross-CPU
   gate; pipeline cache plus permutation key; frustum culling;
-  opaque/transparent pass structure; glTF metallic-roughness BRDF in WGSL
-  under the naga gate; camera, two rigs, ray picking; render-side math
-  explicitly outside the policed regime, covered by the skeleton tier.
+  opaque/transparent pass structure; glTF metallic-roughness BRDF in Slang
+  under the shader-check gate; camera, two rigs, ray picking;
+  render-side math explicitly outside the policed regime, covered by the
+  skeleton tier.
 - **Scope out:** shadows (S07); clustered lights (S10); asset import (scene
   data stays hardcoded or trivially embedded until S12a).
 - **Open questions:**
@@ -707,13 +737,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Depends on:** S06
 - **Decisions:** D8
 - **Course:** module S07; path tag engine; teaches cascaded shadow mapping in
-  WGSL against the Milestone A CSM scene.
+  Slang against the Milestone A CSM scene.
 - **Prototype ports:** none
 - **Normative references:** none
 - **Scope in:** CSM cascade selection, split scheme, depth passes in the
-  draw-list and the skeleton hash; shadow sampling and bias strategy in WGSL;
-  readback goldens tolerant to the chosen filtering; perf iteration against
-  the S09 harness once it exists.
+  draw-list and the skeleton hash; shadow sampling and bias strategy in
+  Slang; readback goldens tolerant to the chosen filtering; perf iteration
+  against the S09 harness once it exists.
 - **Scope out:** clustered light culling (S10); any secondary shadow-casting
   light type.
 - **Open questions:**
@@ -786,7 +816,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 
 - **Stage:** 1 — Renderer, Forward+ staged
 - **Status:** pending
-- **Goal:** Forward+ completed: wgpu compute-shader light clustering, with
+- **Goal:** Forward+ completed: compute-shader light clustering, with
   cluster-assignment counts joining the skeleton hash so clustering
   regressions fail CPU-only on GPU-less CI. May re-sequence later per the
   roadmap, carrying its gate with it; nothing downstream depends on it.
@@ -798,10 +828,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Depends on:** S07
 - **Decisions:** D8
 - **Course:** module S10; path tag engine; teaches compute-shader light
-  clustering in WGSL against the Milestone B clustered scene.
+  clustering in Slang against the Milestone B clustered scene.
 - **Prototype ports:** none
 - **Normative references:** none
-- **Scope in:** cluster grid plus compute assignment pass in WGSL; CPU-side
+- **Scope in:** cluster grid plus compute assignment pass in Slang; CPU-side
   reference computation of cluster counts feeding the skeleton hash; the
   N-point-light test scene; the parity leg.
 - **Scope out:** shadowed point/spot lights; GPU-driven culling beyond light
@@ -1070,13 +1100,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Hot-reload scope in the port: full prototype behavior, or reload deferred to
     editor-era work.
 
-### S16 — Asset viewer: the minimal ImGui-on-SDL3/wgpu shell
+### S16 — Asset viewer: the minimal ImGui-on-SDL3 shell
 
 - **Stage:** 2 — World structure + assets
 - **Status:** pending
 - **Goal:** The first ImGui deliverable and the editor tier's plumbing proof:
-  a standalone asset viewer on imgui_impl_sdl3 plus imgui_impl_wgpu via
-  cimgui, browsing and displaying container files. Its non-movable kernel is
+  a standalone asset viewer on imgui_impl_sdl3 plus a render backend
+  wrapper per graphics backend via cimgui, browsing and displaying
+  container files. Its non-movable kernel is
   the minimal ImGui shell; whatever else re-sequences, the shell lands before
   S20's Luau-UI bind starts.
 - **Working software:** The asset viewer opens a container file, lists
@@ -1099,8 +1130,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Does the viewer live as a mode of one tools binary or its own binary.
   - How much shell code is deliberately shared with the S22 editor versus
     copied.
-  - What the CI smoke can assert offscreen given ImGui draws through the same
-    wgpu path.
+  - What the CI smoke can assert offscreen given ImGui draws through the
+    same render path.
+  - Which ImGui render backend wrapper exists per graphics backend, and
+    whether upstream ships one for each or some are written here (D42
+    removed the single imgui_impl_wgpu this spec assumed).
 
 ### S17 — svsw CLI: new/run/package with 3D scaffold templates
 
@@ -1288,8 +1322,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 
 - **Stage:** 4 — Editor + animation
 - **Status:** pending
-- **Goal:** The editor as a privileged SDK-tier Odin binary (D21) that is the
-  client and supervisor of an S08-topology worker process: every edit is a
+- **Goal:** The editor as an editor-tier Odin binary living in `editor/`
+  (D21, D43) that is the client and supervisor of N Session workers
+  (D44): every edit is a
   typed command on a command stream, sent to the worker over the versioned
   protocol; undo/redo and persistence are command-log mechanisms;
   play-in-editor boots a real deterministic Session inside that worker, with
@@ -1316,7 +1351,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   connection, into a data-stage scene; the scene plays N deterministic ticks
   and matches its world-hash golden; editor tier-scan rules green.
 - **Depends on:** S08, S16, S21
-- **Decisions:** D21, D22, D36
+- **Decisions:** D21, D22, D36, D43, D44
 - **Course:** module S22; path tag engine; teaches the editor command stream
   and play-in-editor against `just editor-roundtrip-check`.
 - **Prototype ports:** the replay-codec discipline applied to the command log.
@@ -1331,8 +1366,26 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope out:** gizmos, asset browser, profiler (S23); editor Luau (S24);
   animation authoring (S25); the rebuild/respawn/restore dev loop (S22b).
 - **Open questions:**
+  - **How many Session workers the editor drives, and when.** D44 makes
+    N the answer and D4's two-client co-op scene the reason, so this
+    spec owns spawn, addressing and lifecycle for more than one.
+  - **How the viewport is presented.** D44 expects window reparenting
+    rather than cross-process texture sharing, since no rendering
+    interface offers safe external memory import. That decides whether
+    gizmos and selection highlights are drawn by the worker and
+    therefore travel as commands, or drawn by the editor over a
+    surface it owns.
+  - **What an Extension may reach.** D43 puts Extensions in the editor
+    build through D3's seam; this spec decides which editor surfaces
+    that seam exposes, and the answer sets the compatibility surface
+    every later editor spec inherits.
   - Command schema versioning, and whether the protocol envelope pattern is
     reused for the log format.
+  - Whether protocol mismatch between editor and worker degrades on
+    unknown data and refuses on unknown methods, or negotiates by
+    capability flags. A user rebuilding a worker from modified engine
+    source while the editor keeps running makes this reachable rather
+    than theoretical.
   - Entity identity across undo/redo and replays (stable editor IDs versus
     ECS handles).
   - How much of the inspector is schema-generated from the mod component
@@ -1500,7 +1553,8 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Open questions:**
   - The glTF animation feature floor for v1 (linear and step only, or cubic
     spline sampling too).
-  - Bone-count and palette limits per the wgpu binding model.
+  - Bone-count and palette limits per the rendering interface's binding
+    model.
   - How blend inputs are driven before state machines exist (Luau-set
     parameters?).
 

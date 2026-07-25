@@ -68,12 +68,17 @@ work. These are done, and a ticket that re-does them is a defect:
 
 ### Repository and gates
 
-- Monorepo layout per D25: `engine/`, `cli/`, `tools/`, `protocol/`,
+- Monorepo layout: `editor/`, `engine/`, `cli/`, `tools/`, `protocol/`,
   `server/`, `runtime/`, `vendor/`, `mods/`, `samples/`, `docs/`, `tests/`.
+  D25 decides one repository rather than this list; `editor/` is the
+  topmost tier band per D43, and the rest elaborate D25.
 - A justfile with `check`, `test`, `type-check`, `fmt`, and `scan`, plus
   `docs-check`, an offline internal-link checker over the repo's markdown
   that blocks on internal relative links and only reports external URLs.
-- Tier-scan rule set, including only-platform-tier-touches-C (D14).
+- Tier-scan rule set: only-platform-tier-touches-C (D14), and
+  nothing-depends-on-`editor/` (D43). The editor rule lands here, with the
+  directory empty, because it is cheap to enforce against nothing and
+  expensive to retrofit once editor code exists.
 - api-surface snapshot machinery.
 - The svsw carve-outs added to [`docs/ODIN_STYLE.md`](../ODIN_STYLE.md),
   per the dispositions below.
@@ -240,6 +245,9 @@ gets the machinery S00 builds.
       by breaking one.
 - [ ] tier-scan fails a deliberate C-tier import from outside the platform
       tier.
+- [ ] tier-scan fails a deliberate import of `editor/` from `engine/`,
+      demonstrated with a throwaway file in each, since the directories are
+      otherwise empty at S00.
 - [ ] The api-surface snapshot fails a deliberate surface change and passes
       after regeneration.
 - [ ] Root `CLAUDE.md` matches D40's section set and rule.

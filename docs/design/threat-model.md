@@ -5,7 +5,7 @@ SECURITY.md's promise and the sandbox's actual mechanisms cannot drift
 apart unnoticed. D50 settles the trust model this records: the mod
 sandbox defends against hostile mod source, not merely buggy source.
 The decision log is the authority behind every entry; this record
-collects the threats, the mechanisms, and the gates in one place.
+collects the threats, the mechanisms, and the gates.
 
 ## The boundary
 
@@ -25,7 +25,7 @@ bug.
 | Memory exhaustion and GC pressure | Per-VM allocation cap; disable-in-place on breach | S14 containment suite |
 | Argument abuse across the `svsw.*` surface | R1-R5 discipline at every binding, backed by the registry-driven fuzz gate that invokes every registered binding with adversarial arguments | Report-only at S14, hard in S21's roster |
 | Hostile mod manifests and data files | Hostile-manifest corpus (malformed syntax, dependency cycles, first-declarant collisions, oversized fields, path traversal) rejected clean | S15 |
-| Determinism griefing in shared-world co-op | Per-chunk hash tripwire with defined trip semantics; a mod that forces trips is quarantined by those semantics rather than left an unclassified session-killer | S28 |
+| Determinism griefing in shared-world co-op | Per-chunk hash tripwire with defined trip semantics; a mod that forces trips is classified and contained by those semantics rather than left an unclassified session-killer | S28 |
 
 ## Outside the boundary
 

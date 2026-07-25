@@ -3,7 +3,7 @@
 Status: current
 Date: 2026-07
 
-Amends D27 in three clauses, because the pairing rule as written
+Amends D27 in four clauses, because the pairing rule as written
 compounds into an unbudgeted maintenance tax: each module publish forces
 a pin bump, each bump reruns every published module's verification gate,
 and by stage 4 roughly twenty-five published modules embed exactly the
@@ -19,8 +19,8 @@ standing pin, embedding only source that pin already carries. Third,
 embeds anchor on named region markers in engine source rather than line
 ranges, settled in C00's grilling in place of its open question about
 porting the line-range slicer, so unrelated churn above an embed moves
-nothing. M-series specs are exempt from the pairing rule, as the spec
-index's status legend records: their committed artifact is the
+nothing. Fourth, M-series specs are exempt from the pairing rule, as
+the spec index's status legend records: their committed artifact is the
 deliverable. Per-spec pairing itself stands; batching course authoring
 to stage ends was rejected because a module written months after its
 spec loses the implementation context that makes it accurate. Adopted

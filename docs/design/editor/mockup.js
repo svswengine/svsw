@@ -947,7 +947,7 @@ function setCurrentLine(n) {
 /* ---------- tabbed document center (Scene + N script editors) ---------- */
 const reloadChips = {
   lua: { text: "hot-reload ✓ (S22b)", cls: "" },
-  odin: { text: "requires engine rebuild (S02a)", cls: " rebuild" },
+  odin: { text: "requires engine rebuild (S22b)", cls: " rebuild" },
   go: { text: "requires services rebuild (S26)", cls: " rebuild" },
 };
 
@@ -1543,8 +1543,8 @@ const menuDefs = {
   Mods: [
     { label: "Mod List", sub: [modItem("base"), modItem("sample_tweaks"), modItem("extra_props")] },
     { label: "Reload Mods",
-      live: () => logConsole("info", "mods reloaded, data stages re-run"),
-      toast: "mods reloaded, data stages re-run (S22b)" },
+      live: () => logConsole("info", "mods reloaded, control stages re-run"),
+      toast: "mods reloaded, control stages re-run (S22b)" },
     { label: "Load Order…", toast: T("edit the mod load order", "S15") },
     { label: "Check Conflicts", toast: T("check for conflicts; mirroring test: no conflicts", "S15") },
     { sep: true },

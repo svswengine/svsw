@@ -130,7 +130,10 @@ references` between Prototype ports and Scope in, the twelfth field.
 Shaders validate through the checksum-pinned Slang compiler rather than
 naga-cli, and the cross-backend rules cover Slang compiling to SPIR-V,
 DXIL and MSL over the in-house rendering interface; the readback-golden
-and skeleton-hash rules carry over unchanged.
+and skeleton-hash rules carry over unchanged. The `c-tier.md` row's list
+reads as SDL3 or cimgui, the graphics backends entering through Odin's
+own vendored bindings rather than this tier, and vendor-quarantine's
+trigger list drops wgpu.
 
 Which two subsystems keep a nested CLAUDE.md, and the S00 task that
 verifies paths frontmatter against the installed Claude Code version, are
@@ -240,6 +243,11 @@ odinfmt on a fresh clone never blocks an edit.
 | comment-review | S00 | A near-verbatim port of the prototype skill: the explain-why, refactor-first, maintain-truth rubric, an AREAS list rewritten for the D25 layout, and the false-positive protection list (dense provenance and determinism comments, license headers, ponytail markers) extended with FFI ownership annotations in the C tier and protocol frame-layout comments. The skeptic defends the status quo. | Shares the adversarial-review validator module and the same retry-once-then-reconstruct policy; citation resolution is mandatory before any comment-change suggestion is reported. |
 | spec-review | S00 | A small pre-"spec written" pass over a drafted spec: a determinism and architecture reader using the determinism-reviewer brief, a scope reader checking the draft against its README schema entry (every depends-on spec is "spec written" or later, every named gate has an owner, scope-out is explicit, every grilling disposition is addressed), and one skeptic. Cheap by design, run once per spec draft ahead of maintainer sign-off. | Shares the output-contract validator; a reader that returns an empty section report is retried once, then the orchestrator re-reads the draft itself and reconstructs that section's verdict directly. Findings must quote the spec text they concern, checked mechanically as a substring of the draft. |
 | truth-verify | C00 (course repo) | For a course module, extracts every embed, reference, and claim, re-validates each against the pinned `svsw` engine commit (embed line ranges exist and match, reference keys resolve, prose claims about code behavior are spot-checked by a skeptic agent reading the actual source), then runs path-closure over the consumable paths. Output is a pass or a per-violation drift report. | Every verification step emits a claim, its source file:line at the pinned commit, and a verdict; a step returning empty or unresolvable evidence retries once, then the item is marked FAILED-UNVERIFIED rather than passed. A module cannot reach "course published" with any unverified item, and the no-stub rule applies to the drift report itself. |
+
+**Amendment (D59):** truth-verify's embed check reads as region-marker
+resolution rather than line ranges: embeds anchor on named region
+markers in engine source, and the check asserts each marker exists and
+its content matches at the pinned commit.
 
 ## Reliability policy
 

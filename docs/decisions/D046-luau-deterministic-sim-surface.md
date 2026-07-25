@@ -15,9 +15,11 @@ order, which ASLR varies run to run. The sandbox therefore ships a
 deterministic sim surface: S14's whitelist replaces the math.*
 transcendentals with engine-provided deterministic f64 implementations,
 carrying an allow-list and ban-list rationale record in S02b's style;
-math.random is replaced by simrng-backed bindings; and sim-writing table
+simrng-backed bindings replace math.random; and sim-writing table
 walks use svsw-provided ordered iteration, with pointer-keyed pairs()
-barred from sim paths by the D34 strict-mode lint. Passing the raw
+barred from sim paths by the D34 strict-mode lint, which binds
+first-party code hard and third-party mods advisorily, their runtime
+divergence remaining a D50 tripwire matter. Passing the raw
 libm-backed functions through is rejected because a per-platform hash
 divergence inside mod code cannot be debugged from the engine side;
 banning transcendentals outright for mods is rejected because gameplay

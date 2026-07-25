@@ -14,7 +14,9 @@ surfaces and a dynamics-lite spec enters the index there, priced for
 deterministic solver ordering in policed f32. Presentation VFX,
 particles, sky and atmosphere, fog, decals, water and reflections, is
 post-engine and follows the D11 pattern when built: presentation-only,
-off-hash, invariance-tested. Navigation and pathfinding substrate is
+off-hash, invariance-tested. Image-based lighting and global
+illumination are post-engine with it, per D54's ambient-term cap.
+Navigation and pathfinding substrate is
 post-engine; S30's encounter movement is mod-side Luau over `svsw.*`
 queries, and its grilling verifies the instruction budget prices that.
 Mesh LOD and occlusion culling are post-engine; engine-scope culling is
@@ -22,7 +24,9 @@ frustum-only, and S09's stress scene is pinned to the D4 few-chunk
 scale so its budgets defend the bar the engine actually promises.
 In-world text rendering, localization and string tables, input
 remapping UI, and music streaming beyond the ported mixer are
-post-engine product work. Shipped player saves are engine work with an
+post-engine product work, and so are the internet-facing gateway
+hardening, hostile-client gate legs and identity story D52 defers.
+Shipped player saves are engine work with an
 owner: the player save/load spec, which also owns the versioned
 snapshot reader, amending D36 where it pointed that story at S27b's
 durability work. Adopted from the 2026-07-25 adversarial review at the

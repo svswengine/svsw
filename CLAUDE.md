@@ -5,10 +5,10 @@
 svsw is an open-source (Apache-2.0) 3D game engine: Odin for the
 deterministic core, Luau for typed, sandboxed gameplay scripting and
 modding, Go for online services, Slang shaders through an in-house RHI
-over Vulkan, D3D12 and Metal (D42), and a policed C interface tier at the
-platform boundary. One monorepo holds
-engine, CLI, runtime, samples, and services; the `course` sibling repo
-teaches it, spec and course module landing in pairs (D27).
+over Vulkan, D3D12 and Metal (D42), and a policed C interface tier at
+the platform boundary. One monorepo holds engine, CLI, runtime, samples,
+and services; the `course` sibling repo teaches it, spec and course
+module landing in pairs (D27).
 
 **Current state: planning and spec phase. This repository contains only
 documentation.** There is no code, no justfile, and no CI yet; all of that

@@ -112,7 +112,7 @@ The ceremony settled the eight questions M00's index entry left open.
   Odin, or Go file, adds it to the explorer, logs create_file, and opens
   it.
 - **Reload semantics stay visible.** Each editor shows a chip: Luau
-  hot-reloads (S22b, D60); Odin requires an engine rebuild (S02a); Go
+  hot-reloads (S22b, D60); Odin requires an engine rebuild (S22b); Go
   requires a services rebuild (S26). The status bar shows the focused document's
   language mode.
 - The run target follows selection in the tree, asset, and mod browsers;
@@ -167,7 +167,7 @@ marked none are mockup-only chrome.
 | Edit | Redo | live: walks the log forward | S22 |
 | Edit | Duplicate Entity | live: clones the selection, logs spawn_entity | S22 |
 | Edit | Delete Entity | live: removes the selection, logs delete_entity | S22 |
-| Edit | Select All | live | S22 |
+| Edit | Select All | toast (multi-select lands with the real editor) | S22 |
 | Edit | Deselect | live | S22 |
 | Edit | Find Entity… | toast | S22 |
 | Edit | Snap Settings | toast | S22 |

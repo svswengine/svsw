@@ -6,7 +6,8 @@ Date: 2026-07
 D21 created two time axes, the edit log driving undo and redo, and the
 sim tick driving play and scrubbing, and left their crossing undefined,
 which is the vision's core loop: rewind, change the game, resume. This
-settles the contract, constraining D21 and the debugger spec. Every
+settles the contract, amending D21 and constraining the debugger spec.
+Every
 command records the sim tick at which it applies, so the tick-stamped
 command log composes with the per-tick Canonical_Input_Set stream into
 one total order, the order every replay, restore and resume

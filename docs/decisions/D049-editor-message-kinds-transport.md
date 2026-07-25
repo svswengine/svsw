@@ -5,9 +5,10 @@ Date: 2026-07
 
 Amends D15 and D18 where the editor's use of the versioned protocol was
 unprovisioned. D15 reserved message-kind ranges for replication and
-future private-service growth; the stage-4 editor already puts command,
-inspection, log and debug traffic on the same protocol, two stages
-before the S26 envelope freeze, and D44's one-binary worker parses the
+future private-service growth; the editor already puts command traffic
+on the same protocol from its stage-3 walking skeleton (S16b), with
+inspection, log and debug traffic following in stage 4, all before the
+stage-5 S26 envelope freeze, and D44's one-binary worker parses the
 gateway vocabulary and the editor vocabulary from one dispatch table, so
 an unreserved editor kind can collide with a reserved one without either
 spec noticing. D15 therefore reserves a third message-kind range, editor

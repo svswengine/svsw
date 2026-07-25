@@ -22,5 +22,8 @@ exists before 1.0, and stating that is the promise: a reader can now
 distinguish a break the project chose from one it failed to notice.
 S32's residual sweep gains a release dry-run, cutting a tag, building
 the artifacts, and scaffolding a project against the tag, so the
-mechanism is exercised once before completion is declared. Adopted from
+mechanism is exercised once before completion is declared. Promising
+cross-release compatibility before 1.0 is rejected as an unresourced
+promise, and per-spec tagging is rejected because stage exits are the
+only boundaries a green gate already defends. Adopted from
 the 2026-07-25 adversarial review at the maintainer's direction.

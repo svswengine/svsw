@@ -73,6 +73,8 @@ are settled; reopening one is a maintainer call.
 | D45 | Committed permissions are an allow list only | [D045-permissions-allow-only.md](D045-permissions-allow-only.md) |
 | D46 | Luau deterministic sim surface | [D046-luau-deterministic-sim-surface.md](D046-luau-deterministic-sim-surface.md) |
 | D47 | Editor viewport transport; the debug-suspended worker | [D047-viewport-transport-debug-suspended.md](D047-viewport-transport-debug-suspended.md) |
+| D48 | Backend sequencing; one ImGui renderer over the RHI | [D048-backend-sequencing-imgui-renderer.md](D048-backend-sequencing-imgui-renderer.md) |
+| D49 | Editor message kinds and the editor-worker transport | [D049-editor-message-kinds-transport.md](D049-editor-message-kinds-transport.md) |
 
 ## Past
 

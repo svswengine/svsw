@@ -13,4 +13,7 @@ creates an unversioned ABI seam, the stopgap option under the longest-run
 rule. Two-stage freeze: envelope plus the three-call worker contract at the
 stage 5 walking skeleton (with message-kind ranges reserved for replication
 and future private-service growth); replication message kinds land at the
-stage 5 exit gate.
+stage 5 exit gate. Amended by D49: a third message-kind range is reserved
+for editor and tooling traffic, owned by the editor-era specs; editor
+kinds never freeze, and the reservation is what protects the frozen v1
+envelope.

@@ -41,4 +41,5 @@ the rest with their owning specs, so the exit-checklist item changes from
 retiring a refusal clause to adding the agent that gate owns. Amended by
 D45: the committed file becomes an allow list only, with `deny` and `ask`
 both empty, and the `vendor/**` deny this decision specified is dormant
-until S01 gives it something to guard.
+until S01 gives it something to guard. Amended by D48: the hook clause's
+WGSL validation reads as Slang validation, per D42.

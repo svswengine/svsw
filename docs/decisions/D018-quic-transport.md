@@ -11,4 +11,7 @@ blocking stalls the prediction stream under loss) and over WebRTC/pion
 WebTransport is the QUIC-native door if the maintainer ever adds a web
 target). Gateway↔worker runs the v1 length-prefixed protocol over loopback
 TCP; supervised same-host processes need no datagram semantics. The
-coop-smoke gate injects latency, loss, and reordering.
+coop-smoke gate injects latency, loss, and reordering. Amended by D49:
+editor-worker runs the same length-prefixed protocol over the same
+loopback transport as gateway-worker, one listening discipline per
+Session worker whichever supervisor spawned it.

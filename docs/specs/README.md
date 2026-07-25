@@ -388,7 +388,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Working software:** Setup spec. `just vendor-libs` and `just shader-check`
   green on both CI platforms; VENDOR.md complete.
 - **Depends on:** S00
-- **Decisions:** D7, D9, D14, D33, D42
+- **Decisions:** D7, D9, D14, D33, D42, D48, D50
 - **Course:** module S01; path tag engine; teaches the C-tier vendoring
   ceremony against `just vendor-libs` and `just shader-check`; also seeds the
   shared Setup track.
@@ -401,9 +401,15 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   compiler prebuilt per target, checksum-pinned, upgrade procedure recorded,
   wired into shader-check; Dear ImGui plus cimgui generated C wrappers
   including imgui_impl_sdl3, with the render backend wrapper deferred to S16
-  now that there is no single imgui_impl to wrap; Luau source vendored, C++
+  now that there is no single imgui_impl to wrap and the render half is the
+  in-house ImDrawData renderer over the RHI (D48); Luau source vendored, C++
   compiled inside vendor-libs alongside cimgui (D33); cgltf, bc7enc, astcenc
-  vendored and pinned; hostile-input posture recorded per dependency. The
+  vendored and pinned; hostile-input posture recorded per dependency; a
+  per-dependency security-response field in VENDOR.md (upstream advisory
+  source, bump trigger, the re-vendor recipe), Luau marked the
+  security-critical dependency whose security releases re-vendor out of
+  cadence (D50), with a free scheduled report-only Action diffing pinned
+  versions against upstream release tags and opening a ticket on drift. The
   vendor-quarantine skill ships here (`docs/plans/claude-tooling-design.md`).
 - **Scope out:** quic-go and Go dependencies (Go modules, S26 and S27a); any
   consumer code of these libraries. The Vulkan, D3D12 and Metal bindings,
@@ -969,9 +975,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   container.
 - **Working software:** A glTF scene round-trips source to container to
   rendered goldens headless on both CI platforms inside `just check`;
-  container codec fuzz and hostile-input tests green.
+  container codec fuzz and hostile-input tests green, the fuzz obligation
+  covering the glTF import path through cgltf as well as the container
+  codec (D51).
 - **Depends on:** S04, S06
-- **Decisions:** D19, D14
+- **Decisions:** D19, D14, D51
 - **Course:** module S12a; path tag engine; teaches the asset container and
   assetc against the glTF round-trip goldens.
 - **Prototype ports:** codec hostile-input hardening discipline; the atomic
@@ -980,7 +988,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope in:** the container format (magic, kind, schema-version, section
   table, checksums, logical content IDs); the assetc CLI for static meshes,
   textures, materials; baked-output loading in the render path sufficient for
-  the rendered-golden gate.
+  the rendered-golden gate; the process posture: editor-era callers invoke
+  assetc as a separate short-lived process, a parser crash killing the
+  bake rather than the caller (D51).
 - **Scope out:** the runtime loader with worker-thread decode and the
   hot-reload contract (S12b); skeleton and animation sections (S25); audio
   bake (S23); the asset viewer UI (S16).
@@ -1076,10 +1086,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   call-depth limits, interrupts), not retrofitted onto stock Lua's.
 - **Working software:** A sandboxed Luau sample runs headless N ticks and
   reproduces a committed world-hash golden (the script_accept equivalent);
-  sandbox containment, disable-in-place, and budget-enforcement tests green in
-  `just check` on both platforms.
+  the sample exercises the D46 replaced math surface and ordered iteration,
+  one committed hash on both CI platforms; sandbox containment,
+  disable-in-place, and budget-enforcement tests green in `just check` on
+  both platforms.
 - **Depends on:** S01, S02a
-- **Decisions:** D3, D12, D14, D33, D34, D35
+- **Decisions:** D3, D12, D14, D33, D34, D35, D46, D50
 - **Course:** module S14; path tag engine; teaches the Luau sandbox boundary
   and the `svsw.*` core API against the hash-golden Luau sample; candidate for
   additional course-path tagging on its mod-facing surface lessons (path
@@ -1091,6 +1103,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   against Luau's stripped globals.
 - **Normative references:** none
 - **Scope in:** a Luau VM host per mod built on Luau's own sandbox primitives;
+  the D46 deterministic sim surface: engine-provided transcendentals,
+  simrng-backed math.random, and ordered iteration for sim-writing table
+  walks; the wall-clock watchdog beside the allocation cap and instruction
+  budget (D50); interrupt behavior across coroutine boundaries verified
+  rather than assumed (D50); the registry-driven binding fuzz gate,
+  report-only here and hard in S21's roster (D50);
   the `svsw.*` core binding surface sufficient for a hash-golden Luau sample;
   R1-R5 as a standing review rule in `docs/ODIN_STYLE.md` and checklists,
   re-verified against Luau's C API; atomic persistence for `svsw.storage`;
@@ -1103,9 +1121,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope out:** the multi-mod pipeline and mirroring (S15); UI bindings
   (S20); the editor capability tier (S24).
 - **Open questions:**
-  - The mod-trust model restated for svsw: buggy-not-hostile as before, or
-    stronger, which decides whether a real watchdog gets budgeted (the
-    carry-forward flags this).
+  - Execution posture: interpreter-only for v1, or Luau native codegen,
+    and if codegen ever enables, the gate asserting interpreter and
+    codegen runs reproduce identical world hashes on both CI platforms.
+  - Does `svsw.*` grow a log binding, and how worker, engine, and per-mod
+    log lines are attributed and routed to the editor Console (D49).
   - Collapse the internal prototype's scattered is-this-call-allowed-now gates
     into one primitive during the port, or port as-is first.
   - Which prototype `svsw.*` namespaces are in the v1 port surface versus
@@ -1124,9 +1144,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   the exit gate.
 - **Working software:** The prototype mod-system suites plus the skeletal
   second-mod mirroring test and a settings-data-control pipeline test green
-  in `just check` on both platforms.
+  in `just check` on both platforms; a hostile-manifest corpus (malformed
+  syntax, dependency cycles, first-declarant collisions, oversized fields,
+  path traversal in mod-relative references) rejected clean, on the S05
+  corpus pattern (D50).
 - **Depends on:** S14
-- **Decisions:** D12, D33
+- **Decisions:** D12, D33, D50
 - **Course:** module S15; path tag engine; teaches manifests, the mod load
   pipeline, and schema mirroring against the second-mod mirroring test;
   candidate for additional course-path tagging on its mod-facing surface
@@ -1140,14 +1163,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   convention (Luau data files plus container references, no second scene
   format).
 - **Scope out:** the shipped base-as-mod ruleset (S30); the nettest mod
-  (S29); hot-reload polish beyond what ports.
+  (S29); in-Session script reload, which S22b owns (D60).
 - **Open questions:**
   - What the minimal base mod contains as a fixture versus leaving all
     content to test mods.
   - Does mod content reference container assets already in this spec or only
     after S17 wires project layout.
-  - Hot-reload scope in the port: full prototype behavior, or reload deferred to
-    editor-era work.
 
 ### S16 — Asset viewer: the minimal ImGui-on-SDL3 shell
 
@@ -1198,7 +1219,8 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   throwaway scaffolded project boots headless twice, reproduces one root
   world hash, and packages correctly on both CI platforms.
 - **Depends on:** S11a, S12b, S15
-- **Decisions:** D16 as amended (the CLI ships as `svsw`; no rename pending).
+- **Decisions:** D16 as amended (the CLI ships as `svsw`; no rename
+  pending); D53, D56.
 - **Course:** module S17; path tag engine; teaches CLI usage and project
   scaffolding against `just scaffold-check`; candidate for additional
   course-path tagging on its mod-facing surface lessons (path structure
@@ -1207,7 +1229,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Normative references:** none
 - **Scope in:** CLI verbs new/run/package; 3D project templates using the
   base-mod convention and container assets; the scaffold-check recipe wired
-  into `just check`.
+  into `just check`; the project-to-engine-source linkage per D56: `svsw
+  new` records the pinned engine checkout path and toolchain expectations
+  in project metadata, and the S22b rebuild recipe resolves from a
+  scaffolded project; the retail failure posture: what a crash in a
+  packaged game writes to disk (log file location, a crash artifact
+  carrying the assert message and tick, the last checkpoint when one
+  exists), local files only.
 - **Scope out:** server verbs (post-engine CLI work; D16 as amended drops
   the rename pairing); package signing and distribution polish.
 - **Open questions:**
@@ -1473,7 +1501,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   edit-rebuild-respawn-restore run (touch a trivial engine source file, trigger
   the rebuild recipe, let the worker respawn and reconnect, restore state) ends
   green with the session's dev-diverged flag set and within-build hash checks
-  (D22 parity, checkpoint agreement on the respawn) passing.
+  (D22 parity, checkpoint agreement on the respawn) passing; the smoke gate
+  runs once from a scaffolded `svsw new` project directory, proving the loop
+  resolves outside the monorepo (D56).
 - **Depends on:** S02a, S08, S22
 - **Decisions:** D36, D60 (D21, D22 as referenced by D36)
 - **Course:** module S22b; path tag engine; teaches the rebuild-respawn-restore
@@ -1569,9 +1599,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Working software:** Gate: an editor script reaches a running Session's
   sim state through the command stream and through nothing else;
   capability-scoping tests (project-FS confinement with symlink escapes
-  denied, disable-in-place on a throwing script) green in `just check`.
+  denied, disable-in-place on a throwing script) green in `just check`. One
+  sample script adds a panel and another adds a menu command through
+  `svsw.editor.ui`; a freshly opened untrusted project executes no script
+  code (D51).
 - **Depends on:** S22, S14
-- **Decisions:** D10, D33, D34, D43
+- **Decisions:** D10, D33, D34, D43, D51
 - **Course:** module S24; path tag engine; teaches the editor-Luau capability
   tier against the hostile-script containment gate.
 - **Prototype ports:** the mod-sandbox VM machinery instantiated at a second
@@ -1581,7 +1614,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   capability tier itself has no visual reference.
 - **Scope in:** the capability tier as a whitelist diff against the mod
   sandbox; the project-scoped FS surface; the assetc invocation binding;
-  editor UI bindings; the command-stream emission binding; the
+  the editor-script UI contract: scripts register panels, menu items,
+  toolbar commands, and inspector sections through a declared
+  `svsw.editor.ui` surface, the M00 dock slots naming where script panels
+  may land and the chrome that stays Odin-only stated; per-project consent
+  per D51, scripts disabled on first open with enablement recorded outside
+  the project directory; `.d.luau` emission for every editor-tier binding
+  through the S14 generator, the drift gate extended to this surface
+  (D34); the command-stream emission binding; the
   capability-scoping test suite; `--!strict` gate-enforced on every editor
   script, the same
   first-party typing policy S14 applies to base-as-mod and samples (D34).
@@ -1593,6 +1633,8 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     atomicity).
   - How editor scripts are discovered and loaded (a per-project scripts
     directory, a manifest).
+  - Lifecycle of script-registered UI when its script is disabled in
+    place: torn down, tombstoned, or restored on re-enable.
 
 ### S25 — Animation runtime: sampler, blend, GPU skinning, container sections
 

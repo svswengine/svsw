@@ -31,4 +31,6 @@ Amended by D44: the editor supervises N Session workers rather than one, and
 a second kind, the Job worker, carries derived-state work under a different
 restart contract. Amended by D55: shipped-save concerns, the
 versioned-snapshot-reader story included, belong to the player save/load
-spec rather than S27b's durability work.
+spec rather than S27b's durability work. Amended by D60: dev-diverged
+marking widens from rebuilds to any behavior-changing script reload, and
+schema-changing reloads take the same reject-and-replay path.

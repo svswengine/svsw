@@ -71,7 +71,7 @@ is `/grill-with-docs`' job, not a passing edit.
 | **Job worker** | A pooled process doing derived-state work such as asset import, shader compilation, or a bake. Owns nothing the user has not already saved, so it is killed and restarted freely (D44). | task runner, build process, helper |
 | **Gateway** | The Go process that terminates client QUIC connections and routes them to workers (D6, D18). | server (bare), proxy, backend, host |
 | **Command stream** | The typed log of editor edit operations backing undo, redo, persistence, and headless replay (D21). | history, journal, event log, undo stack |
-| **Dev-diverged** | The flag a Session carries once a rebuild has landed code changes into it, marking its cross-build hash diffs as forensics rather than failures (D36). | dirty, stale, invalid |
+| **Dev-diverged** | The flag a Session carries once a rebuild or a behavior-changing script reload has landed changes into it, marking its cross-build hash diffs as forensics rather than failures (D36, D60). | dirty, stale, invalid |
 
 ## Verification
 

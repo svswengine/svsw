@@ -85,6 +85,7 @@ are settled; reopening one is a maintainer call.
 | D57 | Rewind-then-edit semantics | [D057-rewind-edit-semantics.md](D057-rewind-edit-semantics.md) |
 | D58 | Fast-path-first extensibility | [D058-fast-path-first-extensibility.md](D058-fast-path-first-extensibility.md) |
 | D59 | Course cadence relief | [D059-course-cadence-relief.md](D059-course-cadence-relief.md) |
+| D60 | In-Session script reload | [D060-in-session-script-reload.md](D060-in-session-script-reload.md) |
 
 ## Past
 

@@ -34,6 +34,10 @@ Ground rules carried from the roadmap:
 - Prototype ports are test-first: a port lands with its suite green, never
   bare. The internal prototype is a source to port from, not a target to
   converge with (D38).
+- Any spec that introduces or reshapes sim state names its
+  completeness-reflection extension in its scope and its exit gate, and
+  classifies each new field on-hash or off-hash with the rationale
+  recorded at the site.
 - The fresh-repo decision (D38) voids the roadmap's hard-cutover, deletion-
   commit, and gate-equivalence machinery. Nothing cuts over; the obligation
   reappears as S00's gate skeleton and S21's full gate roster, and prototype
@@ -511,7 +515,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope in:** prototype packages ported with their suites, adapted only where
   the svsw layout demands; spall profiling zones compiled out of retail;
   `hash_world` injectivity and length-prefix discipline plus the
-  completeness-reflection test. The golden-hashes skill and the
+  completeness-reflection test; the engine allocator model as an explicit
+  deliverable of the kernel port: which allocator sim code runs under, the
+  per-tick temporary arena policy, and the allocator-identity assertions
+  at VM entry points, so D43's reference to the engine's allocator has a
+  referent. The golden-hashes skill and the
   golden-recorder agent's gate-availability re-verification ship here
   (`docs/plans/claude-tooling-design.md`). The test-count badge ships here,
   per `docs/plans/public-stats.md`.
@@ -528,6 +536,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     checkpoints over the wire.
   - How much of the harness's golden-recording workflow ports now versus with
     S04's new tiers.
+  - Does the ported Session expose a per-system boundary hook (system
+    names, ordering, a suspension point between systems) now, sparing the
+    time-travel debugger spec (S22c) a retrofit against frozen goldens, or
+    later.
 
 ### S02b — simmath3d subset + cross-CPU hash gate
 
@@ -679,7 +691,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Normative references:** none
 - **Scope in:** frame envelope (version, checksum, length prefix); version
   negotiation plus whitelist; `Canonical_Input_Set` and `Tick_Commit` types
-  named at the seam; the two-process echo pair; the hostile-frame corpus and
+  named at the seam; the input-composition rule stated as part of the seam
+  definition: every state-mutating input, edit commands included, reaches a
+  Session only as a member of some tick's Canonical_Input_Set or as a
+  defined between-tick boundary event recorded in Tick_Commit, so the
+  Tick_Commit stream is the total order every replay reconstructs (D57);
+  the two-process echo pair; the hostile-frame corpus and
   fuzz obligation; the tier-scan arrow gate. The proto-conformance skill
   ships here at its v0 scope, shared with and extended at S26
   (`docs/plans/claude-tooling-design.md`).
@@ -692,6 +709,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     prose until S26.
   - Whether `Tick_Commit` carries the world hash from v0 for later desync
     tripwires.
+  - Does Tick_Commit record the applied input set, not only the world
+    hash, so resume and desync forensics reconstruct inputs from the log
+    alone.
 
 ## Stage 1 — Renderer, Forward+ staged
 
@@ -718,9 +738,16 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope in:** simmath3d growth one function at a time under the cross-CPU
   gate; pipeline cache plus permutation key; frustum culling;
   opaque/transparent pass structure; glTF metallic-roughness BRDF in Slang
-  under the shader-check gate; camera, two rigs, ray picking;
-  render-side math explicitly outside the policed regime, covered by the
-  skeleton tier.
+  under the shader-check gate; the D54 resolve chain: an HDR offscreen
+  target resolved through one fixed tonemap operator to the sRGB target
+  D22 hashes, presents and reads back; camera, two rigs, ray picking;
+  an off-hash debug-draw layer (lines, shapes, text chips submitted per
+  frame, excluded from the world hash by construction) that S13, S22 and
+  S23 consume instead of inventing three ad-hoc paths; a shader
+  live-reload path, watch-recompile through the pinned Slang binary with
+  pipeline-cache invalidation at a deterministic frame point, dev-only
+  and off-hash; render-side math explicitly outside the policed regime,
+  covered by the skeleton tier.
 - **Scope out:** shadows (S07); clustered lights (S10); asset import (scene
   data stays hardcoded or trivially embedded until S12a).
 - **Open questions:**
@@ -731,6 +758,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Camera-rig API shape and the continuum transition contract.
   - Point/spot light representation before clustering: a fixed small array
     in Milestone A?
+  - The v1 ambient term, a flat or hemisphere constant (D54): shape and
+    value, settled before the Milestone A goldens record; IBL and GI stay
+    post-engine (D55).
+  - The tonemap operator D54 fixes, and how its curve interacts with the
+    readback tolerance.
+  - The debug-draw layer's skeleton-hash treatment: included behind a
+    flag or excluded like ImGui, and how a windowed-only overlay stays
+    out of the D22 parity legs.
 
 ### S07 — Milestone A: cascaded-shadow-mapped sun (stage 1 exit)
 
@@ -890,7 +925,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     private product requirements.
   - Root composition ordering rule and how absent or inactive chunks hash.
   - Activation policy: who activates chunks in a single-player headless run
-    versus the server.
+    versus the server; S28 answers the server half under its
+    replication-only interest invariant.
+  - Where deactivated chunk state resides, and the memory posture that
+    keeps unbounded extent bounded in resident memory: kept, spilled, or
+    regenerated deterministically.
 
 ### S11b — Floating origin: presentation-side re-basing
 
@@ -1288,7 +1327,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   readback goldens, boundary and tier scans including the C-tier scan,
   api-surface snapshots, the api-coverage threshold, stress budgets confirmed
   from provisional, scaffold-check, the script and mod gate family, the
-  headless audio gate, and the parity gate. Finish the verification tooling
+  headless audio gate, the parity gate, the D50 binding-fuzz gate promoted
+  from report-only to hard, the cross-backend comparison gate (Vulkan
+  versus Metal, software versus hardware rasterizer; report-only, D48),
+  and a report-only `win-check` world-hash item with a stated cadence: at
+  every stage exit from stage 2 onward and before any golden re-record,
+  the result recorded in the stage-exit note. Finish the verification tooling
   that lets agents drive the engine headless: golden record/check/frame-diff
   tooling and an svsw-sim-style MCP successor over the new tiers.
 - **Working software:** `just check` is the one gate for the whole engine and
@@ -1299,7 +1343,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   stage: the split-process test scene runs headless and then windowed with
   sound and gamepad together at the dev window.
 - **Depends on:** S09, S11b, S12b, S13, S15, S17, S18, S19, S20
-- **Decisions:** D22, D14, D38
+- **Decisions:** D22, D14, D38, D48, D50
 - **Course:** module S21; path tag engine; teaches the gate roster and the
   headless verification tooling against the completed `just check`.
 - **Prototype ports:** the api-coverage gate; golden record and re-record
@@ -1359,9 +1403,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Working software:** A first `just editor-roundtrip-check`: a committed
   edit-command log replays headless through the command stream, over the worker
   connection, into a data-stage scene; the scene plays N deterministic ticks
-  and matches its world-hash golden; editor tier-scan rules green.
+  and matches its world-hash golden; editor tier-scan rules green. The
+  committed log includes a segment that interleaves scrubbing and edits,
+  so the D57 truncate-and-resim semantics sit under the gate.
 - **Depends on:** S08, S16, S21
-- **Decisions:** D21, D22, D36, D43, D44
+- **Decisions:** D21, D22, D36, D43, D44, D47, D49, D57
 - **Course:** module S22; path tag engine; teaches the editor command stream
   and play-in-editor against `just editor-roundtrip-check`.
 - **Prototype ports:** the replay-codec discipline applied to the command log.
@@ -1369,9 +1415,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   mockup, normative for the panel set, the dock and collapse behaviour,
   and the chrome this spec builds. Prose here points at it rather than
   describing what it shows.
-- **Scope in:** the typed command schema plus serialized command log;
-  undo/redo over the log; play/pause/step with hash display and replay
-  scrubbing; scene tree and inspector panels; the headless command-log replay
+- **Scope in:** the typed command schema plus serialized command log, every
+  entry tick-stamped (D57); undo/redo over the log, resimulating from the
+  earliest affected tick (D57); play/pause/step with hash display, and
+  replay scrubbing as the transport UI whose seek mechanism S22c owns
+  (plain replay-from-start until S22c lands); scene tree and inspector
+  panels; the Console panel and the worker-to-editor log message family
+  inside the D49 editor kind range; the headless command-log replay
   driver for CI.
 - **Scope out:** gizmos, asset browser, profiler (S23); editor Luau (S24);
   animation authoring (S25); the rebuild/respawn/restore dev loop (S22b).
@@ -1379,12 +1429,17 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - **How many Session workers the editor drives, and when.** D44 makes
     N the answer and D4's two-client co-op scene the reason, so this
     spec owns spawn, addressing and lifecycle for more than one.
-  - **How the viewport is presented.** D44 expects window reparenting
-    rather than cross-process texture sharing, since no rendering
-    interface offers safe external memory import. That decides whether
-    gizmos and selection highlights are drawn by the worker and
-    therefore travel as commands, or drawn by the editor over a
-    surface it owns.
+  - **How the viewport composites.** D47 shares the worker's offscreen
+    target with the editor. This spec decides input routing over the
+    embedded surface (clicks land in the editor and travel as commands)
+    and whether gizmos and selection highlights draw worker-side into
+    the shared target or editor-side over it.
+  - Where the presentation camera lives while the Session is paused or
+    scrubbing: worker-side, driven by editor camera commands, is the
+    D47-consistent default.
+  - The render-while-paused contract: the viewport keeps presenting, the
+    camera keeps flying, and debug draw keeps updating at zero sim
+    ticks, which no render gate currently exercises.
   - **What an Extension may reach.** D43 puts Extensions in the editor
     build through D3's seam; this spec decides which editor surfaces
     that seam exposes, and the answer sets the compatibility surface
@@ -1420,7 +1475,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   green with the session's dev-diverged flag set and within-build hash checks
   (D22 parity, checkpoint agreement on the respawn) passing.
 - **Depends on:** S02a, S08, S22
-- **Decisions:** D36 (D21, D22 as referenced by D36)
+- **Decisions:** D36, D60 (D21, D22 as referenced by D36)
 - **Course:** module S22b; path tag engine; teaches the rebuild-respawn-restore
   loop and the dev-diverged hash model against the dev-loop smoke gate.
 - **Prototype ports:** the `engine/save` and `engine/replay` codec pieces
@@ -1430,7 +1485,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope in:** rebuild orchestration (the `just` recipe the editor shells out
   to) and failure surfacing in the editor UI; the reconnect handshake, reusing
   the S05 envelope and version whitelist (frozen as v1 at S26) rather than a
-  new protocol;
+  new protocol; in-Session script reload per D60 (the control-stage re-run,
+  dev-diverged marking on any behavior-changing reload, schema-changing
+  reloads through the same reject-and-replay path);
   restore policy per D36 (schema-hash match restores the last checkpoint, a
   mismatch falls back to full D21 command-log replay from session start, no
   migration functions run in this loop); dev-diverged session semantics per D36
@@ -1455,6 +1512,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     in-process.
   - Whether the crash-only whole-editor-restart variant ships as the actual
     first milestone or the split-process version lands directly.
+  - Bounding the schema-mismatch replay by session re-baselining: Save
+    Scene collapses the command log into fresh data-stage content and
+    declares a new session start, so replay-from-session-start replays a
+    bounded suffix; automatic or manual, and surfaced how.
 
 ### S23 — Editor features: asset browser, gizmos, profiler panel
 
@@ -1583,7 +1644,8 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   with idempotent-retry, gap-rejection, and epoch-fencing tests. On green,
   the envelope freezes at v1 (framing, checksums, negotiation, version
   whitelist) plus the three-call contract, and message-kind ranges are
-  reserved for replication and future service extensions. One protocol
+  reserved for replication, for editor and tooling traffic (D49), and for
+  future service extensions. One protocol
   schema in `protocol/` with conformance-tested Odin and Go codecs over a
   recorded frame corpus.
 - **Working software:** `just proto-conformance` green from both the Odin and
@@ -1591,7 +1653,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   (retry, gap, epoch fence) green; the v1 envelope plus worker contract
   marked frozen in the repo.
 - **Depends on:** S05, S21
-- **Decisions:** D15
+- **Decisions:** D15, D47, D49
 - **Course:** module S26; path tag engine; teaches the Go supervisor and the
   worker contract against `just proto-conformance`; source material for the
   post-engine multiplayer modules.
@@ -1601,7 +1663,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   supervisor;
   the worker three-call implementation on the Odin Session; Odin and Go
   codecs from one schema source; the recorded conformance corpus in CI;
-  message-kind range reservations.
+  message-kind range reservations including the D49 editor and tooling
+  range; the statement that the frozen three-call contract is the
+  supervisor-facing subset of the worker's surface, the editor-facing
+  verbs (pause, seek, inspect, debug; S22c) living in the editor range
+  outside the freeze; a supervision-test leg proving a debug-suspended
+  worker (D47) is never blamed as wedged; on freeze, every protocol
+  consumer's gate present at that point re-runs, `just
+  editor-roundtrip-check` included once S22 is implemented.
 - **Scope out:** QUIC and the gateway proper (S27a); replication kinds (S28);
   sessions and further service layers (S27a).
 - **Open questions:**
@@ -1653,7 +1722,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   S27a worker lifecycle so a killed worker resumes without hash divergence.
 - **Working software:** Durability smoke green: a killed worker respawns and
   resumes from the Tick_Commit log with no hash divergence, observed by a
-  connected headless client across the kill.
+  connected headless client across the kill; one leg kills the worker
+  mid-outbox-delivery and asserts exactly-once observable delivery of a
+  pending notification after respawn.
 - **Depends on:** S27a, S22b
 - **Decisions:** D6, D18, D15
 - **Course:** module S27b; path tag engine; teaches durability (Tick_Commit
@@ -1663,7 +1734,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Normative references:** none
 - **Scope in:** the durable Tick_Commit log; the opaque checkpoint store,
   adopting and extending the S22b `engine/checkpoint` machinery; the
-  idempotent outbox; resume wiring into worker supervision.
+  idempotent outbox, given an engine-era consumer here: the desync-tripwire
+  event and session lifecycle notifications deliver through it; resume
+  wiring into worker supervision.
 - **Scope out:** replication kinds (S28); multi-machine topology (S29).
 - **Open questions:**
   - Tick_Commit log storage engine v1 (flat append log versus an embedded
@@ -1690,17 +1763,23 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   state matches the server's chunk-hash checkpoints across the run; desync
   injection trips the tripwire loudly.
 - **Depends on:** S27a, S11a
-- **Decisions:** D6, D5, D15
+- **Decisions:** D6, D5, D15, D50, D57
 - **Course:** module S28; path tag engine; teaches replication, prediction,
   and reconciliation against the fault-injected two-client run; source
   material for the post-engine multiplayer modules.
 - **Prototype ports:** the `engine/save` snapshot codec as the checkpoint
   format; the `engine/replay` harness as desync forensics.
 - **Normative references:** none
-- **Scope in:** interest subscription by chunk; delta encoding and
-  application; prediction and reconciliation via checkpoint resim; chunk-hash
-  checkpoint messages; the fault-injection test rig (netem/toxiproxy-style,
-  local) wrapping the gateway path.
+- **Scope in:** interest subscription by chunk, filtering replication only
+  and never driving sim-side activation: any activation the server performs
+  on a client's behalf enters the Session as a Canonical_Input_Set member
+  recorded in Tick_Commit, which closes S11a's activation-policy question
+  under that invariant; delta encoding and application; prediction and
+  reconciliation via checkpoint resim over the S22b `engine/checkpoint`
+  substrate; chunk-hash checkpoint messages; the fault-injection test rig
+  wrapping the gateway path, its injected latency, loss and reorder
+  schedules seeded and reproducible, which rules out netem/toxiproxy-style
+  system tools in favor of a protocol-level shim.
 - **Scope out:** real-network multi-machine runs (S29); the windowed parity
   leg (S29); the reserved message kinds.
 - **Open questions:**
@@ -1710,6 +1789,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Reconciliation depth: how many ticks of resim the client budgets and what
     happens past it.
   - Which entities are predicted beyond the local player.
+  - Deactivation hysteresis when the last interested client departs, as a
+    tick-recorded event.
+  - Tripwire trip semantics: what a trip does to the session (kill,
+    resync-from-checkpoint, or quarantine), and how mod-induced
+    divergence is classified per the threat model (D50).
 
 ### S29 — Two-client co-op harness: mods/nettest and coop-smoke
 
@@ -1718,8 +1802,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Goal:** The stage 5 exit: `mods/nettest` (a bare chunk-mutation component
   plus movement intents, nothing else) as stage-owned test content, and `just
   coop-smoke`: gateway plus headless authoritative sim plus two headless
-  clients mutating adjacent chunks over a real network (two machines or two
-  netns), server chunk hashes matching goldens, kill-and-respawn worker
+  clients mutating adjacent chunks over a real network (network namespaces
+  on one CI runner; a two-machine run at the dev desk is a human
+  checkpoint), server chunk hashes matching goldens, kill-and-respawn worker
   resume, injected latency, loss, and reordering, and one leg swapping a
   headless client for a windowed client asserting the same server chunk
   hashes and client skeleton hashes (D22 across the network path).
@@ -1734,15 +1819,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   multiplayer modules.
 - **Prototype ports:** none
 - **Normative references:** none
-- **Scope in:** `mods/nettest` content; coop-smoke orchestration (netns or
-  two machines in CI); the kill/respawn resume assertion over the Tick_Commit
+- **Scope in:** `mods/nettest` content; coop-smoke orchestration (network
+  namespaces on one hosted runner; the two-machine run is a dev-desk human
+  checkpoint); the kill/respawn resume assertion over the Tick_Commit
   log; the windowed parity leg; the replication-kind freeze artifact.
 - **Scope out:** the gameplay ruleset (stage 6 owns it); contested-interaction
   scenarios.
 - **Open questions:**
-  - CI topology: netns on one runner versus two runners, and what real
-    network means for the gate's credibility.
-  - Fault-injection tool choice and determinism of injected schedules.
   - How the windowed leg runs in CI (virtual display reuse from S04).
 
 ## Stage 6 — Engine-completion verification + rebrand

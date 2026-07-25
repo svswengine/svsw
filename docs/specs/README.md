@@ -182,14 +182,15 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except M00, which is **spec written**.
+Every spec below is **pending**, except S00, which is **grilled**, and
+M00, which is **spec written**.
 
 ## Overview
 
 | id | title | working software | depends on | status |
 |---|---|---|---|---|
 | M00 | Editor visual mockup: HTML+CSS prototype of the editor's look and behavior | mockup opens and runs interactive in any browser (design artifact) | none | spec written |
-| S00 | Repo bootstrap: toolchain, just check skeleton, two-platform CI | `just check` green on both CI platforms (setup) | none | pending |
+| S00 | Repo bootstrap: toolchain, just check skeleton, two-platform CI | `just check` green on both CI platforms (setup) | none | grilled |
 | S01 | Vendoring ceremony: all C-tier dependencies | `just vendor-libs` + `just shader-check` green (setup) | S00 | pending |
 | C00 | Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates | deployed course shell with the S00 and S01 modules live (setup) | S00, S01 | pending |
 | S02a | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | pending |
@@ -353,7 +354,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S00 — Repo bootstrap: toolchain, just check skeleton, two-platform CI
 
 - **Stage:** 0 — New-stack proof
-- **Status:** pending
+- **Status:** grilled
 - **Goal:** Create the `svsw` repository with the internal prototype's tooling
   discipline from the first commit: a justfile with a `just check` composition
   gate, the `docs/ODIN_STYLE.md` standard, boundary/tier-scan scaffolding
@@ -444,23 +445,17 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   endpoint badge ship here, per `docs/plans/public-stats.md`.
 - **Scope out:** any vendored dependency (S01); any engine package (S02a and
   later); sanitizer jobs beyond what is validated on the actual runners.
-- **Open questions:**
-  - CI provider and runner selection for the macOS arm64 leg.
-  - Sanitizer story: which sanitizers run where, decided and validated before
-    CI grows (the internal prototype's cut ASan job is the cautionary tale).
-  - Beads prefix for the fresh repo: new prefix or continue `svsw-`.
-  - `docs/ODIN_STYLE.md` carve-outs that change for a 3D engine.
-  - Which parts of the carbon corpus copy into `docs/research/` and which
-    stay reference-only in the carbon tree.
-  - Windows gates split: which gates run on hosted CPU-only Windows CI
-    runners versus requiring a developer's local remote-test rig (real GPU),
-    and does the cross-CPU hash gate (S02b) add windows-x86-64 as a third
-    golden platform, with its goldens recorded through the remote rig?
-  - win-run desktop launch: launching a windowed process on a Windows
-    machine's interactive desktop from an SSH session needs a launcher
-    mechanism (scheduled-task trigger, session-aware shim, or a small
-    resident helper); which one, and does the same mechanism serve
-    gamepad-equipped human test sessions?
+- **Open questions:** none open. All were charted as wayfinder map #1 and
+  settled on its child issues #2 through #14, which hold the dispositions
+  the spec document folds in. Four produced decisions in their own right:
+  D39 (the committed WebFetch posture), D40 (what the always-loaded prompt
+  carries, amending D28's agent-roster exception), D41 (`Normative
+  references` as a spec field), and the beads id prefix `svsw`, recorded
+  on #6. Two answers carry a validation debt S00 implementation owes
+  before it depends on them: the `win-run` launch mechanism was chosen from
+  primary sources but never exercised on the rig (#5), and the ASan job
+  lands only after a green-then-red demonstration on an actual runner
+  (#12).
 
 ### S01 — Vendoring ceremony: all C-tier dependencies
 

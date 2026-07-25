@@ -173,11 +173,13 @@ behind that trigger. The mechanics:
   that it moves no spec rung.
 
 There is no `.beads/` database in this repo yet, and creating one is not a
-session's business. Initializing it is S00 scope, and which prefix it
-should use is still an open question on S00 in the
-[spec index](../specs/README.md), so `bd init` waits on that answer. Until
-it lands, read this section as the shape of the layer rather than as
-commands to run today.
+session's business. Initializing it is S00 scope, and the command it runs
+is `bd init --prefix svsw`, which names issues `svsw-<hash>`, for example
+`svsw-1sj`. One database carries one prefix, so the epic-or-task
+distinction never appears in an id: it is beads' own type field, set by
+`-t epic` at creation and read back as `issue_type`. Until that init lands,
+read this section as the shape of the layer rather than as commands to run
+today.
 
 ## Pull requests as a triage surface
 

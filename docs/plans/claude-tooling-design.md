@@ -291,6 +291,16 @@ lives in the root settings file where worktree sessions still see it.
 
 ## Permissions posture
 
+**Amended by D45.** The committed file is now an allow list only: `deny` and
+`ask` are both empty, and the network-touching shell commands below join
+`allow`. The `vendor/**` deny is dormant rather than abandoned, since
+`vendor/` does not exist yet; S01 is where it gets a subject again, and S01
+carries the trigger. D39's precedence finding is what makes allow-only the
+right shape, because anything the committed file names with a stricter verb
+cannot be loosened in a personal `settings.local.json`. The text below is
+kept because the reasoning for each original entry is still the reasoning
+that would justify reinstating it.
+
 Committed in `.claude/settings.json`: allow `just *`, `odin *`, `go
 test`/`vet`/`build`, `gofmt`, read-only git, and bd; deny reads into
 `vendor/**` except VENDOR.md manifests, `**/build/**`, and

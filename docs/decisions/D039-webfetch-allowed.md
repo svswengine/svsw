@@ -26,4 +26,8 @@ those. The deny rules over `vendor/**`, build output and generated files are
 untouched, so the prompt-injection surface reduction D28 built them for
 stands unchanged. Amends D28 in its committed-permissions clause and in its
 grilled decision 5; the rest of that decision holds, and
-`docs/plans/claude-tooling-design.md` carries the detail.
+`docs/plans/claude-tooling-design.md` carries the detail. Amended by D45:
+the shell network commands above join the allow list and both `deny` and
+`ask` empty, so the committed file becomes an allow list only; the
+precedence finding in this decision is what makes that the right shape and
+is unchanged.

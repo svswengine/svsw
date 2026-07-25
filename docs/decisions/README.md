@@ -70,6 +70,7 @@ are settled; reopening one is a maintainer call.
 | D42 | In-house RHI over Vulkan, D3D12 and Metal; Slang shaders | [D042-in-house-rhi-slang.md](D042-in-house-rhi-slang.md) |
 | D43 | The editor tier, Extensions, and Editor scripts | [D043-editor-tier-extensions.md](D043-editor-tier-extensions.md) |
 | D44 | Worker topology: two kinds, split by state ownership | [D044-worker-topology.md](D044-worker-topology.md) |
+| D45 | Committed permissions are an allow list only | [D045-permissions-allow-only.md](D045-permissions-allow-only.md) |
 
 ## Past
 

@@ -38,4 +38,7 @@ and personal loosening in `settings.local.json` is corrected to reach only
 what the committed file leaves silent. Amended by D40: the full-roster
 exception is withdrawn and agents stage with their gates, four at S00 and
 the rest with their owning specs, so the exit-checklist item changes from
-retiring a refusal clause to adding the agent that gate owns.
+retiring a refusal clause to adding the agent that gate owns. Amended by
+D45: the committed file becomes an allow list only, with `deny` and `ask`
+both empty, and the `vendor/**` deny this decision specified is dormant
+until S01 gives it something to guard.

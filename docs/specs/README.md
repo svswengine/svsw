@@ -415,6 +415,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - SDL3 build configuration surface (which subsystems compiled), including
     whether window reparenting for editor viewport embedding (D44) needs
     anything enabled here.
+  - **What deny rules go back into `.claude/settings.json`.** D45 emptied
+    them because `vendor/` did not exist; this spec creates it and fills it
+    with third-party source, which is exactly the prompt-injection surface
+    D28's `vendor/**` deny was written for. Decide the rule set here, and
+    whether the VENDOR.md carve-out D28 wanted is expressible now that file
+    matchers have no negation.
 
 ### C00 — Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates
 

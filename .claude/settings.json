@@ -21,14 +21,7 @@
       "Bash(gh label list:*)",
       "Bash(gh pr list:*)",
       "Bash(gh pr view:*)",
-      "Bash(gh repo view:*)"
-    ],
-    "deny": [
-      "Read(./vendor/**)",
-      "Read(./**/build/**)",
-      "Read(./**/*.generated.*)"
-    ],
-    "ask": [
+      "Bash(gh repo view:*)",
       "Bash(curl:*)",
       "Bash(wget:*)",
       "Bash(git push:*)",
@@ -37,6 +30,8 @@
       "Bash(git clone:*)",
       "Bash(go get:*)",
       "Bash(go install:*)"
-    ]
+    ],
+    "deny": [],
+    "ask": []
   }
 }

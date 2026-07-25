@@ -7,6 +7,9 @@ subdirectory holds one kind of document, and a new subdirectory such as
 
 - [docs/ODIN_STYLE.md](ODIN_STYLE.md) — the Odin engineering standard.
 - [docs/specs/README.md](specs/README.md) — the spec index and todo list.
+- [docs/specs/S00-repo-bootstrap.md](specs/S00-repo-bootstrap.md) — the S00
+  normative text. A spec document lands beside the index as its spec
+  reaches "spec written", and is listed here in the same change.
 - [docs/decisions/README.md](decisions/README.md) — the decision log.
 - [docs/context/CONTEXT.md](context/CONTEXT.md) — the glossary and domain
   model: the terms this repo uses, the ones it bars, and the ambiguous

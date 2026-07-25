@@ -182,15 +182,15 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except S00, which is **grilled**, and
-M00, which is **spec written**.
+Every spec below is **pending**, except S00 and M00, which are **spec
+written**.
 
 ## Overview
 
 | id | title | working software | depends on | status |
 |---|---|---|---|---|
 | M00 | Editor visual mockup: HTML+CSS prototype of the editor's look and behavior | mockup opens and runs interactive in any browser (design artifact) | none | spec written |
-| S00 | Repo bootstrap: toolchain, just check skeleton, two-platform CI | `just check` green on both CI platforms (setup) | none | grilled |
+| [S00](S00-repo-bootstrap.md) | Repo bootstrap: toolchain, just check skeleton, two-platform CI | `just check` green on both CI platforms (setup) | none | spec written |
 | S01 | Vendoring ceremony: all C-tier dependencies | `just vendor-libs` + `just shader-check` green (setup) | S00 | pending |
 | C00 | Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates | deployed course shell with the S00 and S01 modules live (setup) | S00, S01 | pending |
 | S02a | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | pending |
@@ -354,108 +354,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S00 — Repo bootstrap: toolchain, just check skeleton, two-platform CI
 
 - **Stage:** 0 — New-stack proof
-- **Status:** grilled
-- **Goal:** Create the `svsw` repository with the internal prototype's tooling
-  discipline from the first commit: a justfile with a `just check` composition
-  gate, the `docs/ODIN_STYLE.md` standard, boundary/tier-scan scaffolding
-  enforcing the C-tier policy (D14), an api-surface snapshot gate skeleton,
-  a report-only security scan, and CI on macOS arm64 and Linux x86-64. The
-  repository is public and open source from the first push, dual-licensed
-  MIT + Apache-2.0 (D23; amended: Apache-2.0 single, per the maintainer's
-  repo setup) and closed to external contributions until a DCO-based
-  inbound=outbound mechanism is announced (D23, D24); the directory
-  skeleton reflects the monorepo layout decision (D25). The maintainer has
-  already created the public surface per D26 — the `svswengine` GitHub org,
-  the `svsw` engine repo, and the `course` sibling repo — so S00's step
-  there is configuration, not creation: GitHub Pages enabled on `course`;
-  branch protection on both repos; the closed-contribution posture (D24)
-  applied org-wide; and the PR-auto-close Action wired up. The repository
-  is public already, with issues enabled (D38), so none of this is a launch
-  step.
-- **Working software:** Setup spec. `just check` runs green on both CI
-  platforms on every commit, initially composing type-check, an empty test
-  suite, tier-scan, the api-surface snapshot, and scan. The root README
-  gains toolchain prerequisites and the `just check`/`just run` quickstart
-  when the gate skeleton lands.
-- **Depends on:** none
-- **Decisions:** D14, D23, D24, D25, D26
-- **Course:** module S00; path tag engine; teaches the repo bootstrap and the
-  `just check` gate skeleton against the two-platform CI run; also seeds the
-  shared Setup track.
-- **Prototype ports:** justfile composition pattern; the style-guide
-  structure now carried by `docs/ODIN_STYLE.md`; boundary-scan/tier-scan
-  gates; api-surface snapshot-diff gate.
-- **Normative references:** none
-- **Scope in:** git repo and monorepo layout reflecting D25 (`engine/`,
-  `cli/`, `tools/`, `protocol/`, `server/`, `runtime/`, `vendor/`, `mods/`,
-  `samples/`, `docs/`, `tests/`); justfile with check/test/type-check/fmt/scan
-  recipes plus `docs-check`, an offline internal-link checker over the
-  repo's markdown (for example lychee in offline mode) that blocks on
-  internal relative links and only reports external URLs; the svsw
-  carve-outs added to the existing `docs/ODIN_STYLE.md`; tier-scan rule set
-  including only-platform-tier-touches-C; api-surface snapshot machinery; CI
-  workflows for macOS arm64 and Linux x86-64; the decision-log doc seeded
-  with the decisions settled by then; research corpus and adopted roadmap
-  committed under `docs/research/`; beads init for the new repo; LICENSE
-  (Apache-2.0), CONTRIBUTING.md, and SECURITY.md shipped at repo root
-  (already authored; S00 wires them into the public repo); the docs/ layout
-  convention (a router `docs/README.md`
-  and every documentation markdown under a subdirectory of `docs/`); the
-  PR-auto-close GitHub Action; the already-created
-  `svswengine` GitHub org, `svsw` engine repo, and `course` sibling repo
-  (D26; S00 configures rather than creates them): GitHub Pages enabled on
-  `course`; branch protection on both repos; the closed-contribution posture
-  (D24) applied org-wide; remote Windows testing
-  as local developer tooling, not CI, with two recipes: `just win-check`
-  (working name) syncs the working tree over SSH to a Windows machine,
-  builds natively there with the Windows Odin toolchain, and runs the
-  headless gate suite; `just win-run` (working name) syncs, builds the same
-  binary, and launches the windowed build of a verification scene on
-  the Windows machine's interactive desktop so a human at that machine
-  tests it hands-on, optionally streamed back to the dev machine with a
-  low-latency streaming tool such as Sunshine/Moonlight. D22 parity
-  ties the two together: the windowed run and the headless run come from
-  one build and must produce identical hashes, so human testing and agent
-  verification exercise the same engine. The target machine (host, user,
-  paths) comes from a gitignored local config file so any fork can point
-  the recipes at their own Windows box; the dev side runs on macOS or
-  Linux/WSL2. CI itself uses hosted runners only: macOS arm64, Linux
-  x86-64, and hosted Windows runners for CPU-only determinism legs. No
-  self-hosted runners: a self-hosted runner attached to a public repository
-  executes forked code on the owner's machine, and this repository is
-  public now (D38), so that hazard is live rather than deferred. S00 also
-  ships the Claude Code tooling bootstrap core; the
-  full design record is `docs/plans/claude-tooling-design.md`. In scope: root
-  CLAUDE.md; the six paths-scoped rules files (odin, luau, go, c-tier, wgsl,
-  specs); the graduated hook set (non-blocking formatters and diagnostics
-  plus the one blocking PreToolUse marker scan on `git commit`/`merge`);
-  committed shared permissions in `.claude/settings.json`; the
-  spec-ceremony, check-triage, merge-prune, review-to-docs-pr, and win-rig
-  skills; the adversarial-review, comment-review, and spec-review
-  workflows; and, as an exception to gate-staged tooling placement, the
-  full agent roster (gate-runner, golden-recorder, win-rig-runner,
-  determinism-reviewer, spec-scribe, binding-dev, go-services-dev,
-  course-writer), with every agent whose gate does not exist yet carrying
-  an explicit refusal clause naming the owning spec. odinfmt is documented
-  as a dev dependency in the setup docs, installed beside odin, ols, just,
-  and bd, only once its formula is re-verified on the actual machine. A
-  task verifies paths-frontmatter support against the installed Claude Code
-  version, with nested CLAUDE.md documented as the fallback. The tier-1
-  badge row, the stats-refresh Action skeleton, and the spec-progress
-  endpoint badge ship here, per `docs/plans/public-stats.md`.
-- **Scope out:** any vendored dependency (S01); any engine package (S02a and
-  later); sanitizer jobs beyond what is validated on the actual runners.
-- **Open questions:** none open. All were charted as wayfinder map #1 and
-  settled on its child issues #2 through #14, which hold the dispositions
-  the spec document folds in. Four produced decisions in their own right:
-  D39 (the committed WebFetch posture), D40 (what the always-loaded prompt
-  carries, amending D28's agent-roster exception), D41 (`Normative
-  references` as a spec field), and the beads id prefix `svsw`, recorded
-  on #6. Two answers carry a validation debt S00 implementation owes
-  before it depends on them: the `win-run` launch mechanism was chosen from
-  primary sources but never exercised on the rig (#5), and the ASan job
-  lands only after a green-then-red demonstration on an actual runner
-  (#12).
+- **Status:** spec written
+- **Spec document:** [S00-repo-bootstrap.md](S00-repo-bootstrap.md), the
+  normative text. This entry has collapsed into it: the document carries
+  every schema field, the grilling dispositions, the validation debt S00
+  implementation owes, and the exit checklist.
 
 ### S01 — Vendoring ceremony: all C-tier dependencies
 

@@ -53,6 +53,7 @@ draws on it at a multiplier.
 | Provider | macOS arm64 label | Free for a public repo | Free macOS ceiling | macOS concurrency | Where the cliff is |
 |---|---|---|---|---|---|
 | GitHub Actions | `macos-26`, `macos-latest` | yes, by policy, no application | none; free and unlimited | 5 (GitHub Free plan) | only if a workflow names a larger runner |
+| Cirrus CI | `ghcr.io/cirruslabs/macos-runner:sonoma` | yes, by policy, no application | 500 min/month | 1 macOS VM | roughly $0.06/min at 4 CPUs |
 | CircleCI | `m4pro.medium` | yes, automatic for public repos | 25,000–30,000 credits ≈ 125–150 min/month | 2 for macOS OSS credits | $0.12/min at 200 credits/min |
 | Blacksmith | `blacksmith-6vcpu-macos-26` | yes, from a shared pool | 3,000 x64 min at a 20x macOS rate ≈ 150 min/month | unverified | $0.08/min |
 | Codemagic | `mac_mini_m2` | yes, Personal accounts only | 500 macOS M2 min/month | 1 parallel build | $0.095/min |
@@ -60,7 +61,10 @@ draws on it at a multiplier.
 
 Every row after the first is a grant with a ceiling; the first is a policy
 without one. That gap, roughly two orders of magnitude on macOS minutes, is
-the finding.
+the finding. Cirrus CI is the only other row whose free tier is a standing
+policy rather than a grant, and the only one besides GitHub that covers
+hosted Windows for free, which is why it is carried here despite the
+continuity risk recorded in its own section.
 
 ## GitHub Actions
 
@@ -210,6 +214,39 @@ eligibility wording is a direct risk for this repo: "Free build minutes are
 reserved for personal and hobby projects on Personal accounts", where
 `svsw` is owned by the `svswengine` organization.
 
+## Cirrus CI
+
+The only provider besides GitHub whose free public-repository tier covers
+macOS arm64 and hosted Windows together, and the one that most needs a
+continuity judgement before it is relied on.
+
+The tier is a standing policy, not an application: "Cirrus CI is free for
+Open Source projects with some limitations" and "Free access to Cirrus
+Cloud Clusters for public repositories". The published ceiling is "an upper
+monthly limit on free usage equal to 50 compute credits (which is equal to
+10,000 CPU-minutes for Linux tasks or 500 minutes for macOS tasks which
+always use 4 CPUs)", against "4.0 CPUs macOS VM (1 VM)" and "8.0 CPUs for
+Windows platform (Containers or VMs)". Logs and caches persist 90 days.
+Past the free limit, Apple silicon works out to roughly $0.06 per minute at
+4 CPUs. The published figures do not reconcile: 50 credits at the stated
+Apple-silicon rate computes to 833 macOS minutes rather than 500. The 500
+is what the page states, so it is what is recorded here.
+
+Two findings sit against it. Cloud allows exactly one macOS image, and the
+docs say so: "Cirrus CI Cloud only allows
+`ghcr.io/cirruslabs/macos-runner:sonoma` image". Sonoma is macOS 14, two
+releases stale for 2026, against `macos-26` on GitHub. And the continuity
+question: `cirrus-ci.org` did not resolve on 2026-07-25, while the docs
+repository `cirruslabs/cirrus-ci-docs` is live and unarchived with its most
+recent commit dated 2026-04-07, which adds a home-page banner announcing
+that Cirrus Labs is joining OpenAI to work on agent infrastructure. No
+primary source states either a sunset or continued operation of the free
+Cloud tier, so this is an open continuity risk rather than a settled
+outcome.
+
+Cirrus Runners, the $150-per-month product, is a separate offering with no
+free tier, ruled out on cost below.
+
 ## GitLab.com SaaS runners
 
 Apple silicon exists (`saas-macos-medium-m1`, 4 vCPU / 8 GB; and
@@ -271,19 +308,13 @@ line each.
   the free plan; hosted Mac is Pro pay-as-you-go, and whether the "free for
   open source" Pro grant includes Mac minutes is not published. It also has
   no hosted Windows: "Buildkite offers both Linux and macOS hosted agents."
-- **Bitrise** — Apple silicon starts at Starter, "$89/month when billed
-  annually or $99 per month when billed monthly"; the free plan's machine
-  type is Linux Medium.
 - **Cirrus Runners** — "$150 per month per concurrent Cirrus Runner", no
-  free tier or open-source offer on the product page.
+  free tier or open-source offer on the product page. Distinct from Cirrus
+  CI Cloud above, which does have one.
 - **Depot** — no free plan, a 7-day trial only; open source is a
   discount by request ("contact us"), not a published program.
 - **Namespace** — a 30-day trial, no ongoing free tier, no open-source
   program documented.
-- **Semaphore** — "$15 free credits per month" against macOS at $0.09/min,
-  so roughly 165 macOS minutes if macOS may draw on them at all, no
-  open-source program, and whether its macOS machines are Apple silicon
-  is not stated.
 - **WarpBuild** — macOS is cloud-only by Apple licensing, but the docs
   path 404s, so labels, free tier and any open-source program could not
   be established.
@@ -291,7 +322,7 @@ line each.
   membership", a paid annual subscription, and it is Xcode-project shaped
   with no Linux leg.
 
-## Ruled out on hosted-only, on having no macOS, or on availability
+## Ruled out on hosted-only, on platform coverage, or on availability
 
 - **RunsOn** — ephemeral runners "in your own AWS account", and its
   supported images are Linux and Windows only, no macOS.
@@ -304,10 +335,21 @@ line each.
   appears only in the self-hosted context.
 - **Travis CI** — "Travis CI will stop support for macOS starting March
   31st, 2025", and its documented macOS images are Intel-only.
-- **Cirrus CI** — `cirrus-ci.org` returned NXDOMAIN on 2026-07-25 while
-  `cirrus-ci.com` and `cirrus-runners.app` resolved, and the docs
-  repository is not archived. The service's status could not be
-  established from a primary source, so it cannot be relied on.
+- **Bitrise** — no hosted Windows at any price, which disqualifies it as a
+  sole provider before cost enters. The stack manifests contain only
+  `osx-*`, `ubuntu-*` and `linux-docker-*` entries, and the build-stacks
+  page enumerates macOS and Linux only. Its Apple-silicon machines are
+  `g2.mac.*` on `osx-xcode-26.6.x`, and the free Hobby plan grants "300
+  credits per month" against machines priced per minute, a unit the site
+  never defines, so the tier cannot be sized in advance either way.
+- **Semaphore** — no hosted Windows: "You can select VMs running Linux,
+  macOS, or Windows (self-hosted only)". Its macOS is Apple silicon,
+  `a2-standard-4` at 4 vCPU and 8 GB on `macos-xcode26`, the tightest
+  hosted-macOS memory of the set, and the free tier is "$15 free credits
+  per month" against macOS at $0.09 per minute, roughly 166 macOS minutes.
+- **Cirrus CI** — not ruled out; it has a real free public-repository tier
+  covering macOS and Windows, recorded in its own section above. The
+  availability question there is continuity, not capability.
 
 ## Which providers publish an explicit open-source program
 
@@ -423,6 +465,15 @@ risk to name, not a number to compare.
   later specs want to keep from a run. Public repositories cannot raise it.
 - **Whether to hedge with a second provider at all**, given the
   concentration risk above and the trust-boundary cost of mixing.
+- **Whether Apple's Xcode clang alone satisfies Odin's LLVM requirement.**
+  No provider in this set ships a standalone `llvm` formula on its current
+  macOS image; every one ships Apple's Xcode clang. GitHub's `macos-26`
+  reports Clang 21.0.0, inside Odin's supported 17 to 22 window, but Apple
+  numbers its clang on its own scheme rather than LLVM's, so the mapping
+  wants checking against a real build before a recipe depends on it. If it
+  does not hold, every provider needs an explicit `brew install llvm@N`
+  step, which costs far more against a 500-minute allowance than against an
+  unlimited one.
 
 ## Unverified
 
@@ -455,9 +506,21 @@ risk to name, not a number to compare.
   accounts" wording.
 - **WarpBuild's labels, free tier and open-source program.** Its docs
   path 404s.
-- **Whether Semaphore's macOS machines are Apple silicon.**
 - **Per-job timeout and artifact retention for CircleCI, Buildkite, GitLab
-  macOS and Blacksmith.** Not stated on the pages read.
+  macOS and Blacksmith.** Not stated on the pages read. Cirrus CI's
+  per-job timeout is likewise not published.
+- **Whether Bitrise's Hobby plan reaches Apple silicon at all.** Two
+  independent readings of the same pricing page disagreed: one read the
+  free plan's machine type as Linux Medium, the other read the machine
+  availability table as naming Hobby for `g2.mac.medium` and
+  `g2.mac.large`. The plan cards and the availability table are rendered
+  separately and never reconciled, so the page itself is the defect. Moot
+  while the no-hosted-Windows finding stands.
+- **What a Bitrise credit is worth in minutes.** The Hobby grant is stated
+  in credits and every machine is priced per minute, with no conversion
+  published on the pricing, credit-usage or machine-type pages. The
+  widely-repeated 1-credit-to-1-Linux-minute figure traces to a page that
+  now returns 404, so it is not citable.
 - **Whether the drop-in vendors register as GitHub self-hosted runners.**
   This is the question issue #2 already flagged as deciding, and it still
   could not be answered from a primary source: Cirrus Runners' own pages
@@ -465,8 +528,11 @@ risk to name, not a number to compare.
   naming the registration model. Under a zero budget it is moot, since
   every drop-in vendor is paid, but it would return the moment one is
   considered.
-- **Cirrus CI's service status.** `cirrus-ci.org` does not resolve; no
-  primary source explains why.
+- **Whether Cirrus CI's free Cloud tier continues.** `cirrus-ci.org` does
+  not resolve, and the docs repository's most recent commit announces
+  Cirrus Labs joining OpenAI. Neither a sunset notice nor a statement of
+  continued operation exists in any primary source, so the tier is
+  documented but its future is not.
 
 ## Sources
 

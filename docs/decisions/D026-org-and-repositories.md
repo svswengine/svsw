@@ -16,4 +16,6 @@ shrinks to residual sweeps: the trademark carve-out (D23), docs and course
 reference sweeps, and retiring the working-name hedges. Both repositories
 already exist on the org, and the engine repository's name being `svsw`
 shrinks the D16 ceremony further still, since the brand and the repo name
-already match.
+already match. Amended by D38: the public push happened ahead of S00, so the
+clause holding everything private until S00 is implemented no longer binds
+and S00's step on the public surface is configuration rather than launch.

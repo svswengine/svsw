@@ -9,3 +9,5 @@ included). The mod-facing Luau UI API re-binds over ImGui with the same
 off-hash gating and containment; Clay retires at cutover, and with it the
 research-era Clay line as the HUD answer. Shipped-HUD theming and gamepad
 polish are stage 6 work. Superseded in part by D33 (Lua 5.4 becomes Luau).
+Amended by D38: Clay never enters this repository, so nothing retires at a
+cutover.

@@ -14,4 +14,7 @@ product's own service layer is documented only in its own repository. The
 rule is zero private-product references in the public engine docs, boundary
 pointers included: no phrasing that names or points at the private repository
 or its contents; the public engine story ends at engine completion. The
-course repo keeps its path labels.
+course repo keeps its path labels. Amended by D37: the repository's public
+issue tracker is a documentation surface too, so ticket titles and bodies,
+wayfinder maps, and the comments on them fall under the same rule, boundary
+pointers included.

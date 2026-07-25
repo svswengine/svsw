@@ -29,4 +29,7 @@ loosening in gitignored `settings.local.json`. The spec-ceremony skill wraps
 the brainstorm-and-grilling flow; beads is the status record, one bead per
 spec against a fresh database initialized at S00, and the skill updates the
 specs/README.md table in the same step as each bead transition. Full design
-record: `docs/plans/claude-tooling-design.md`.
+record: `docs/plans/claude-tooling-design.md`. Amended by D37:
+`docs/specs/README.md` becomes the sole spec-status record in place of
+beads, and the planned spec-ceremony skill narrows to authoring the spec
+document and moving the ladder row.

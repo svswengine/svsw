@@ -13,3 +13,7 @@ hashing lands only in the new target's session assembly; `engine/worldgrid`
 composes chunk hashes over the unchanged `hash_world` primitives; the shared
 kernel stays frozen additive-only until the stage 3 deletion commit, so the
 old target never calls the composition and no old golden is re-recorded.
+Amended by D38: the repository is fresh, so the kernel freeze and the
+deletion commit are moot, and the surviving claim is that
+`engine/worldgrid` composes chunk hashes over the ported `hash_world`
+primitives, consumed unmodified.

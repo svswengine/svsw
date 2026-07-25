@@ -39,7 +39,6 @@ are settled; reopening one is a maintainer call.
 | D10 | Editor Luau ships in v1 | [D010-editor-luau-v1.md](D010-editor-luau-v1.md) |
 | D11 | Animation is presentation-only, off-hash, client-side | [D011-animation-off-hash.md](D011-animation-off-hash.md) |
 | D12 | Mod machinery ports as-is | [D012-mod-machinery-port.md](D012-mod-machinery-port.md) |
-| D13 | No backward compatibility through the transition | [D013-no-backward-compatibility.md](D013-no-backward-compatibility.md) |
 | D14 | The C interface tier | [D014-c-interface-tier.md](D014-c-interface-tier.md) |
 | D15 | Go<->engine boundary: versioned wire protocol over a process boundary | [D015-go-engine-wire-protocol.md](D015-go-engine-wire-protocol.md) |
 | D16 | Rebrand at engine completion | [D016-rebrand-at-completion.md](D016-rebrand-at-completion.md) |
@@ -63,10 +62,14 @@ are settled; reopening one is a maintainer call.
 | D34 | Script typing policy | [D034-script-typing-policy.md](D034-script-typing-policy.md) |
 | D35 | Number semantics on f64-only Luau | [D035-f64-number-semantics.md](D035-f64-number-semantics.md) |
 | D36 | Engine dev loop | [D036-engine-dev-loop.md](D036-engine-dev-loop.md) |
+| D37 | Work decomposition: specs, tickets, and slices | [D037-work-decomposition.md](D037-work-decomposition.md) |
+| D38 | Fresh repository: no cutover, public from the first push | [D038-fresh-repository.md](D038-fresh-repository.md) |
 
 ## Past
 
-None.
+| # | Title | Superseded by | File |
+|---|-------|---------------|------|
+| D13 | No backward compatibility through the transition | D38 | [D013-no-backward-compatibility.md](D013-no-backward-compatibility.md) |
 
 ## Numbering continuity
 
@@ -74,7 +77,9 @@ Documents under `docs/research/` use the research-era numbering; this table
 maps it. `D54` through `D86` map in order to `D4` through `D36`; three
 earlier research numbers also map: `D11` to `D1`, `D15` to `D2`, and `D42`
 to `D3`. Those three are research tokens; despite the numeric collision,
-research `D11` and `D15` are unrelated to the current D11 and D15.
+research `D11` and `D15` are unrelated to the current D11 and D15. D37 and
+every number after it were decided in this repository and have no
+research-era counterpart.
 
 | Research | Current | Research | Current | Research | Current |
 |----------|---------|----------|---------|----------|---------|

@@ -1,6 +1,6 @@
 # D13: No backward compatibility through the transition
 
-Status: current
+Status: superseded by [D38](D038-fresh-repository.md)
 Date: 2026-07
 
 Nothing in the behavior, formats, APIs, goldens, or gates of the internal

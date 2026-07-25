@@ -11,4 +11,6 @@ the asset container stays untouched (brand-neutral magic since stage 2, per
 D19); the beads issue prefix is grandfathered (history continuity per D13);
 the decision log, beads history, and CI continue uninterrupted under the
 settled name; `scaffold-check` stays pointed at the `svsw` CLI throughout.
-The rebrand fires when the stage 6 engine-completion gate passes.
+The rebrand fires when the stage 6 engine-completion gate passes. Amended by
+D38: the repository is fresh, so the beads id prefix is new rather than
+grandfathered.

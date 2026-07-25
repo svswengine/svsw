@@ -12,5 +12,5 @@ count, headless/windowed parity, sim-tick p95, gate-roster count, course
 modules) is computed by a stats-refresh GitHub Action in `.github` that
 writes shields endpoint JSON files, rendered via `img.shields.io/endpoint`;
 hosted runners only, matching the S00 no-self-hosted-runner rule. Spec
-progress (`N/38 implemented`) is the headline metric, available immediately
+progress (`N/39 implemented`) is the headline metric, available immediately
 at S00. See `docs/plans/public-stats.md`.

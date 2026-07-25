@@ -71,6 +71,8 @@ are settled; reopening one is a maintainer call.
 | D43 | The editor tier, Extensions, and Editor scripts | [D043-editor-tier-extensions.md](D043-editor-tier-extensions.md) |
 | D44 | Worker topology: two kinds, split by state ownership | [D044-worker-topology.md](D044-worker-topology.md) |
 | D45 | Committed permissions are an allow list only | [D045-permissions-allow-only.md](D045-permissions-allow-only.md) |
+| D46 | Luau deterministic sim surface | [D046-luau-deterministic-sim-surface.md](D046-luau-deterministic-sim-surface.md) |
+| D47 | Editor viewport transport; the debug-suspended worker | [D047-viewport-transport-debug-suspended.md](D047-viewport-transport-debug-suspended.md) |
 
 ## Past
 

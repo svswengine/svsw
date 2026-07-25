@@ -41,4 +41,6 @@ worst. Viewport embedding is expected to work by reparenting the worker's
 operating-system window rather than by sharing a texture, since no rendering
 interface offers safe cross-process external memory import and SDL3 supports
 reparenting directly; the specifics belong to S22. Settled with the
-maintainer on 2026-07-25.
+maintainer on 2026-07-25. Amended by D47: the viewport embeds a shared
+offscreen render target rather than a reparented window, and a third
+worker condition, debug-suspended, joins the two kinds.

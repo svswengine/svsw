@@ -103,7 +103,7 @@ const systems = [
 ];
 
 const luaSource = [
-  "-- crates.lua (mod: sample_tweaks, control stage)",
+  "-- crates.luau (mod: sample_tweaks, control stage)",
   'local speed = settings.get("crate_drift_speed")',
   "",
   "local function drift(e, dt)",
@@ -123,10 +123,10 @@ const luaSource = [
 ];
 
 /* ---------- project files (the script IDE surface) ---------- */
-const CRATES = "mods/sample_tweaks/crates.lua";
+const CRATES = "mods/sample_tweaks/crates.luau";
 
 const fileDefs = {
-  "mods/base/settings.lua": { lang: "lua", size: "0.3 KB", src: [
+  "mods/base/settings.luau": { lang: "lua", size: "0.3 KB", src: [
     "-- base settings (settings stage)",
     "svsw.setting.declare {",
     '  name = "crate_drift_speed",',
@@ -135,7 +135,7 @@ const fileDefs = {
     "  min = 0.0, max = 2.0,",
     "}",
   ] },
-  "mods/base/data.lua": { lang: "lua", size: "0.5 KB", src: [
+  "mods/base/data.luau": { lang: "lua", size: "0.5 KB", src: [
     "-- base prototypes (data stage)",
     "svsw.data.extend {",
     '  { type = "entity", name = "crate", mesh = "meshes/cube.mesh" },',
@@ -143,7 +143,7 @@ const fileDefs = {
     '  { type = "tile", name = "ground", texture = "textures/ground_tiles.png" },',
     "}",
   ] },
-  "mods/base/control.lua": { lang: "lua", size: "0.4 KB", src: [
+  "mods/base/control.luau": { lang: "lua", size: "0.4 KB", src: [
     "-- base control (control stage)",
     "svsw.on_init(function()",
     '  svsw.storage.crate_count = svsw.count("crate")',
@@ -155,14 +155,14 @@ const fileDefs = {
     "  end",
     "end)",
   ] },
-  "mods/sample_tweaks/settings.lua": { lang: "lua", size: "0.2 KB", src: [
+  "mods/sample_tweaks/settings.luau": { lang: "lua", size: "0.2 KB", src: [
     "-- sample_tweaks settings (settings stage)",
     "svsw.setting.override {",
     '  name = "crate_drift_speed",',
     "  default = 0.25,",
     "}",
   ] },
-  "mods/sample_tweaks/data.lua": { lang: "lua", size: "0.4 KB", src: [
+  "mods/sample_tweaks/data.luau": { lang: "lua", size: "0.4 KB", src: [
     "-- sample_tweaks data patches (data stage)",
     'local crate = svsw.data.get("entity", "crate")',
     'crate.material = "materials/crate.mat"',
@@ -172,7 +172,7 @@ const fileDefs = {
     "}",
   ] },
   [CRATES]: { lang: "lua", size: "0.6 KB", src: luaSource },
-  "mods/extra_props/data.lua": { lang: "lua", size: "0.3 KB", src: [
+  "mods/extra_props/data.luau": { lang: "lua", size: "0.3 KB", src: [
     "-- extra_props prototypes (data stage)",
     "svsw.data.extend {",
     '  { type = "entity", name = "barrel", mesh = "meshes/cube.mesh" },',
@@ -903,7 +903,7 @@ function focusDockTab(dockId, panelId) {
 /* ---------- script rendering: one state per file, N synced views ----------
    Breakpoint toggles and the current line mutate row classes in place
    (no re-render), so contenteditable buffer edits survive them. */
-let currentLine = 6; // crates.lua only; the call stack points here
+let currentLine = 6; // crates.luau only; the call stack points here
 
 function renderCode(path, holder, editable) {
   const def = fileDefs[path];
@@ -935,7 +935,7 @@ function toggleBreakpoint(path, lineNo) {
   pushCmd(on ? "set_breakpoint" : "clear_breakpoint", `{file="${file}", line=${lineNo}}`);
   logConsole("info", `breakpoint ${on ? "set" : "cleared"} at ${file}:${lineNo}`);
   fs.views.forEach(v => v.children[lineNo - 1] && v.children[lineNo - 1].classList.toggle("bp", on));
-  if (fileDefs[path].lang !== "lua") toast("native breakpoints land with S23");
+  if (fileDefs[path].lang !== "lua") toast("native breakpoints land with S24b");
 }
 
 function setCurrentLine(n) {
@@ -946,7 +946,7 @@ function setCurrentLine(n) {
 
 /* ---------- tabbed document center (Scene + N script editors) ---------- */
 const reloadChips = {
-  lua: { text: "hot-reload ✓ (S14)", cls: "" },
+  lua: { text: "hot-reload ✓ (S22b)", cls: "" },
   odin: { text: "requires engine rebuild (S02a)", cls: " rebuild" },
   go: { text: "requires services rebuild (S26)", cls: " rebuild" },
 };
@@ -1098,7 +1098,7 @@ function buildFilesTree() {
       const row = treeItem(el("file-row", holder));
       row.setAttribute("aria-selected", "false");
       row.title = "double-click to open in the editor";
-      el("lang-badge", row, { lua: "LUA", odin: "ODN", go: "GO" }[def.lang]);
+      el("lang-badge", row, { lua: "LUAU", odin: "ODN", go: "GO" }[def.lang]);
       el("file-name mono", row, p.split("/").pop());
       el("file-size", row, def.size);
       row.addEventListener("click", () => {
@@ -1109,7 +1109,7 @@ function buildFilesTree() {
         });
         row.classList.add("selected");
         row.setAttribute("aria-selected", "true");
-        if (p === CRATES) setRunTarget("sample: crates.lua");
+        if (p === CRATES) setRunTarget("sample: crates.luau");
         else if (p.startsWith("mods/")) setRunTarget("mod: " + p.split("/")[1]);
         pushCmd("select", `{file="${p}"}`);
       });
@@ -1126,7 +1126,7 @@ function focusFilesPanel() {
 let newScriptSeq = 0;
 function newScript(lang) {
   const dirs = { lua: "mods/sample_tweaks", odin: "engine/systems", go: "server" };
-  const path = `${dirs[lang]}/untitled_${++newScriptSeq}.${lang === "lua" ? "lua" : lang}`;
+  const path = `${dirs[lang]}/untitled_${++newScriptSeq}.${lang === "lua" ? "luau" : lang}`;
   const tpl = {
     lua: ["-- untitled (control stage)", "", "svsw.on_tick(function(tick)", "end)"],
     odin: ["package systems", "", "// untitled system", "untitled :: proc() {", "}"],
@@ -1204,8 +1204,8 @@ function initBrowsers() {
   keyClickable(crates, true);
   crates.addEventListener("click", () => {
     if (!selectRow(crates)) return;
-    setRunTarget("sample: crates.lua");
-    pushCmd("select", `{script="crates.lua"}`);
+    setRunTarget("sample: crates.luau");
+    pushCmd("select", `{script="crates.luau"}`);
   });
   crates.addEventListener("dblclick", () => openFileDoc(CRATES));
 }
@@ -1474,7 +1474,7 @@ const menuDefs = {
     ] },
     { sep: true },
     { label: "New Script", sub: [
-      { label: "Lua", log: false, live: () => newScript("lua") },
+      { label: "Luau", log: false, live: () => newScript("lua") },
       { label: "Odin", log: false, live: () => newScript("odin") },
       { label: "Go", log: false, live: () => newScript("go") },
     ] },
@@ -1544,7 +1544,7 @@ const menuDefs = {
     { label: "Mod List", sub: [modItem("base"), modItem("sample_tweaks"), modItem("extra_props")] },
     { label: "Reload Mods",
       live: () => logConsole("info", "mods reloaded, data stages re-run"),
-      toast: "mods reloaded, data stages re-run (S14)" },
+      toast: "mods reloaded, data stages re-run (S22b)" },
     { label: "Load Order…", toast: T("edit the mod load order", "S15") },
     { label: "Check Conflicts", toast: T("check for conflicts; mirroring test: no conflicts", "S15") },
     { sep: true },
@@ -1552,7 +1552,7 @@ const menuDefs = {
     { label: "Open Mod Folder", toast: T("open the mod folder", "S17") },
     { label: "Data-Stage Inspector", live: () => focusDockTab("dock-bl", "tab-mods") },
     { sep: true },
-    { label: "Editor Extensions", toast: T("manage the editor-tier Lua capability set", "S24") },
+    { label: "Editor Scripts…", toast: T("manage the editor-tier Luau capability set", "S24") },
   ],
   Window: [
     { label: "Layout", sub: [

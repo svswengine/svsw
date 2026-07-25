@@ -504,6 +504,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     corpus, set in CI with the first module.
   - How much of the internal prototype's course-writer agent and course-embeds
     skill material ports into the course repo's own agent tooling.
+  - A generated API-reference path on the existing Pages deploy: render
+    the D34 binding-registry `.d.luau` output per capability tier, the
+    drift gate keeping it honest, plus a thin getting-started track for
+    engine users; decided here, shipped once S14's generator exists.
 
 ### S02a — Prototype kernel port: kernel, ECS, simrng, save/replay, harness
 
@@ -1542,9 +1546,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **From M00 (second review):** the editor embeds a first-class multi-language
   script IDE surface: a Files explorer, tabbed editors for Luau, Odin, and Go
   with breakpoints, and per-language reload semantics surfaced in the UI (Luau
-  hot-reloads, Odin and Go rebuild). Note: the mockup's language badges read
-  conceptually as LUAU/ODN/GO now (D33); the artifact itself
-  (`docs/design/editor/index.html`) is unchanged.
+  hot-reloads, Odin and Go rebuild). Note: the 2026-07 M00 touch renamed
+  the artifact's badges, sample files, and menu labels to Luau (D33), so
+  the mockup and this note agree.
 - **Working software:** A first `just editor-roundtrip-check`: a committed
   edit-command log replays headless through the command stream, over the worker
   connection, into a data-stage scene; the scene plays N deterministic ticks

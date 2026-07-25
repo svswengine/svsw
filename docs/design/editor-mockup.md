@@ -108,12 +108,12 @@ The ceremony settled the eight questions M00's index entry left open.
   highlights matching lines with a count, and File > Save to clear the
   dirty state and log save_file. Luau breakpoints share state with the
   debugger; Odin and Go gutter clicks log set_breakpoint and toast that
-  native breakpoints land with S23. File > New Script scaffolds a Luau,
+  native breakpoints land with S24b. File > New Script scaffolds a Luau,
   Odin, or Go file, adds it to the explorer, logs create_file, and opens
   it.
 - **Reload semantics stay visible.** Each editor shows a chip: Luau
-  hot-reloads (S14); Odin requires an engine rebuild (S02a); Go requires
-  a services rebuild (S26). The status bar shows the focused document's
+  hot-reloads (S22b, D60); Odin requires an engine rebuild (S02a); Go
+  requires a services rebuild (S26). The status bar shows the focused document's
   language mode.
 - The run target follows selection in the tree, asset, and mod browsers;
   the pin freezes it. The transport is bidirectional: step back replays
@@ -194,13 +194,13 @@ marked none are mockup-only chrome.
 | Session | Re-record Goldens… | toast: sanctioned flow, requires stated intent | S02a |
 | Session | Session Settings | toast | S22 |
 | Mods | Mod List (base, sample_tweaks, extra_props) | checkable, toast on toggle | S15 |
-| Mods | Reload Mods | toast plus reload_mods command and console line | S14 |
+| Mods | Reload Mods | toast plus reload_mods command and console line | S22b |
 | Mods | Load Order… | toast | S15 |
 | Mods | Check Conflicts | toast | S15 |
 | Mods | New Mod (scaffold) | toast | S17 |
 | Mods | Open Mod Folder | toast | S17 |
 | Mods | Data-Stage Inspector | live: focuses the mod/data browser tab | S15 |
-| Mods | Editor Extensions | toast | S24 |
+| Mods | Editor Scripts… | toast | S24 |
 | Window | Layout > Default, Scripting, Debugging, Profiling | live: focuses the named panels | S23 |
 | Window | Save Layout | toast | S23 |
 | Window | Reset Layout | live | S23 |
@@ -229,15 +229,8 @@ marked none are mockup-only chrome.
 - Real engine integration.
 - ImGui implementation detail: the mockup decides what the editor shows;
   S22 to S24 decide how ImGui renders it.
-- Renaming the mockup artifact's `.lua` sample files, badges, and menu
-  labels (in `editor/index.html` and `editor/mockup.js`) to `.luau`: a
-  cosmetic residual left for the next M00 touch. This record already says
-  Luau.
-- Three feature-map corrections, recorded here for that same next touch:
-  the behavior contract toasts that native breakpoints land with S23,
-  whose scope disowns them; the owner is the script-and-native-debugging
-  spec (S24b). The Reload Mods row and the Luau reload chip credit S14,
-  which owns no reload; S22b owns editor-era script reload. The
-  Mods > Editor Extensions row names Extensions (D43, native Odin) where
-  it means Luau editor scripts; it renames to Editor Scripts (S24), with
-  Extensions listed separately if at all.
+- The 2026-07 M00 touch executed the recorded residuals against the
+  artifact: sample files, badges, and menu labels read Luau; native
+  breakpoints toast S24b; mod reload credits S22b (D60); and the menu
+  row reads Editor Scripts, per D43's vocabulary. No residuals remain
+  recorded.

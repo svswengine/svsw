@@ -26,7 +26,7 @@
   <div id="toolbar">
     <select id="run-target" title="run target; follows selection unless pinned">
       <option>scene: sandbox_01</option>
-      <option>sample: crates.lua</option>
+      <option>sample: crates.luau</option>
       <option>mod: sample_tweaks</option>
     </select>
     <button id="btn-pin" title="pin the run target (stop following selection)">pin</button>
@@ -123,7 +123,7 @@
             <div class="mod-row"><span class="mod-name">sample_tweaks</span><span class="mod-ver mono">0.2.0</span><span class="mod-meta">3 data patches, 1 system</span></div>
             <div class="mod-row"><span class="mod-name">extra_props</span><span class="mod-ver mono">0.1.0</span><span class="mod-meta">2 prototypes</span></div>
             <div class="sec-title">control scripts</div>
-            <div class="proto-row" id="row-crates-lua" title="double-click to open in the editor"><span class="proto-id mono">crates.lua</span><span class="proto-src">sample_tweaks</span></div>
+            <div class="proto-row" id="row-crates-lua" title="double-click to open in the editor"><span class="proto-id mono">crates.luau</span><span class="proto-src">sample_tweaks</span></div>
           </div>
           <div class="proto-list">
             <div class="sec-title">data-stage prototypes</div>
@@ -184,16 +184,16 @@
         <div id="dbg-script" class="tab-panel active">
           <div class="dbg-preview">
             <div class="dbg-preview-head">
-              <span class="mono">crates.lua</span>
-              <button id="btn-open-editor" title="open crates.lua as a center document">open in editor</button>
+              <span class="mono">crates.luau</span>
+              <button id="btn-open-editor" title="open crates.luau as a center document">open in editor</button>
             </div>
             <div id="lua-preview"></div>
           </div>
           <div class="dbg-side">
             <div class="dbg-sec">
               <div class="sec-title">call stack</div>
-              <div class="stack-row mono" data-line="6" title="open crates.lua at this frame">drift <span class="stack-loc">crates.lua:6</span></div>
-              <div class="stack-row mono" data-line="12" title="open crates.lua at this frame">&lt;on_tick handler&gt; <span class="stack-loc">crates.lua:12</span></div>
+              <div class="stack-row mono" data-line="6" title="open crates.luau at this frame">drift <span class="stack-loc">crates.luau:6</span></div>
+              <div class="stack-row mono" data-line="12" title="open crates.luau at this frame">&lt;on_tick handler&gt; <span class="stack-loc">crates.luau:12</span></div>
               <div class="stack-row mono">dispatch_control <span class="stack-loc">[engine]</span></div>
             </div>
             <div class="dbg-sec">

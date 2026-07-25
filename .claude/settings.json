@@ -36,8 +36,7 @@
       "Bash(git fetch:*)",
       "Bash(git clone:*)",
       "Bash(go get:*)",
-      "Bash(go install:*)",
-      "WebFetch"
+      "Bash(go install:*)"
     ]
   }
 }

@@ -19,4 +19,7 @@ engine completion, mirroring engine-before-product; FULL composes everything.
 Drift rule: the course repo pins the engine at a commit, and the pin bump is
 the drift-detection event, backed by a report-only probe against engine HEAD;
 an engine change that breaks a published module's gate returns the paired
-spec to implemented until the module is fixed.
+spec to implemented until the module is fixed. Amended by D59: a spec's
+course rung gates only its own closure, pin bumps batch at stage
+boundaries, embeds anchor on named region markers, and M-series specs
+are exempt from pairing.

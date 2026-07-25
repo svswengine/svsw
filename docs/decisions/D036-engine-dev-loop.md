@@ -29,4 +29,6 @@ re-recorded from the dev loop; golden re-recording stays the separate,
 deliberate, reviewed ritual the golden-hashes process already defines.
 Amended by D44: the editor supervises N Session workers rather than one, and
 a second kind, the Job worker, carries derived-state work under a different
-restart contract.
+restart contract. Amended by D55: shipped-save concerns, the
+versioned-snapshot-reader story included, belong to the player save/load
+spec rather than S27b's durability work.

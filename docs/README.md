@@ -25,6 +25,9 @@ subdirectory holds one kind of document, and a new subdirectory such as
   `index.html` in a browser.
 - [docs/design/editor-mockup-qa.md](design/editor-mockup-qa.md) — the M00
   mockup's QA sweep: findings, fixes, contrast ratios, and re-verification.
+- [docs/design/threat-model.md](design/threat-model.md) — the threat
+  model: what the declared security boundary defends against, mechanism
+  by mechanism, and the postures outside it.
 - [docs/research/README.md](research/README.md) — the research corpus index.
 - [docs/agents/](agents/) — the per-repo configuration the engineering
   skills read: the skill routing map, issue tracker, triage labels, and

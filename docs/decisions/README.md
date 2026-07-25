@@ -75,6 +75,16 @@ are settled; reopening one is a maintainer call.
 | D47 | Editor viewport transport; the debug-suspended worker | [D047-viewport-transport-debug-suspended.md](D047-viewport-transport-debug-suspended.md) |
 | D48 | Backend sequencing; one ImGui renderer over the RHI | [D048-backend-sequencing-imgui-renderer.md](D048-backend-sequencing-imgui-renderer.md) |
 | D49 | Editor message kinds and the editor-worker transport | [D049-editor-message-kinds-transport.md](D049-editor-message-kinds-transport.md) |
+| D50 | The mod trust model is hostile input | [D050-mod-trust-model.md](D050-mod-trust-model.md) |
+| D51 | Opening an untrusted project requires consent | [D051-untrusted-project-consent.md](D051-untrusted-project-consent.md) |
+| D52 | Engine-era networking is trusted-network only | [D052-engine-era-network-posture.md](D052-engine-era-network-posture.md) |
+| D53 | Engine releases and the compatibility surface | [D053-releases-compatibility-surface.md](D053-releases-compatibility-surface.md) |
+| D54 | The color pipeline is fixed before Milestone A | [D054-color-pipeline.md](D054-color-pipeline.md) |
+| D55 | The post-engine substrate roster | [D055-post-engine-substrate-roster.md](D055-post-engine-substrate-roster.md) |
+| D56 | Source-first engine distribution | [D056-source-first-distribution.md](D056-source-first-distribution.md) |
+| D57 | Rewind-then-edit semantics | [D057-rewind-edit-semantics.md](D057-rewind-edit-semantics.md) |
+| D58 | Fast-path-first extensibility | [D058-fast-path-first-extensibility.md](D058-fast-path-first-extensibility.md) |
+| D59 | Course cadence relief | [D059-course-cadence-relief.md](D059-course-cadence-relief.md) |
 
 ## Past
 

@@ -185,5 +185,6 @@ rule.
 
 ---
 
-Style guides for Luau and Go arrive with their first concrete
-implementations.
+[GO_STYLE.md](GO_STYLE.md) and [LUAU_STYLE.md](LUAU_STYLE.md) are the
+companion standards for the service tier and the script tier, written
+ahead of the first code so the first code matches them.

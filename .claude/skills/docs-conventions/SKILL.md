@@ -14,8 +14,9 @@ everything else. Where both files speak, on the wrap rule, they agree.
 ## Layout (D30)
 
 Every documentation markdown lives under a subdirectory of `docs/`. Only
-the router `docs/README.md` and `docs/ODIN_STYLE.md` sit at the `docs/` top
-level, and none sits at the repository root. A new subdirectory arrives
+the router `docs/README.md` and the project style guides
+(`docs/ODIN_STYLE.md`, `docs/GO_STYLE.md`, `docs/LUAU_STYLE.md`) sit at
+the `docs/` top level, and none sits at the repository root. A new subdirectory arrives
 with its content, never ahead of it. Adding a document means updating the
 router in the same change; a document the router does not list is not
 landed.

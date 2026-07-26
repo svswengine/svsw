@@ -1,11 +1,15 @@
 # Documentation
 
 All documentation lives in subdirectories of `docs/`. This router and the
-style guide are the only markdown files at the top level of `docs/`. Each
+style guides are the only markdown files at the top level of `docs/`. Each
 subdirectory holds one kind of document, and a new subdirectory such as
 `docs/architecture` arrives with its content, not ahead of it.
 
 - [docs/ODIN_STYLE.md](ODIN_STYLE.md) — the Odin engineering standard.
+- [docs/GO_STYLE.md](GO_STYLE.md) — the Go engineering standard: the
+  boundary, the protocol seam, supervision, and the service toolchain.
+- [docs/LUAU_STYLE.md](LUAU_STYLE.md) — the Luau engineering standard:
+  the sandbox boundary, mod layout, and determinism on hashed paths.
 - [docs/specs/README.md](specs/README.md) — the spec index and todo list.
 - [docs/specs/S00-repo-bootstrap.md](specs/S00-repo-bootstrap.md) — the S00
   normative text. A spec document lands beside the index as its spec

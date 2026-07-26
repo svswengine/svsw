@@ -8,16 +8,10 @@ log winning wherever they disagree. Design goals, in order: determinism,
 containment, developer experience. A script that diverges the world hash
 or escapes the sandbox has already failed, whatever else it does well.
 
-No rule here earned its place in a working codebase: this repository
-carries no code and S14 sits at pending, so every rule derives from the
-decision log and the spec index, and the first implementation will
-sharpen them. Review enforces all of them. The machine covers what the
-canon already gates: B1 and H1 by S14's whitelist, which removes the
-barred functions rather than blocking calls to them; H2, T1 and T2
-through `luau-analyze` and D34's `just check` drift gate; E2 through
-D50's binding fuzz gate, report-only at S14 and hard in S21's roster.
-S00's hook has StyLua format every `.luau` write (S1) without blocking,
-and `just check` itself arrives with S00.
+Review enforces every rule here. Each states the failure it prevents, so
+it can be applied without a checker; the boundary rules additionally hold
+by construction, because the whitelist omits what it bars rather than
+blocking calls to it.
 
 ## 1. The sandbox boundary
 
@@ -45,10 +39,10 @@ Filesystem access, asset writes and command-stream emission belong to an
 editor script (D10, D43); the mod whitelist does not grow to meet them.
 The two capability tiers share one VM architecture and one embedding
 (D10, D33), each mod and each editor script still getting its own VM
-host (S14), so a mod tier drifting toward the editor tier dissolves the
+host (D12), so a mod tier drifting toward the editor tier dissolves the
 only declared security boundary into the tier that deliberately contains
-nothing. S24 specifies its whitelist as a
-diff against the mod sandbox, which keeps the two from parting silently.
+nothing. The editor tier's whitelist is specified as a diff against the
+mod sandbox (D43), which keeps the two from parting silently.
 
 ### B3. Three limits bound every script; write hot loops against them
 
@@ -59,11 +53,11 @@ adjacent lazy quantifiers over one character class produce (`"a-a-a-b"`
 against a long subject that never matches), and never run one over
 mod-supplied, save-supplied or network-supplied text: pattern-matching
 backtracking runs inside one C call where the instruction hook cannot
-interrupt it, the hole the watchdog closes. No gate reads pattern
+interrupt it, the hole the watchdog closes. No checker reads pattern
 literals; review is the whole enforcement. Do not assume a coroutine
-boundary resets or escapes the budget
-in either direction; D50 makes that a verified scope item at S14, so
-code depending on either answer is written against an unrecorded fact.
+boundary resets or escapes the budget in either direction; whether it
+does is deliberately unspecified (D50), so code depending on either
+answer is written against an unrecorded fact.
 
 ## 2. Mod layout
 
@@ -74,9 +68,9 @@ then `control` (D12). Settings are read by the later stages and written
 by none; component schemas under global component IDs, scenes and
 prefabs are data stage (D19); systems and per-tick behavior are control
 stage. Migrating code between stages breaks the load-order determinism
-S15 builds out of Kahn resolution over a name-sorted ready queue: a schema
-registered from control stage arrives after a dependent mod mirrored its
-absence.
+the loader builds out of Kahn resolution over a name-sorted ready queue
+(D12): a schema registered from control stage arrives after a dependent
+mod mirrored its absence.
 
 ### L2. Control-stage load must survive being re-run
 
@@ -107,8 +101,8 @@ x86-64, so one call diverges the world hash between the CI legs;
 so two runs of one input produce two trajectories (D1, D46). Passing the
 raw functions through is rejected because a per-platform divergence
 inside mod code cannot be debugged from the engine side. The whitelist
-substitutes the replacements, gated by a hash-golden sample reproducing
-one committed hash on both platforms.
+substitutes the replacements, so the raw functions are not reachable to
+call by accident.
 
 ### H2. Walk sim-writing tables in an order the contents determine
 
@@ -131,9 +125,8 @@ for actor in pairs(actor_set) do
 end
 ```
 
-The D34 strict-mode lint binds first-party code hard and third-party
-mods advisorily, their divergence remaining a D50 tripwire matter. How
-the bar is enforced for nonstrict third-party mods is open at S14.
+The D34 strict-mode lint binds first-party code hard; for third-party
+mods it is advisory, their divergence remaining a D50 tripwire matter.
 
 ### H3. Nothing that varies between two runs may reach sim state
 
@@ -197,14 +190,14 @@ arithmetic diverges the hash rather than merely rounding a result. When
 gameplay needs integer-exact arithmetic, the answer is a binding. D33
 rejected modifying the runtime to reconcile the number models, so this
 discipline is the mechanism rather than a preference about one, and no
-gate catches a violation.
+checker catches a violation; review does.
 
 ## 5. Types and declarations
 
 ### T1. `--!strict` on every first-party script
 
 Base-as-mod, samples, editor scripts and scaffold templates typecheck
-clean under strict mode or fail `just check` (D34). Third-party mods
+clean under strict mode (D34). Third-party mods
 stay nonstrict, and their type errors surface as IDE warnings that never
 block a load. Inverting that asymmetry is the dangerous mistake: typing
 is a developer-experience mechanism for code the project controls, the
@@ -214,12 +207,11 @@ containment misreads D50.
 ### T2. The `svsw.*` declarations are generated; regenerate, never edit
 
 The `svsw.*` type surface ships as `.d.luau` files generated from the
-Odin binding registry, with a drift gate inside `just check` (D3, D34).
-Never hand-write a local alias mirroring an engine type, and never cast
-an engine handle into a shape invented at the call site: a hand-copied
-shape is a second source of truth the drift gate cannot see, and it goes
-stale the first time its binding changes. A wrong declaration means the
-binding or the generator is wrong.
+Odin binding registry (D3, D34). Never hand-write a local alias
+mirroring an engine type, and never cast an engine handle into a shape
+invented at the call site: a hand-copied shape is a second source of
+truth, and it goes stale the first time its binding changes. A wrong
+declaration means the binding or the generator is wrong.
 
 ## 6. Errors and containment
 
@@ -228,7 +220,7 @@ binding or the generator is wrong.
 Wrap a call in `pcall` only where the callee signals failure by raising,
 and name in a comment which failures the wrapper expects. An error
 escaping a mod's own handling disables that mod in place with the engine
-healthy, the containment outcome S14, S20 and S24 each gate; a wrapper
+healthy, the containment outcome the engine guarantees (D50); a wrapper
 spanning the tick swallows the fault that path exists to surface.
 
 ```luau
@@ -254,21 +246,17 @@ reaches an engine assert is therefore a defect in the boundary, reported
 rather than worked around from the script side. ODIN_STYLE A8 states the
 same contract from the binding side, and both files carry it because the
 reviewer reading a Luau diff is the one who notices the missing
-binding-side check. D50's fuzz gate walks the binding registry with
-adversarial arguments, report-only at S14 and hard in S21's roster.
+binding-side check. D50 commits the binding surface to
+adversarial-argument fuzzing from the engine side.
 
 ## 7. Style
 
-### S1. Formatting: StyLua, and `luau-analyze` before done
+### S1. Formatting: StyLua, and the typecheck before done
 
-Do not hand-format. StyLua formats Luau natively, and S00's PostToolUse
-hook runs it on every Edit or Write of a `*.luau` file
-(`docs/plans/claude-tooling-design.md`); `luau-analyze` validates
-against D34's strict and nonstrict split. A style rule that
-fights the toolchain becomes a rule nobody runs. This hook is weaker
-than the Odin vet flags: it is non-blocking and warns when StyLua is
-absent, so a change is done when `luau-analyze` has run clean, not when
-the hook has fired.
+Do not hand-format. StyLua formats Luau natively, and a style rule that
+fights the formatter becomes a rule nobody runs. A change is done when
+the strict-mode typecheck (T1) runs clean, not when the file looks
+right.
 
 ### S2. No globals; state is module-local or engine-owned
 
@@ -282,10 +270,8 @@ reason T1 is not optional there.
 
 ---
 
-Editor-tier rules await S24, which owns the whitelist diff,
-project-scoped filesystem semantics and script discovery; the mod tier
-never widens to meet them (B2). The checkable digest at
-`.claude/rules/luau.md` derives from this file when S00 lands the
-tooling, and the binding side of this contract ships at S14
-with the `lua-binding` skill and R1-R5, the C-API boundary checklist the
-Luau port re-verifies (D33, S14).
+Editor-tier rules belong to the editor capability tier (D10, D43): the
+whitelist diff, the project-scoped filesystem semantics and script
+discovery live there, and the mod tier never widens to meet them (B2).
+The binding side of this contract is ODIN_STYLE A8 and the C-API
+boundary discipline the Luau embedding carries (D33).

@@ -5,9 +5,8 @@ The engineering standard for Odin code in this repository. Adapted from
 safety, performance, developer experience.
 
 Every rule here earned its place in a working codebase. Review enforces all
-of them; the vet-flag rules (S1, S2) run on every test and type-check
-invocation, so the gate enforces those by machine. Derived requirements such
-as determinism trace to private product requirements.
+of them; the compiler's vet flags enforce S1 and S2 on every build. Derived
+requirements such as determinism trace to private product requirements.
 
 ## 1. Assertions
 

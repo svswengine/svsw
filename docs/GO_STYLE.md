@@ -96,7 +96,7 @@ Go-only diff touching codec code is a review stop.
 
 Go randomizes map iteration order per run, so an encoder, a checksum input
 or a `TickCommit` record built by ranging a map emits different bytes every
-run, reddening conformance against the Odin codec and breaking replay of the
+run, breaking conformance with the Odin codec and breaking replay of the
 durability log.
 
 ```go
@@ -105,8 +105,8 @@ for _, k := range slices.Sorted(maps.Keys(chunks)) {
 	enc.chunk(k, chunks[k])
 }
 
-// BAD: order varies per run, the checksum varies with it, and the
-// Go side alone goes red.
+// BAD: order varies per run, the checksum varies with it, and
+// conformance with the Odin codec breaks.
 for k, v := range chunks {
 	enc.chunk(k, v)
 }
@@ -115,7 +115,7 @@ for k, v := range chunks {
 Wire structs use explicit widths (`uint32`, `int64`), never `int` or `uint`,
 and a narrowing conversion is range-checked first: a length validated as
 `int64` and truncated to `int32` returns negative and walks past the check
-it just passed. This is ODIN_STYLE T1 from the other side of the bytes.
+it just passed.
 
 ## 3. Workers and lifetimes
 
@@ -180,20 +180,18 @@ kill instead of a rejection.
 ### E1. Reject the wire, assert the supervisor's own state
 
 A frame off a socket, an unreachable worker, a failed write, a rejected
-version and a timeout are operating errors, returned as `error` values and
-handled; a violated internal invariant, an epoch that went backwards, a
-decoded length disagreeing with its buffer, is a programmer error. This is
-ODIN_STYLE A8 with the wire frame standing where script input stands, plus
-one qualification the Odin canon does not need: no Go code runs inside a
-worker (B1), so every Go panic is a supervisor-side panic, and one in the
-gateway takes every session it routes with it. Confine the invariants
-allowed to stop the process to
-state whose corruption makes continuing worse than stopping, never let a
-decoder be one of them (P1), and keep `os.Exit` and `log.Fatal` in `main`,
-since they skip the defers that flush the durability log. `recover` never
-turns a programmer error into a returned error; the one defensible use logs
-and closes a single connection. Odin's assertion density has no Go analogue
-and no linter for it; ODIN_STYLE A1 does not cross.
+version and a timeout are operating errors, returned as `error` values
+and handled. A violated internal invariant, an epoch that went backwards,
+a decoded length disagreeing with its buffer, is a programmer error, and
+a panic at the point of corruption beats running on over corrupt
+supervisor state. No Go code runs inside a worker (B1), so every Go panic
+is a supervisor-side panic, and one in the gateway takes every session it
+routes with it: confine the invariants allowed to stop the process to
+state whose corruption makes continuing worse than stopping, and never
+let a decoder be one of them (P1). Keep `os.Exit` and `log.Fatal` in
+`main`, since they skip the defers that flush the durability log.
+`recover` never turns a programmer error into a returned error; the one
+defensible use logs and closes a single connection.
 
 ### E2. Inspect by `errors.Is` and `errors.As`, and wrap deliberately
 
@@ -216,12 +214,11 @@ the storm those lines were meant to explain.
 
 ## 6. Function shape
 
-### F1. No line limit; one function, one job
+### F1. One function, one job
 
-ODIN_STYLE F1's 70-line ceiling does not cross, and the difference is
-deliberate rather than an oversight: Go's error handling inflates line
-counts honestly, and a codec's switch over message kinds and a supervisor's
-select loop have shapes an Odin procedure does not. The intent crosses. A
+There is no line ceiling: error handling inflates line counts honestly,
+and a codec's switch over message kinds or a supervisor's select loop
+reads as one unit well past any fixed count. The test is the job. A
 function does one thing, the error path is indented and the happy path is
 not, and one that needs a second screen to state its job gets split.
 
@@ -248,7 +245,5 @@ whitespace, so formatting stops being a review topic.
 
 ---
 
-Gateway, durability and replication rules grow here as those services
-take shape; the protocol rules bind any codec speaking the D15 envelope.
 Tool versions, linters, gates and module configuration belong to the
 toolchain records, not to this file.

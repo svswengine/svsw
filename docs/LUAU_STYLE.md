@@ -177,10 +177,6 @@ local due: number = spawn_tick + COOLDOWN_TICKS
 local neighbor = entity + 1
 ```
 
-ODIN_STYLE T2 makes the same claim on the other side of the boundary by
-another mechanism: IDs are not integers, and the checker is made to
-agree.
-
 ### N2. Integer-sensitive math stays in Odin
 
 Do not implement integral sim math in Luau. The ECS core, `hash_world`,
@@ -243,11 +239,8 @@ The script tier may pass anything across `svsw.*`. The binding tier
 treats everything script-supplied as an operating error and rejects it,
 with the mod disabled and the engine healthy. A script argument that
 reaches an engine assert is therefore a defect in the boundary, reported
-rather than worked around from the script side. ODIN_STYLE A8 states the
-same contract from the binding side, and both files carry it because the
-reviewer reading a Luau diff is the one who notices the missing
-binding-side check. D50 commits the binding surface to
-adversarial-argument fuzzing from the engine side.
+rather than worked around from the script side. D50 commits the binding
+surface to adversarial-argument fuzzing from the engine side.
 
 ## 7. Style
 
@@ -273,5 +266,5 @@ reason T1 is not optional there.
 Editor-tier rules belong to the editor capability tier (D10, D43): the
 whitelist diff, the project-scoped filesystem semantics and script
 discovery live there, and the mod tier never widens to meet them (B2).
-The binding side of this contract is ODIN_STYLE A8 and the C-API
-boundary discipline the Luau embedding carries (D33).
+The binding side of this contract belongs to the engine's C-API
+boundary discipline (D33).

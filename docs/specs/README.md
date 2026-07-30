@@ -200,8 +200,8 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except M00, S00, S01 and S02a, which are
-**spec written**, and S02b, S03, S05 and S14, which are **grilled**.
+Every spec below is **pending**, except M00, S00, S01, S02a and S02b,
+which are **spec written**, and S03, S05 and S14, which are **grilled**.
 
 ## Overview
 
@@ -212,7 +212,7 @@ Every spec below is **pending**, except M00, S00, S01 and S02a, which are
 | [S01](S01-vendoring-ceremony.md) | Vendoring ceremony: all C-tier dependencies | `just vendor-libs` + `just shader-check` green (setup) | S00 | spec written |
 | C00 | Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates | deployed course shell with the S00 and S01 modules live (setup) | S00, S01 | pending |
 | [S02a](S02a-prototype-kernel-port.md) | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | spec written |
-| S02b | simmath3d subset + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | grilled |
+| [S02b](S02b-simmath3d-cross-cpu-gate.md) | simmath3d + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | spec written |
 | S03 | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | grilled |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
 | S05 | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | grilled |
@@ -467,33 +467,15 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   every schema field, the grilling dispositions, the port inventory, the
   determinism pyramid, and the exit checklist.
 
-### S02b — simmath3d subset + cross-CPU hash gate
+### S02b — simmath3d + cross-CPU hash gate
 
 - **Stage:** 0 — New-stack proof
-- **Status:** grilled
-- **Goal:** The new `engine/simmath3d` minimal subset (vec3/mat4/quat,
-  transcendentals banned) under the policed no-FMA policy, with the
-  cross-CPU/cross-OS hash gate live from its first commit. This is the
-  highest-risk new code in stage 0 and gets its own grilling session.
-- **Working software:** The cross-platform simmath3d hash gate (macOS arm64
-  versus Linux x86-64) passes green on both CI legs inside `just check`; the
-  determinism pyramid from S02a stays green with simmath3d types in play.
-- **Depends on:** S02a (the harness)
-- **Decisions:** D1, D20
-- **Course:** module S02b; path tag engine; teaches simmath3d and cross-CPU
-  determinism against the cross-platform hash gate.
-- **Prototype ports:** the simmath policed-surface pattern.
-- **Normative references:** none
-- **Scope in:** the minimal vec3/mat4/quat subset with allow-list and ban-list
-  documentation; the FMA policing mechanism; the cross-CPU hash gate in CI.
-- **Scope out:** the wider simmath3d surface (grows one function at a time in
-  S06); render-side math (outside the policed regime, covered by the skeleton
-  tier from S04 on).
-- **Open questions:**
-  - The exact v1 allow-list contents and the ban-list rationale record.
-  - The FMA policing mechanism: compiler flags, code review rule, or a scan.
-  - What the cross-CPU gate hashes: raw op results, a fixed op-sequence
-    transcript, or both.
+- **Status:** spec written
+- **Spec document:**
+  [S02b-simmath3d-cross-cpu-gate.md](S02b-simmath3d-cross-cpu-gate.md),
+  the normative text. This entry has collapsed into it: the document
+  carries every schema field, the grilling dispositions, the operation
+  inventory, the policing mechanisms, and the exit checklist.
 
 ### S03 — SDL3 window + RHI device + draw-list render core
 

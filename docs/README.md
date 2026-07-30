@@ -20,6 +20,9 @@ subdirectory holds one kind of document, and a new subdirectory such as
 - [docs/specs/S02a-prototype-kernel-port.md](specs/S02a-prototype-kernel-port.md) —
   the S02a normative text: the prototype kernel port, the port inventory,
   and the determinism pyramid.
+- [docs/specs/S02b-simmath3d-cross-cpu-gate.md](specs/S02b-simmath3d-cross-cpu-gate.md) —
+  the S02b normative text: the policed simmath3d surface, its operation
+  inventory, and the cross-CPU hash gate.
 - [docs/decisions/README.md](decisions/README.md) — the decision log.
 - [docs/context/CONTEXT.md](context/CONTEXT.md) — the glossary and domain
   model: the terms this repo uses, the ones it bars, and the ambiguous

@@ -41,4 +41,7 @@ Shipped player saves are engine work with an
 owner: the player save/load spec, which also owns the versioned
 snapshot reader, amending D36 where it pointed that story at S27b's
 durability work. Adopted from the 2026-07-25 adversarial review at the
-maintainer's direction.
+maintainer's direction. Amended 2026-07-31, settled with the maintainer:
+display-side HDR output (HDR10, extended-range swapchain output) is
+deliberate post-engine work; D54's internal HDR-offscreen-to-tonemap-to-sRGB
+pipeline is unaffected.

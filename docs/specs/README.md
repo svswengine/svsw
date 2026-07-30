@@ -200,8 +200,8 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except M00, S00, S01, S02a and S02b,
-which are **spec written**, and S03, S05 and S14, which are **grilled**.
+Every spec below is **pending**, except M00, S00, S01, S02a, S02b and
+S05, which are **spec written**, and S03 and S14, which are **grilled**.
 
 ## Overview
 
@@ -215,7 +215,7 @@ which are **spec written**, and S03, S05 and S14, which are **grilled**.
 | [S02b](S02b-simmath3d-cross-cpu-gate.md) | simmath3d + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | spec written |
 | S03 | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | grilled |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
-| S05 | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | grilled |
+| [S05](S05-protocol-v0.md) | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | spec written |
 | S06 | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | pending |
 | S07 | Milestone A: cascaded-shadow-mapped sun (stage 1 exit) | CSM scene green on all four tiers (stage 1 exit) | S06 | pending |
 | S08 | Split-process topology: sim process + render client over the protocol | `just split-smoke` green, hash-checkpointed agreement | S05, S06 | pending |
@@ -597,55 +597,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S05 — Protocol v0: versioned frames, two-process echo pair, the arrow rule
 
 - **Stage:** 0 — New-stack proof
-- **Status:** grilled
-- **Goal:** The protocol seam from frame one: a `protocol/` package with
-  versioned, checksum-first, length-prefixed frames extending the prototype
-  replay-codec hardening pattern, version negotiation with a
-  supported-version whitelist, the `Session.step(Canonical_Input_Set) ->
-  Tick_Commit` seam named in code, and the dependency-arrow rule
-  (session/kernel never imports network, wall clock, or Go-facing code)
-  enforced as a gate. The gate runs real software: a two-process echo pair.
-- **Working software:** `just proto-frame-check` green: it builds and runs a
-  listener binary and a client binary that exchange versioned frames over
-  localhost with negotiation, then runs a hostile-frame corpus (fuzzed,
-  malformed, and unsupported-version frames all rejected clean, matching the
-  prototype codec suites); the tier-scan arrow rule passes inside `just check`.
-- **Depends on:** S02a
-- **Decisions:** D15, D57
-- **Course:** module S05; path tag engine; teaches versioned wire-frame
-  design and hostile-input hardening against the two-process echo pair.
-- **Prototype ports:** the replay/save wire-format hardening pattern (checksum
-  first, bound lengths, fail clean).
-- **Normative references:** none
-- **Scope in:** frame envelope (version, checksum, length prefix); version
-  negotiation plus whitelist; `Canonical_Input_Set` and `Tick_Commit` types
-  named at the seam; the input-composition rule stated as part of the seam
-  definition: every state-mutating input, edit commands included, reaches a
-  Session only as a member of some tick's Canonical_Input_Set or as a
-  defined between-tick boundary event recorded in Tick_Commit, so the
-  Tick_Commit stream is the total order every replay reconstructs (D57);
-  the two-process echo pair; the hostile-frame corpus and
-  fuzz obligation; the tier-scan arrow gate. The proto-conformance skill
-  ships here at its v0 scope, shared with and extended at S26
-  (`docs/plans/claude-tooling-design.md`).
-- **Scope out:** the split-process render client (S08); worker three-call
-  contract enforcement and the envelope freeze (S26); replication message
-  kinds (S28, frozen at S29); any Go code.
-- **Open questions:**
-  - Exact v0 frame header layout and checksum algorithm.
-  - How much of the three-call worker contract is drafted in code now versus
-    prose until S26.
-  - Does `Tick_Commit` carry enough content from v0 that a Tick_Commit
-    stream alone reproduces byte-identical state, the world hash for later
-    desync tripwires and the applied input set for resume and forensics
-    both included, framed against S02a's now-mandatory save-load-save
-    round-trip.
-  - Does the v0 header reserve D49's editor and tooling message-kind range
-    alongside the replication and worker-contract ranges now, or is range
-    allocation deferred to S26's freeze.
-  - Given D57's tick-stamped command-log total order, does the v0
-    Tick_Commit payload need a slot for command-log entries distinct from
-    tick input, or is that entirely S26 and S28 scope past v0.
+- **Status:** spec written
+- **Spec document:** [S05-protocol-v0.md](S05-protocol-v0.md), the
+  normative text. This entry has collapsed into it: the document carries
+  every schema field, the grilling dispositions, the byte-exact v0
+  envelope, the seam types, and the exit checklist.
 
 ## Stage 1 — Renderer, Forward+ staged
 

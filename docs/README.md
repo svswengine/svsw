@@ -23,6 +23,9 @@ subdirectory holds one kind of document, and a new subdirectory such as
 - [docs/specs/S02b-simmath3d-cross-cpu-gate.md](specs/S02b-simmath3d-cross-cpu-gate.md) —
   the S02b normative text: the policed simmath3d surface, its operation
   inventory, and the cross-CPU hash gate.
+- [docs/specs/S05-protocol-v0.md](specs/S05-protocol-v0.md) —
+  the S05 normative text: the v0 frame envelope, the seam types, and the
+  arrow rule.
 - [docs/decisions/README.md](decisions/README.md) — the decision log.
 - [docs/context/CONTEXT.md](context/CONTEXT.md) — the glossary and domain
   model: the terms this repo uses, the ones it bars, and the ambiguous

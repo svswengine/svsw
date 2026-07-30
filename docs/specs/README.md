@@ -389,7 +389,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S01 — Vendoring ceremony: all C-tier dependencies
 
 - **Stage:** 0 — New-stack proof
-- **Status:** pending
+- **Status:** grilled
 - **Goal:** One quarantine pass vendors the full C-tier dependency set: SDL3 as
   source, the Slang compiler as checksum-pinned prebuilt binaries per
   platform, Dear ImGui plus cimgui wrappers, Luau

@@ -4,7 +4,7 @@ Normative text for S03. The [spec index](README.md) records this spec's
 rung and nothing else duplicates it (D37).
 
 - **Stage:** 0 — New-stack proof
-- **Status:** grilled
+- **Status:** spec written
 - **Depends on:** S01, S02b
 - **Decisions:** [D2](../decisions/D002-layering.md),
   [D7](../decisions/D007-sdl3-wgpu-platform.md),
@@ -123,12 +123,14 @@ adapter or the negotiated swapchain format.
   the walk from draw list to backend calls against an offscreen
   attachment.
 - Vulkan and Metal implemented; the interface designed against all three
-  APIs' constraints; D3D12 backend source present far enough that the
-  compile-only Windows leg compiles it and executes nothing (#94).
+  APIs' constraints; the D3D12 package present as a **seam-complete
+  stub**, defined below, which the compile-only Windows leg compiles and
+  never executes (#94).
 - The present pass as a fullscreen-triangle draw, and the swapchain
   format and color-space policy (#92, #93).
-- The viewport transport surface family and its capability-absent
-  readback fallback (#89).
+- The viewport transport surface family, fully typed with its frame
+  protocol, and the CPU readback path as its one implemented transport
+  (#89).
 - The capability enumeration, including the reserved and explicitly
   absent entries (#90).
 - Caller-declared resource-state transitions and the debug-build
@@ -202,6 +204,31 @@ The Windows posture follows D48 unchanged. The compile-only
 from S03 onward and executes nothing. Runtime validation on Windows stays
 local-rig and report-only until S03b lands, and Vulkan is the supported
 Windows path in the engine era.
+
+**What "the D3D12 backend source" is at S03: a seam-complete stub**
+(maintainer micro-ruling at landing, 2026-07-31). The D3D12 package
+implements the full RHI seam, meaning every type, every entry point and
+every signature the Vulkan and Metal packages implement, with bodies
+that are typed and unimplemented. MSVC compiles the package on the
+Windows leg, which is the whole of what this spec asks of it. All
+behavior is S03b's.
+
+Three things follow, and the middle one is why the bound is worth
+stating:
+
+- **An empty file does not satisfy this spec.** Neither does a package
+  that compiles because it declares nothing. The leg's value is that a
+  seam change in `engine/render3d/gpu` breaks the D3D12 package's
+  compile in the same commit that makes it, and a package with no seam
+  in it cannot break.
+- **A typed unimplemented body is not a reserved capability.** The
+  reserved entries in the enumeration below answer their query with
+  absent and refuse at a live device; these bodies are never reached at
+  all, because nothing executes them at this rung. Conflating the two
+  would put a D3D12 device on the roster of things S03 ships.
+- **Nothing in this spec's wording may imply D3D12 coverage** (D48).
+  The stub compiles; it does not draw, and no acceptance line here
+  claims otherwise.
 
 ### The three present-target kinds
 
@@ -284,12 +311,18 @@ The per-draw uniform block stays monomorphic the same way (#95):
   The internal prototype demonstrated exactly this when a runtime ambient
   term extended a block that already existed rather than adding one.
 
-Granularity is per-pass and per-draw, on the internal prototype's
-precedent. Pass-constant data, the camera above all, is one fixed shape
+Granularity is per-pass and per-draw **from day one**, on the internal
+prototype's precedent, blessed as normative by a maintainer micro-ruling
+at landing (2026-07-31) rather than left as the drafter's reading of
+#95. Pass-constant data, the camera above all, is one fixed shape
 uploaded once per pass outside the draw loop. Draw-varying data is one
 fixed shape uploaded per draw. Both are fixed-size and fixed-layout for a
 given pipeline id, and neither shape depends on which branch a draw
-takes.
+takes. Both blocks exist at S03 even though one opaque pass with one
+camera could be served by the per-draw block alone: collapsing them now
+and splitting them at S06 would move every uniform's slot after the
+layout had consumers, which is the churn the monomorphic ruling exists
+to prevent.
 
 What this settles is the mechanism. The exact field layout, the slot
 assignments, and where the boundary sits between a discriminant lane and
@@ -352,7 +385,7 @@ answers, and the answer is no:
 | Mesh and task shaders | reserved, absent | its consuming spec |
 | Hardware ray tracing | reserved, absent | its consuming spec |
 | Async compute on a second queue | reserved, absent | its consuming spec |
-| Viewport surface transport | implemented, may report absent per device | S16b proves it |
+| Viewport surface transport | implemented over CPU readback; OS exporters absent | S16b, with its handle courier |
 
 A reserved capability is not a stub that half works. The query returns
 absent, every entry point behind it refuses, and the refusal is the
@@ -498,6 +531,37 @@ overlays in the same space. This is a consequence of two landed decisions
 rather than a new ruling, and it is what keeps the editor's viewport and
 the readback golden showing the same image.
 
+### The depth that lands here
+
+#89 settled the family's shape and not its depth. The depth is a
+maintainer micro-ruling at landing (2026-07-31), and it splits the
+capability into a part that is fully designed now and a part that waits
+for a consumer:
+
+- **The surface family and its frame protocol land fully typed.** Every
+  type, every entry point and every signature in the Protocol
+  obligations above exists at S03: acquire and publish, open, latest,
+  release and close, the two timelines, the rotation policy set at
+  creation, the adapter identity in the token, and the refusal paths.
+  The protocol is the hard part and the part later specs write against,
+  so it is designed here rather than discovered in editor code (#89).
+- **The CPU readback path is the one implemented transport.** It moves
+  real frames across the boundary through host memory, and it is what
+  every entry point above actually does at this rung.
+- **The OS exporters land with their first consumer, at S16b.**
+  IOSurface on Metal, dma-buf on Linux Vulkan, and NT shared handles on
+  D3D12 are per-backend internals behind the same typed surface, and
+  each arrives with the courier that carries its handle across the
+  process boundary, which is S16b's plumbing either way.
+
+The reason to implement readback rather than nothing is that it makes
+the smoke gate mean something. A typed family with no transport behind
+it can only be checked for compiling; a typed family with readback
+behind it can be driven end to end on a hosted runner, which is where
+`just check` runs. So the family is exercised at S03 rather than merely
+declared, and what S16b adds is speed on hardware that has it, not the
+capability's first proof of life.
+
 ### The capability-absent readback fallback
 
 A CPU readback path is sanctioned as the capability-absent fallback: a
@@ -505,7 +569,10 @@ round trip through host memory, correct everywhere, slow, and explicitly
 off the hot path. It is selected when the viewport surface kind reports
 unsupported, which covers a headless hosted runner, a software
 rasterizer, a driver without the extension, and a cross-process adapter
-mismatch.
+mismatch. At S03 it is selected always, because no OS exporter exists
+yet to report supported. The fallback and the one implemented transport
+are therefore the same code at this rung, and they stop being the same
+code at S16b without the selection rule changing.
 
 Sanctioning it does one specific thing: it gives S16b's smoke gate a
 hosted-runner floor, which is that spec's own open question answered from
@@ -565,7 +632,11 @@ run. Five properties:
    outside the list the skeleton hash covers. This is the clause that
    makes the same recorded list come out of a headless run, a windowed
    run and a worker exporting a viewport, and without it D22's parity
-   comparison is between two different things.
+   comparison is between two different things. No disposition on map #88
+   drew this boundary; a maintainer micro-ruling at landing (2026-07-31)
+   blesses it as normative, because S04 cannot define a hash without
+   knowing where the recorded stream stops and this spec is what stops
+   it.
 5. **Ordinal and float lanes are separable.** S04's definition excludes
    floats, and the per-draw block mixes ordinal data such as handles and
    the permutation discriminant with float data such as transforms and
@@ -595,7 +666,11 @@ normative here.
 - **The render3d smoke test.** Both paths execute: the headless path
   renders the test frame into the offscreen target with no window and no
   swapchain, and the windowed path is exercised as far as a hosted runner
-  allows. It asserts execution and interface behavior, not pixels.
+  allows. It asserts execution and interface behavior, not pixels. It
+  also drives the viewport surface family over the readback transport,
+  which is the whole reason that transport is implemented here rather
+  than deferred: it gives the family a leg that runs on a hosted runner
+  instead of one that only compiles.
 - **The transition validator**, which is an assertion in a build with
   assertions live rather than a recipe of its own. A wrong declared
   transition fails the smoke test.
@@ -623,10 +698,10 @@ claiming one.
 
 ### The Windows compile-only leg
 
-Grows to compile this spec's Odin render tree and its D3D12 backend
-source, still running no tests and still saying so in its name. Nothing
-in that leg's wording may imply D3D12 coverage or Windows runtime
-coverage (D48).
+Grows to compile this spec's Odin render tree and its seam-complete
+D3D12 package, still running no tests and still saying so in its name.
+Nothing in that leg's wording may imply D3D12 coverage or Windows
+runtime coverage (D48).
 
 ### What does not gate here
 
@@ -660,7 +735,9 @@ Suggested, not binding; `/to-tickets` owns the breakdown.
 10. The swapchain present target, the present pass and the format policy.
 11. The viewport transport surface family and the readback fallback.
 12. tier-scan's extended rules.
-13. D3D12 backend source to the point where the Windows leg compiles it.
+13. The D3D12 package as a seam-complete stub: every entry point the
+    other two backends implement, declared with its real signature and a
+    typed unimplemented body, compiling under MSVC on the Windows leg.
 
 Two ordering constraints are more than convenient. Step 5 before step 8's
 second backend, because a validator written after two backends already
@@ -703,13 +780,23 @@ D42 rejected wgpu-then-swap to avoid.
 - [ ] The present pass, the swapchain transitions and the transport
       export barrier are all recorded outside the list the skeleton hash
       will cover.
-- [ ] The viewport surface family's vocabulary is present, reports absent
-      with a named reason where unsupported, and selects the readback
-      fallback in that case.
+- [ ] The viewport surface family's vocabulary is present and fully
+      typed, and reports absent with a named reason where an OS exporter
+      is unsupported.
+- [ ] A frame crosses a process boundary through the readback transport
+      end to end on both CI platforms, exercising acquire, publish,
+      open, latest, release and close rather than only compiling them.
+- [ ] An adapter-identity mismatch in the token is refused by name
+      rather than crashing or tearing, and a dead producer surfaces at
+      the consumer as a refused call.
 - [ ] `just shader-check` green on this spec's shaders under S01's
       cadence.
 - [ ] The Windows compile-only leg compiles the Odin render tree and the
-      D3D12 backend source, runs no tests, and its name says so.
+      D3D12 package, runs no tests, and its name says so.
+- [ ] The D3D12 package is seam-complete: every entry point the Vulkan
+      and Metal packages implement is declared there with its real
+      signature, demonstrated by removing one entry point from the seam
+      and watching the Windows leg fail to compile.
 - [ ] Every open question below either answered on a ticket or carried
       forward explicitly, never dropped.
 
@@ -753,18 +840,6 @@ depth, and what drafting this document surfaced.
   will routinely present a target whose size is not the window's. Whether
   the present pass letterboxes, stretches or crops is entirely off the
   hashed path and entirely unruled.
-- **How much of the transport lands at S03.** #89's resolution settled
-  the shape and not the depth: whether S03 lands the vocabulary plus one
-  backend's implementation, or the vocabulary alone with the capability
-  reporting absent until S16b proves it, is the first residual on that
-  issue and no comment rules on it. The exit checklist above is written
-  so both answers satisfy it, which is deliberate and is not a
-  substitute for the ruling.
-- **What "the D3D12 backend source" is at S03.** #94 requires the
-  compile-only leg to compile it from S03 onward, while D48 has S03
-  implementing two backends. Whether the compiled artifact is a seam-only
-  stub, a partial implementation or a complete but never-executed one is
-  unruled, and it changes how much of S03b's work S03 absorbs.
 - **The draw list's exact field layout** and the block's slot
   assignments, which #95 explicitly left to this spec and which nothing
   since has fixed. With it, where the boundary sits between a
@@ -811,3 +886,11 @@ Four items are deferred to a named owner rather than left open:
   post-engine reopen on #91, landing above the RHI. D55's roster does not
   currently record it, which is a gap in the roster rather than a gap in
   the ruling.
+
+Four points where this document went past map #88 were settled by
+maintainer micro-ruling at landing (2026-07-31) and live in the
+normative text above rather than here: the D3D12 package's bound as a
+seam-complete stub, the transport's depth as a fully typed family with
+CPU readback its one implemented transport, the skeleton-hash boundary
+clause placing the recorded stream's end at the offscreen target, and
+per-pass plus per-draw blocks from day one.

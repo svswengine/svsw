@@ -200,8 +200,8 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except M00, S00, S01, S02a, S02b, S05
-and S14, which are **spec written**, and S03, which is **grilled**.
+Every spec below is **pending**, except M00, S00, S01, S02a, S02b, S03,
+S05 and S14, which are **spec written**.
 
 ## Overview
 
@@ -213,7 +213,7 @@ and S14, which are **spec written**, and S03, which is **grilled**.
 | C00 | Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates | deployed course shell with the S00 and S01 modules live (setup) | S00, S01 | pending |
 | [S02a](S02a-prototype-kernel-port.md) | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | spec written |
 | [S02b](S02b-simmath3d-cross-cpu-gate.md) | simmath3d + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | spec written |
-| S03 | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | grilled |
+| [S03](S03-window-rhi-draw-list.md) | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | spec written |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
 | [S05](S05-protocol-v0.md) | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | spec written |
 | S06 | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | pending |
@@ -480,64 +480,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S03 — SDL3 window + RHI device + draw-list render core
 
 - **Stage:** 0 — New-stack proof
-- **Status:** grilled
-- **Goal:** The new render stack's skeleton: `engine/platform_sdl` (window,
-  event pump, swapchain surface), `engine/render3d` (backend-free CPU core
-  emitting a plain draw-list), `engine/render3d/gpu` (the in-house rendering
-  interface and the only consumer of a graphics backend, with an offscreen
-  attachment). D42 makes that stratum a real abstraction over three
-  backends rather than a thin pass-through to one, so its shape is now this
-  spec's central design problem rather than a detail. Both modes drive
-  one render path into the same offscreen target; the window presents
-  from that target, so a mode fork cannot hide.
-- **Working software:** A headless run renders a test frame offscreen with no
-  window; a smoke test asserting both paths execute passes in `just check`
-  (goldens arrive in S04). A windowed run opens an SDL3 window and presents
-  the same frame on the dev machine: this is a human checkpoint, not a CI
-  assertion.
-- **Depends on:** S01, S02b
-- **Decisions:** D2, D7, D14, D22, D42, D47, D48
-- **Course:** module S03; path tag engine; teaches the SDL3 platform layer,
-  the in-house rendering interface, and the draw-list render core against
-  the offscreen test frame.
-- **Prototype ports:** the D2 boundary pattern (backend-free core, thin GPU
-  stratum, boundary-scan gate), rebuilt over the in-house interface.
-- **Normative references:** none
-- **Scope in:** `engine/platform_sdl` window/swapchain/event pump; the
-  draw-list struct stream (pipeline id, bind sets, handles, instance ranges,
-  uniform blocks); `engine/render3d` one opaque pass with depth buffer;
-  `engine/render3d/gpu` carrying the rendering interface and walking the
-  list into backend calls with an offscreen attachment; Vulkan and Metal
-  implemented per D48's sequencing, the interface designed against all
-  three APIs' constraints with D3D12 arriving through its own spec;
-  tier-scan rules extended so only the platform tier and render3d/gpu
-  touch a graphics backend or SDL3; the first Slang shader under
-  shader-check.
-- **Scope out:** goldens and the parity gate (S04); textures and materials
-  beyond the minimum to draw; input translation (S08, S19); audio (S18).
-  Ray tracing, mesh shaders, bindless and async compute: D42 exists so the
-  interface can reach them later, and none is drawn here.
-- **Open questions:**
-  - **Viewport surface transport as a named RHI capability (D47).** The
-    shape of cross-process offscreen-target export per backend (IOSurface,
-    dma-buf external memory, NT shared handles) and where it sits in the
-    interface, designed in rather than bolted on.
-  - **How much of the interface S03 defines.** A resource and command
-    vocabulary that never needs breaking later, or the minimum to draw one
-    triangle, accepting a redesign when ray tracing and bindless arrive.
-  - Explicit-barrier and resource-state model: tracked automatically inside
-    the interface, or declared by callers.
-  - Swapchain surface format and color-space handling so presented and
-    readback pixels stay comparable across three backends.
-  - Present mechanism from the offscreen target: blit versus a
-    fullscreen-triangle pass.
-  - Adapter and device selection policy across CI and dev machines, now per
-    backend, and how far the D48 compile-only Windows leg ruled into S01
-    reaches: does it exercise this spec's Vulkan-on-Windows path beyond
-    compiling it, or does Windows coverage stay scoped to S03b's rig-only
-    D3D12 leg.
-  - How the draw-list uniform-block ABI stays monomorphic per the Trinity
-    RenderJob shape.
+- **Status:** spec written
+- **Spec document:**
+  [S03-window-rhi-draw-list.md](S03-window-rhi-draw-list.md), the
+  normative text. This entry has collapsed into it: the document carries
+  every schema field, the grilling dispositions, the rendering
+  interface and its capability enumeration, the viewport transport
+  family, and the exit checklist.
 
 ### S04 — Textured cube: three golden tiers + the D22 parity gate
 

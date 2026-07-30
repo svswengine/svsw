@@ -23,6 +23,9 @@ subdirectory holds one kind of document, and a new subdirectory such as
 - [docs/specs/S02b-simmath3d-cross-cpu-gate.md](specs/S02b-simmath3d-cross-cpu-gate.md) —
   the S02b normative text: the policed simmath3d surface, its operation
   inventory, and the cross-CPU hash gate.
+- [docs/specs/S03-window-rhi-draw-list.md](specs/S03-window-rhi-draw-list.md) —
+  the S03 normative text: the SDL3 platform layer, the in-house rendering
+  interface, and the draw-list render core.
 - [docs/specs/S05-protocol-v0.md](specs/S05-protocol-v0.md) —
   the S05 normative text: the v0 frame envelope, the seam types, and the
   arrow rule.

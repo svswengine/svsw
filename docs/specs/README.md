@@ -200,8 +200,8 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except M00, S00, S01, S02a, S02b and
-S05, which are **spec written**, and S03 and S14, which are **grilled**.
+Every spec below is **pending**, except M00, S00, S01, S02a, S02b, S05
+and S14, which are **spec written**, and S03, which is **grilled**.
 
 ## Overview
 
@@ -227,7 +227,7 @@ S05, which are **spec written**, and S03 and S14, which are **grilled**.
 | S12a | Asset container + assetc: glTF to sectioned binary to rendered goldens | glTF round-trip to rendered goldens + codec fuzz green | S04, S06 | pending |
 | S12b | Runtime asset loader: worker-thread decode + hot reload | running scene hot-swaps assets with handle stability asserted | S12a | pending |
 | S13 | Deterministic collision v1, scoped by private product requirements | degenerate corpus + snapshot-resim + capsule-on-terrain golden green | S02a, S11a | pending |
-| S14 | Luau sandbox port: the scripting boundary, test-first | sandboxed Luau sample reproduces its world-hash golden headless | S01, S02a | grilled |
+| [S14](S14-luau-sandbox-port.md) | Luau sandbox port: the scripting boundary, test-first | sandboxed Luau sample reproduces its world-hash golden headless | S01, S02a, S02b | spec written |
 | S15 | Mod pipeline port: multi-mod shared world, proven by the mirroring test | prototype mod suites + skeletal second-mod mirroring test green | S14 | pending |
 | S16 | Asset viewer: the minimal ImGui-on-SDL3 shell | viewer renders a container mesh (human checkpoint) + CI shell smoke | S01, S12a | pending |
 | S17 | svsw CLI: new/run/package with 3D scaffold templates | `just scaffold-check` green inside `just check` | S11a, S12b, S15 | pending |
@@ -1082,81 +1082,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S14 — Luau sandbox port: the scripting boundary, test-first
 
 - **Stage:** 2 — World structure + assets
-- **Status:** grilled
-- **Goal:** Stand up the scripting boundary on Luau (D33), adapting the
-  internal prototype's hardened Lua embedding as patterns rather than a literal
-  port: sandbox construction, an allocation cap plus the shared
-  instruction-budget count hook, R1-R5 discipline at the C API boundary, one
-  set_error/disable_mod containment path (a mod can never crash the engine),
-  the schema two-pass validate-then-build parse, the D3 opt-in binding
-  principle, and the `svsw.*` core API over schema-laid-out native storage with
-  two-tier entity views. Sandbox, budget, and containment are re-derived
-  against Luau's own sandbox primitives (`safeenv`, `luaL_sandboxthread`,
-  call-depth limits, interrupts), not retrofitted onto stock Lua's.
-- **Working software:** A sandboxed Luau sample runs headless N ticks and
-  reproduces a committed world-hash golden (the script_accept equivalent);
-  the sample exercises the D46 replaced math surface and ordered iteration,
-  one committed hash on both CI platforms; sandbox containment,
-  disable-in-place, and budget-enforcement tests green in `just check` on
-  both platforms.
-- **Depends on:** S01, S02a
-- **Decisions:** D3, D12, D14, D33, D34, D35, D46, D50
-- **Course:** module S14; path tag engine; teaches the Luau sandbox boundary
-  and the `svsw.*` core API against the hash-golden Luau sample; candidate for
-  additional course-path tagging on its mod-facing surface lessons (path
-  structure defined in the course repository).
-- **Prototype ports:** the internal prototype's `engine/script` sandbox,
-  budget, and containment design (sandbox_strip, lua_Alloc cap, count-hook
-  budget, R1-R5) as patterns, not literal code, since Luau's C API, GC, and
-  stdlib differ from Lua's (D33); the `runtime/` stdlib seed re-authored
-  against Luau's stripped globals.
-- **Normative references:** none
-- **Scope in:** a Luau VM host per mod built on Luau's own sandbox primitives;
-  the D46 deterministic sim surface: engine-provided transcendentals,
-  simrng-backed math.random, and ordered iteration for sim-writing table
-  walks; the wall-clock watchdog beside the allocation cap and instruction
-  budget (D50); interrupt behavior across coroutine boundaries verified
-  against Luau upstream rather than assumed (D50, issue #38), settling the
-  posture: coroutines are permitted within a tick, resuming across a tick
-  boundary disables the mod, the shared instruction budget lives in the VM
-  callbacks' userdata and never in per-thread userdata, budget exhaustion
-  latches rather than resets because interrupt-raised errors are
-  pcall-catchable, and the wall-clock watchdog is unchanged; the
-  registry-driven binding fuzz gate, report-only here and hard in S21's
-  roster (D50);
-  the `svsw.*` core binding surface sufficient for a hash-golden Luau sample;
-  R1-R5 as a standing review rule in `docs/ODIN_STYLE.md` and checklists,
-  re-verified against Luau's C API; atomic persistence for `svsw.storage`;
-  `--!strict` gate-enforced for base-as-mod and samples, nonstrict and
-  advisory-only for third-party mods, the sandbox remaining the safety
-  boundary either way (D34); the `.d.luau` declaration generator over the
-  binding registry plus its `just check` drift gate (D34). The lua-binding
-  skill and the binding-dev agent's gate-availability re-verification ship
-  here (`docs/plans/claude-tooling-design.md`).
-- **Scope out:** the multi-mod pipeline and mirroring (S15); UI bindings
-  (S20); the editor capability tier (S24).
-- **Open questions:**
-  - Execution posture: interpreter-only for v1, or Luau native codegen,
-    and if codegen is ever enabled, the gate asserting interpreter and
-    codegen runs reproduce identical world hashes on both CI platforms.
-    Is interpreter-only an engineering default this grilling can settle,
-    or a maintainer performance-budget call tied to S09's stress harness.
-  - Whether `svsw.*` grows a log binding, and how worker, engine, and
-    per-mod log lines are attributed and routed to the editor Console
-    (D49).
-  - How the D46 pointer-keyed pairs() bar is enforced for nonstrict
-    third-party mods, where the D34 lint is advisory: sandbox-level
-    replacement of pairs in the whitelist, a load-time scan, or accepted
-    as advisory with the S28 tripwire as backstop.
-  - Collapse the internal prototype's scattered is-this-call-allowed-now gates
-    into one primitive during the port, or port as-is first.
-  - Which prototype `svsw.*` namespaces are in the v1 port surface versus
-    deferred until a consumer exists.
-  - Whether a deterministic tick-scheduler or wait-idiom for mod coroutines
-    is worth building as later fast-path scope (D58), given that resuming
-    across a tick boundary disables the mod.
-  - Confirm this spec's map treats the coroutine posture recorded in scope
-    in as closed rather than reopening it.
+- **Status:** spec written
+- **Spec document:**
+  [S14-luau-sandbox-port.md](S14-luau-sandbox-port.md), the normative
+  text. This entry has collapsed into it: the document carries every
+  schema field, the grilling dispositions, the boundary architecture,
+  the v1 `svsw.*` surface, the port inventory, and the exit checklist.
 
 ### S15 — Mod pipeline port: multi-mod shared world, proven by the mirroring test
 
@@ -1199,6 +1130,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     content to test mods.
   - Does mod content reference container assets already in this spec or only
     after S17 wires project layout.
+  - Whether the shared instruction budget gains a per-mod manifest field.
+    S14 fixes it as an engine constant for the engine era, records its
+    goldens against that value, and names this spec's manifest grilling
+    the reopen point; a per-mod value would have to earn its place
+    against the world-hash cost H4 describes.
 
 ### S16 — Asset viewer: the minimal ImGui-on-SDL3 shell
 

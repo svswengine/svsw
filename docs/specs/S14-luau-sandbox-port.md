@@ -5,7 +5,7 @@ rung and nothing else duplicates it (D37).
 
 - **Stage:** 2 — World structure + assets
 - **Status:** spec written
-- **Depends on:** S01, S02a
+- **Depends on:** S01, S02a, S02b
 - **Decisions:** [D3](../decisions/D003-opt-in-bindings.md),
   [D12](../decisions/D012-mod-machinery-port.md),
   [D14](../decisions/D014-c-interface-tier.md),
@@ -148,7 +148,9 @@ re-derived.
   never crash the engine.
 - The C-API boundary rules, re-derived against Luau and carried as a
   standing review rule in [`docs/ODIN_STYLE.md`](../ODIN_STYLE.md) and
-  the review checklists.
+  the review checklists, with R5's `LUAU_EXTERN_C` and
+  `LUA_USE_LONGJMP=1` pins recorded in `docs/VENDOR.md` and held by the
+  cross-boundary error conformance test.
 
 ### The surface
 
@@ -281,6 +283,17 @@ subject to one callback and one pool (verified against Luau upstream,
 issue #38). The pool is armed from one helper at every site that runs
 mod code, so the accounting cannot drift between call sites.
 
+**The budget's value is an engine constant for the engine era**
+(maintainer micro-ruling at landing, 2026-07-31). Not a per-mod manifest
+field and not a project setting: H4 makes the budget observable in sim
+behavior, because crossing it disables a mod and a disabled mod moves the
+world hash, so a per-mod or per-project value would make the hash a
+function of configuration this spec's goldens do not record. **The
+goldens are recorded against the constant**, and moving it is a
+determinism change triaged like any other. The named reopen is S15's
+manifest grilling, which is where a per-mod field would have to earn its
+place against the hash cost; nothing before it reopens the question.
+
 **The wall-clock watchdog** closes the hole the budget structurally
 cannot: time spent inside one C call, where the instruction hook does
 not fire. D50 names pattern-matching backtracking as the case, and B3
@@ -374,22 +387,75 @@ script error propagates as a `longjmp`, and gave the reason: compiling
 it as C++ would make errors C++ exceptions attempting to unwind Odin
 frames that carry no unwind tables. Luau's implementation is C++ by
 construction (D33, D14 as amended, and S01's roster builds it as C++
-inside `vendor-libs`), so the premise R5 rested on is gone and the rule
-cannot be carried by assertion.
+inside `vendor-libs`), so the premise R5 rested on is gone.
 
-What replaces it is an obligation rather than an answer. Before any
-binding is written, the vendored Luau build's error-propagation mode is
-verified against upstream: which mode the build selects, whether a
-mode that avoids unwinding through non-C++ frames is available and
-selected, and what an error crossing an Odin frame actually does under
-it. The answer is recorded in three places that must agree: this rule's
-restatement in `docs/ODIN_STYLE.md`, the Luau build-configuration field
-in `docs/VENDOR.md`, and a conformance test that drives an error across
-an Odin frame and asserts the observed behavior. S01 carries the same
-seam from the other side as its open question on the C++ toolchain and
-build-flag baseline, and the two are answered together. Until they are,
-no R2 or R3 wording in this repository may be read as describing a
-verified mechanism.
+**What replaces it is a verified fact, not an obligation.** The
+vendored runtime's error-propagation mode was read out of upstream
+source at `luau-lang/luau` commit `f8ca77a`, and a maintainer
+micro-ruling at landing (2026-07-31) records the finding here as
+settled. Five parts:
+
+- **The longjmp mode still exists.** `LUA_USE_LONGJMP`
+  (`VM/include/luaconf.h`, lines 65 to 67) selects between C++ throw and
+  `setjmp`/`longjmp` propagation, defaulting to 0, and the selection is
+  implemented through the `LUAU_SETJMP` and `LUAU_LONGJMP` macros in
+  `VM/src/ldo.cpp` (lines 33 to 76). The C++ implementation language and
+  the error-propagation mechanism are separate choices, which is the
+  fact R5's original reasoning could not have known.
+- **Upstream's own build already pairs the two flags svsw needs.**
+  `CMakeLists.txt` (lines 194 to 197) sets `LUAU_EXTERN_C` together with
+  `LUA_USE_LONGJMP=1`. That pairing is exactly svsw's embedding shape, a
+  C-compatible boundary reached from a non-C++ host, so **svsw pins that
+  configuration** rather than inventing one.
+- **Nothing unwinds that needs to.** At the pinned commit the VM has no
+  RAII destructors on the throw paths a protected call takes, verified
+  by inspection of those paths rather than promised by an upstream
+  compatibility contract. That distinction is why the conformance test
+  below is load-bearing rather than ceremonial.
+- **The Compiler is a separate case and a safe one.** It uses exceptions
+  internally in both modes, and it throws none of them across its public
+  boundary, so compiling a chunk never propagates an exception into an
+  Odin frame whatever `LUA_USE_LONGJMP` says.
+- **The interrupt and its latch are mode-agnostic.** `VM_INTERRUPT` sets
+  a status flag and returns rather than calling `luaD_throw`, so the
+  budget machinery this spec builds behaves identically under either
+  mode. The one exception is an interrupt hook that itself calls
+  `lua_error`, which is mode-sensitive exactly like any other error and
+  is governed by R1 rather than by anything special.
+
+One new fact sharpens R1 rather than R5. **The two modes are asymmetric
+for unprotected calls.** Under longjmp mode an error with no recovery
+point reaches the panic path and aborts deterministically; under
+exception mode the same error becomes an uncaught C++ exception, which
+is uncontrolled termination through whatever the host runtime happens to
+do. Both are fatal, and only one is diagnosable. That asymmetry is the
+strongest argument in this document for R1's rule that the engine enters
+script code only through a protected call: the pin makes the failure
+mode legible, and R1 is what keeps the engine out of it.
+
+Two obligations survive the verification and are recorded as
+obligations, because the fact above is true of a configuration rather
+than of Luau:
+
+1. **The vendored build configuration pins `LUAU_EXTERN_C` and
+   `LUA_USE_LONGJMP=1` explicitly.** `LUA_USE_LONGJMP` defaults to 0, so
+   a build that inherits the default silently gets exception propagation
+   and the verified fact stops holding without a single line changing.
+   `docs/VENDOR.md` records build configuration per dependency at
+   vendoring time, flags deliberately left at upstream defaults
+   included; these two are the opposite of that and are recorded as
+   deliberate pins. A vendoring pass that drops them is a regression.
+2. **The cross-boundary error conformance test stays load-bearing.** It
+   drives an error across an Odin frame and asserts the observed
+   behavior, and it is the only gate that would catch a future Luau bump
+   reintroducing an RAII destructor on a protected-call throw path. The
+   inspection above is a fact about one commit; the test is what makes
+   it a fact about every commit after it.
+
+R5's restatement in `docs/ODIN_STYLE.md` records the pinned
+configuration and the reason for it rather than the original C-only
+wording, and S01's open question on the C++ toolchain and build-flag
+baseline is answered from this side for Luau's two flags.
 
 ## The v1 `svsw.*` surface
 
@@ -478,9 +544,12 @@ the replacements, which is what makes the cross-platform leg of the gate
 meaningful rather than decorative.
 
 The engine-provided implementations themselves are simmath3d's problem,
-not this spec's: S02b owns the policed deterministic math surface and
-its allow-list. What S14 owns is that the mod-visible names resolve to
-the policed implementations and never to libm.
+not this spec's: S02b builds the deterministic `f64` transcendentals and
+owns the policed surface and its allow-list. What S14 owns is that the
+mod-visible names resolve to those implementations and never to libm.
+That is the whole of why this spec's `Depends on` carries S02b, added by
+maintainer micro-ruling at landing (2026-07-31): S14 binds against
+S02b's surface, and there is nothing else to bind against.
 
 ### What is deliberately not here
 
@@ -548,13 +617,15 @@ determined by content rather than by insertion or address, with its hash
 semantics specified before any code is written. Building it now would be
 speculative engineering against no named consumer.
 
-One documented inconsistency is named here rather than fixed here.
-LUAU_STYLE B3 currently tells authors not to assume a coroutine boundary
-resets or escapes the budget "in either direction," calling the question
-deliberately unspecified. #38 specified it, and this spec depends on the
-answer. The standard's clause is stale rather than wrong in effect, since
-code written to B3's caution is correct under the settled posture too.
-Reconciling the wording is recorded as an open question below.
+One documented inconsistency surfaced while drafting and was fixed at
+landing rather than carried. LUAU_STYLE B3 told authors not to assume a
+coroutine boundary resets or escapes the budget "in either direction,"
+calling the question deliberately unspecified; #38 specified it and this
+spec depends on the answer. The clause was stale rather than wrong in
+effect, since code written to B3's caution stays correct under the
+settled posture, so the fix was a wording reconciliation: B3 now states
+that a coroutine boundary neither resets nor escapes the budget, one
+shared pool per VM and a latching exhaustion.
 
 ## Iteration determinism and the `pairs()` bar
 
@@ -723,7 +794,9 @@ for three of its defended threats. It covers, at minimum:
   VM closes.
 - **The watchdog.** Time spent inside one C call where the interrupt
   cannot fire ends in a disabled mod.
-- **Error propagation across an Odin frame**, the R5 obligation above.
+- **Error propagation across an Odin frame**, the standing R5 gate
+  above: the one check that would catch a Luau bump reintroducing RAII
+  on a protected-call throw path.
 
 The suite is written test-first and it is the corpus #77's port verdict
 depends on: the gates port as-is and are verified against this corpus
@@ -850,7 +923,7 @@ read rather than a target to match.
 | The allocation cap in the VM allocator | byte accounting, refusal rather than raising, collect-and-retry before the memory error | the allocator contract's details are the runtime's own and are re-read, not assumed |
 | The count-hook budget with a shared pool | the shared pool, the one arming helper, the latch, and the post-call re-check | Luau's interrupt replaces the count hook, and the pool lives in the callbacks' userdata (#38) |
 | One error path: set error, then disable in place | the funnel, the warning-level report, and the no-mod-conversion rule | unchanged in shape; the error objects and traceback API are Luau's |
-| R1 through R5 | R1 through R4 as a standing review rule | R5's premise is gone: Luau is C++ (see the boundary rules above) |
+| R1 through R5 | R1 through R4 as a standing review rule, and R5 as the pinned build configuration that makes the same guarantee | R5's premise is gone, since Luau is C++, but its guarantee survives through `LUA_USE_LONGJMP=1` (see the boundary rules above) |
 | The two-pass validate-then-build schema parse | both passes and the canonical field order | the field-kind enumeration changes by construction, so there is no fingerprint continuity and none is wanted |
 | Two-tier entity views | the durable and iteration tiers and the escaped-view refusal | handles are opaque typed handles under D35 |
 | The permission gates | as-is, plus one helper consolidation (#77) | see the disposition above |
@@ -914,12 +987,14 @@ Suggested, not binding; `/to-tickets` owns the breakdown.
    boundary and acceptance procedures have a subject in the v1 surface,
    which are rewrites, and which are obsolete. This is what #62 did for
    S02a and what map #73 did not do for S14.
-2. **The R5 answer.** Verify the vendored Luau build's
-   error-propagation mode against upstream, record it in
-   `docs/ODIN_STYLE.md`, `docs/VENDOR.md` and a conformance test. This
-   is first among the code steps because R2 and R3 are unwritable until
-   it is settled, and because it closes S01's open question from the
-   other side.
+2. **The R5 pins.** Set `LUAU_EXTERN_C` and `LUA_USE_LONGJMP=1`
+   explicitly in the vendored build, record both in `docs/VENDOR.md` as
+   deliberate pins rather than inherited defaults, restate R5 in
+   `docs/ODIN_STYLE.md` against the pinned configuration, and land the
+   cross-boundary error conformance test. This is first among the code
+   steps because R2 and R3 describe a mechanism that only holds under
+   those pins, and because it closes S01's open question from the other
+   side for Luau.
 3. **The VM host and the sandbox construction**, with the allow-list and
    ban-list rationale record written as the whitelist is built rather
    than after. Whitelist conformance tests land in the same step.
@@ -956,9 +1031,12 @@ result is a suite that proves the port matches itself.
 - [ ] The suite triage recorded: files and procedures classified
       near-verbatim, rewrite, or obsolete, with the obsolete ones tied
       to the surface #78 leaves out.
-- [ ] The Luau error-propagation mode verified against upstream and
-      recorded in all three places, with a conformance test driving an
-      error across an Odin frame and asserting the observed behavior.
+- [ ] `LUAU_EXTERN_C` and `LUA_USE_LONGJMP=1` set explicitly in the
+      vendored build and recorded in `docs/VENDOR.md` as deliberate pins,
+      demonstrated by a build that drops one failing rather than
+      inheriting a default.
+- [ ] The cross-boundary error conformance test green, driving an error
+      across an Odin frame and asserting the observed behavior.
 - [ ] The allow-list and ban-list rationale record committed, with every
       entry carrying a reason.
 - [ ] Whitelist conformance green: each barred global unreachable by its
@@ -998,8 +1076,9 @@ result is a suite that proves the port matches itself.
       deliberate type error there fails `just check` and the same error
       in a third-party fixture does not block its load.
 - [ ] R1 through R4 recorded in `docs/ODIN_STYLE.md` as a standing
-      review rule, re-verified against Luau's C API, and R5 replaced by
-      the recorded answer rather than by the original wording.
+      review rule, re-verified against Luau's C API, and R5 restated
+      against the pinned build configuration rather than by the original
+      C-only wording.
 - [ ] The three-flag helper consolidation done, with no behavior change
       observable in the accept corpus.
 - [ ] The `lua-binding` skill lands, and the `binding-dev` agent's
@@ -1081,13 +1160,6 @@ green rather than during the port.
 
 ### Surfaced while drafting
 
-- **LUAU_STYLE B3's coroutine clause is stale.** It tells authors the
-  budget's behavior across a coroutine boundary is deliberately
-  unspecified; #38 specified it and this spec depends on the answer.
-  Code written to B3's caution stays correct, so this is a wording
-  reconciliation rather than a correctness defect, and it is named here
-  because a standard that describes a settled mechanism as unspecified
-  will mislead the next reader.
 - **How R1 through R4 land beside the rules already in
   `docs/ODIN_STYLE.md`.** S3 there already tells `proc "c"` callbacks to
   rebuild the context and to leave no deferred cleanup live across a
@@ -1104,12 +1176,19 @@ green rather than during the port.
   it under `docs/`. Which subdirectory, and whether the two records
   share one home, is a landing-time micro-ruling of the kind S01 took
   for its manifest.
-- **The instruction budget's default value, and whether it is content
-  or configuration.** The prototype carried separate per-tick and
-  per-load defaults. H4 makes the budget observable in sim behavior,
-  because crossing it disables a mod and a disabled mod moves the world
-  hash, so the budget is sim-determining and a golden is recorded
-  against a particular value. Whether it is a fixed engine constant, a
-  per-mod manifest field, or a project setting is unsettled, and the
-  answer interacts with S15's manifest. This spec commits to the
-  mechanism, not to the number.
+- **The instruction budget's number.** The budget is an engine constant
+  per the ruling above, and the constant's value is not fixed here. The
+  prototype carried separate per-tick and per-load defaults, which is
+  evidence about shape rather than a value to inherit (D38), and the
+  number is chosen during implementation against the v1 surface's own
+  sample. What the ruling settles is that whatever number is chosen is
+  the one every golden is recorded against.
+
+Three questions this document surfaced were settled by maintainer
+micro-ruling at landing (2026-07-31) and live in the normative text above
+rather than here: that R5's guarantee survives as a pinned
+`LUA_USE_LONGJMP=1` build configuration verified against upstream rather
+than as an open obligation, that the shared instruction budget is an
+engine constant for the engine era with S15's manifest grilling the named
+reopen, and LUAU_STYLE B3's stale coroutine clause, which was reworded in
+its own commit at this landing.

@@ -427,8 +427,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   source, bump trigger, the re-vendor recipe), Luau marked the
   security-critical dependency whose security releases re-vendor out of
   cadence (D50), with a free scheduled report-only Action diffing pinned
-  versions against upstream release tags and opening a ticket on drift. The
-  vendor-quarantine skill ships here (`docs/plans/claude-tooling-design.md`).
+  versions against upstream release tags and opening a ticket on drift;
+  the D48 compile-only hosted Windows CI leg, ruled 2026-07-30 to enter
+  here because this is the first spec producing Windows-compilable code,
+  with S00 unchanged and this spec's grilling naming the leg's exact entry
+  point. The vendor-quarantine skill ships here
+  (`docs/plans/claude-tooling-design.md`).
 - **Scope out:** quic-go and Go dependencies (Go modules, S26 and S27a); any
   consumer code of these libraries. The Vulkan, D3D12 and Metal bindings,
   which come from Odin's vendor collection rather than this quarantine pass.
@@ -454,6 +458,15 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     D28's `vendor/**` deny was written for. Decide the rule set here, and
     whether the VENDOR.md carve-out D28 wanted is expressible now that file
     matchers have no negation.
+  - Where the D48 compile-only Windows leg attaches now that it is ruled
+    into this spec: inside `just vendor-libs`, inside `just shader-check`,
+    or as a CI job beside them; which vendored C-tier sources it compiles;
+    and how it stays inside S00's bare-label and no-self-hosted-runner
+    rules.
+  - What opens the ticket when this spec's scheduled report-only drift
+    Action sees a new upstream release, who triages it, and how a Luau
+    security release reaches S14, Luau's first consumer, given D50 marks
+    Luau the dependency whose security releases re-vendor out of cadence.
 
 ### C00 — Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates
 
@@ -572,6 +585,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     names, ordering, a suspension point between systems) now or only when
     S22c needs it; exposing it now spares the time-travel debugger spec a
     retrofit against frozen goldens.
+  - Does the byte-identical save-load-save round-trip run as its own layer
+    of the harness pyramid or as a `save` package unit test, and does it
+    need a golden fixture separate from the `hash_world` goldens.
+  - Confirm D20's forced worker-count clause, the identical golden run at
+    workers=1 and workers=max on one hash-golden leg, is S12b scope and
+    creates no obligation here, so no worker-count child is spawned under
+    this spec.
 
 ### S02b — simmath3d subset + cross-CPU hash gate
 
@@ -656,7 +676,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Present mechanism from the offscreen target: blit versus a
     fullscreen-triangle pass.
   - Adapter and device selection policy across CI and dev machines, now per
-    backend.
+    backend, and how far the D48 compile-only Windows leg ruled into S01
+    reaches: does it exercise this spec's Vulkan-on-Windows path beyond
+    compiling it, or does Windows coverage stay scoped to S03b's rig-only
+    D3D12 leg.
   - How the draw-list uniform-block ABI stays monomorphic per the Trinity
     RenderJob shape.
 
@@ -709,6 +732,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     surface support per backend.
   - N ticks and camera-orbit parameters that make the goldens sensitive
     without being brittle.
+  - Is this spec's readback-tier platform fragility, the macos-26
+    paravirtual Metal device and lavapipe on ubuntu-24.04, the same
+    question as D48's compile-gated Windows posture, namely what CI
+    actually guarantees per platform, and are both answered as one
+    stated policy rather than two.
 
 ### S05 — Protocol v0: versioned frames, two-process echo pair, the arrow rule
 
@@ -751,11 +779,17 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Exact v0 frame header layout and checksum algorithm.
   - How much of the three-call worker contract is drafted in code now versus
     prose until S26.
-  - Whether `Tick_Commit` carries the world hash from v0 for later desync
-    tripwires.
-  - Does Tick_Commit record the applied input set, not only the world
-    hash, so resume and desync forensics reconstruct inputs from the log
-    alone.
+  - Does `Tick_Commit` carry enough content from v0 that a Tick_Commit
+    stream alone reproduces byte-identical state, the world hash for later
+    desync tripwires and the applied input set for resume and forensics
+    both included, framed against S02a's now-mandatory save-load-save
+    round-trip.
+  - Does the v0 header reserve D49's editor and tooling message-kind range
+    alongside the replication and worker-contract ranges now, or is range
+    allocation deferred to S26's freeze.
+  - Given D57's tick-stamped command-log total order, does the v0
+    Tick_Commit payload need a slot for command-log entries distinct from
+    tick input, or is that entirely S26 and S28 scope past v0.
 
 ## Stage 1 — Renderer, Forward+ staged
 
@@ -804,7 +838,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     in Milestone A?
   - The v1 ambient term, a flat or hemisphere constant (D54): shape and
     value, settled before the Milestone A goldens record; IBL and GI stay
-    post-engine (D55).
+    post-engine (D55). Frozen provisionally here and re-verified by S07's
+    grilling once real CSM shadows exist, or fixed once here for both.
+  - Does landing D54's HDR-offscreen to fixed-tonemap to sRGB resolve
+    chain here oblige the one-time re-record of S04's cube goldens as part
+    of this spec's gate, so the Milestone A goldens never absorb a stale
+    cube golden.
   - The tonemap operator D54 fixes, and how its curve interacts with the
     readback tolerance.
   - The debug-draw layer's skeleton-hash treatment: included behind a
@@ -841,6 +880,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Shadow filtering choice (PCF tap count) versus readback-golden stability.
   - How shadow-pass structure is encoded in the skeleton hash so CSM
     regressions fail CPU-only.
+  - Is S09's stress harness a real dependency of the CSM perf iteration or
+    do informal perf checks suffice until S09 exists, the index ground
+    rule barring a dependency on a later spec, so the answer either moves
+    S09 or keeps the iteration informal.
+  - Does this spec's grilling re-verify the ambient constant S06 freezes,
+    D54 having written that constant to keep shadowed areas off black in
+    these very goldens, or inherit it unchanged.
 
 ### S08 — Split-process topology: sim process + render client over the protocol
 
@@ -869,9 +915,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   gamepad and windowed interactive input (S19).
 - **Open questions:**
   - What crosses the wire in stage 1: a full render-relevant state snapshot
-    per tick, or an early delta shape that S28 later formalizes.
+    per tick, or an early delta shape that S28 later formalizes, and does
+    that answer follow S05's Tick_Commit-content decision rather than
+    being taken independently here.
   - Does the client run a Session replica or render pure state uploads.
-  - Checkpoint cadence for split-smoke.
+  - Checkpoint cadence for split-smoke, and whether stage-1 checkpoints
+    are whole-world hashes only, D6's per-chunk hash checkpoints not
+    existing until S11a lands at stage 2.
 
 ### S09 — 3D stress harness with provisional budgets
 
@@ -901,11 +951,20 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   wiring and budget documentation. The sim-tick p95 badge ships here, per
   `docs/plans/public-stats.md`.
 - **Scope out:** budget confirmation (S21); GPU-time measurement (skeleton
-  and CPU only; GPU timing is a later decision).
+  and CPU only; GPU timing is a later decision); mesh LOD and occlusion
+  culling, post-engine on the D55 roster, engine-scope culling staying
+  frustum-only and this spec's stress scene staying pinned to D4's
+  few-chunk scale, so a budget miss is never answered by scoping culling
+  in.
 - **Open questions:**
   - Initial provisional budget numbers and the machine class they assume.
   - Synthetic scene shape: entity count, draw count, chunk-like spatial
     distribution parameters.
+  - Does worker-count variance testing, D20's identical golden at
+    workers=1 and workers=max, live in this stress harness or purely in
+    S12b's hash-golden gate, so ownership is single.
+  - Is the synthetic multi-chunk-shaped scene cosmetic before S11a exists,
+    or does it get revisited once S11a's structural chunk model lands.
 
 ### S10 — Milestone B: compute-shader clustered light culling
 
@@ -937,6 +996,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     record a CPU-derived expectation validated against GPU readback locally
     only.
   - Compute-pass viability on the Linux software-Vulkan CI path.
+  - Is the CPU-side reference computation of cluster counts main-thread
+    work under D20, or exempt from that rule as sim-adjacent CPU work.
+  - Should this floating spec's map be charted after the stage-2 rows that
+    do gate other work, S11a and S12a, rather than immediately after S07,
+    nothing downstream depending on it.
 
 ### S03b — D3D12 backend: the third RHI implementation on the win rig
 
@@ -970,6 +1034,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - What triggers scheduling the floating spec, and how long the
     interface may drift before the third implementation gets expensive.
   - Whether readback tolerance bands differ on the rig's GPU class.
+  - Now that D48's compile-only hosted Windows leg is ruled into S01, does
+    this spec's rig work depend on that leg existing first, or is the rig
+    loop independent of it.
+  - Does D48's "Vulkan is the supported Windows path in the engine era"
+    demote D3D12 from floating to permanently non-blocking and optional,
+    and should this row say so explicitly rather than only that nothing
+    downstream depends on it.
 
 ## Stage 2 — World structure + assets
 
@@ -1005,7 +1076,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   interest (S28); hand-authored chunk content (S30).
 - **Open questions:**
   - Chunk size in world units and entities-per-chunk expectations from
-    private product requirements.
+    private product requirements: both are gated on that source (D4)
+    stating numeric scale targets, which makes it a blocking external
+    input to be confirmed in hand before this spec's grilling opens rather
+    than a routine open question.
   - Root composition ordering rule and how absent or inactive chunks hash.
   - Activation policy: who activates chunks in a single-player headless run
     versus the server; S28 answers the server half under its
@@ -1013,6 +1087,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Where deactivated chunk state resides, and the memory posture that
     keeps unbounded extent bounded in resident memory: kept, spilled, or
     regenerated deterministically.
+  - Does S02a's byte-identical save-load-save discipline extend to a
+    round-trip crossing a chunk activation or deactivation boundary, or is
+    that deferred to the player save and load spec D55 names.
+  - Does S09's multi-chunk-shaped stress scene get revisited once this
+    spec's structural chunk model lands.
 
 ### S11b — Floating origin: presentation-side re-basing
 
@@ -1034,9 +1113,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   invariance test; the far-from-origin test scene.
 - **Scope out:** any sim-side coordinate change (S11a owns the model).
 - **Open questions:**
-  - Re-base trigger threshold.
+  - Re-base trigger threshold, and whether it is a hashed sim-visible
+    value or a presentation-only constant, D1 requiring sim determinism
+    independent of rendering choices.
   - Precision budget: at what distance does f32 chunk-local plus re-basing
     still hold the readback goldens.
+  - Must the invariance test cover S02a's byte-identical save-load-save
+    round-trip across a re-base boundary, or is re-basing provably
+    orthogonal to serialized state.
 
 ### S12a — Asset container + assetc: glTF to sectioned binary to rendered goldens
 
@@ -1073,7 +1157,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   bake (S23); the asset viewer UI (S16).
 - **Open questions:**
   - The brand-neutral container name and magic bytes (maintainer pick, needed
-    before the first baked data).
+    before the first baked data), whose delay blocks S16's viewer and S17's
+    scaffold templates, both of which reference container files before this
+    spec's rung advances.
+  - How D53's re-bake-on-schema-bump-with-no-runtime-migration contract is
+    tested here as an explicit gate rather than narrated.
   - Compression codec(s) per section, and whether v1 ships uncompressed.
   - BC7-only runtime posture for v1 given astcenc sits vendored for mobile.
   - Logical content ID scheme (hash of source path, stable GUID) and the
@@ -1109,6 +1197,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Failure posture when a hot-swapped asset is malformed (loud placeholder
     per the prototype rule, or reject and keep the old asset).
   - How handle stability is asserted across a mesh reload.
+  - Does the hash-golden gate need a leg forcing the identical scenario
+    through workers=1 and workers=max per D20's amendment, distinct from
+    the decode-threading-on-versus-off test already in the working-software
+    wording.
+  - Is the single deterministic integration-point contract asserted by that
+    same forced-worker-count leg, or are the two separate tests.
 
 ### S13 — Deterministic collision v1, scoped by private product requirements
 
@@ -1145,7 +1239,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   (issue #39).
 - **Open questions:**
   - Exact envelope: which sweeps the gameplay-facing systems and the
-    first-person controller require.
+    first-person controller require, which is what the private product
+    requirements source (D4) has to enumerate for controller movement
+    before the envelope can be settled, so that source is in the room for
+    this grilling.
   - Heightfield versus grid proxy representation for chunk terrain and its
     authoring path.
   - Solver iteration and ordering rules that keep resolution deterministic
@@ -1158,12 +1255,17 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     components mods can set, or code.
   - The terrain authoring source behind the proxies: an assetc heightmap
     bake (reflected into S12a), a Luau data-stage grid, or flat-only for
-    engine scope, recorded in D17's amendment trail if flat-only wins.
+    engine scope, recorded in D17's amendment trail if flat-only wins. If
+    the answer is the heightmap bake, does it add an S12a dependency this
+    row does not list.
   - Whether the query set must serve deterministic grid pathfinding, and
     whether the chunk grid exposes a walkability view (D55: encounter
     movement is mod-side over these queries).
   - Debug-draw emission for colliders, contacts, and sweeps through the
     S06 layer, off-hash by the D11 invariance pattern.
+  - Confirm this spec's map does not reopen the dynamics-lite question D55
+    left conditional on this grilling: it is settled and stays out of the
+    index, per this row's scope out.
 
 ### S14 — Luau sandbox port: the scripting boundary, test-first
 
@@ -1225,6 +1327,8 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Execution posture: interpreter-only for v1, or Luau native codegen,
     and if codegen is ever enabled, the gate asserting interpreter and
     codegen runs reproduce identical world hashes on both CI platforms.
+    Is interpreter-only an engineering default this grilling can settle,
+    or a maintainer performance-budget call tied to S09's stress harness.
   - Whether `svsw.*` grows a log binding, and how worker, engine, and
     per-mod log lines are attributed and routed to the editor Console
     (D49).
@@ -1239,6 +1343,8 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Whether a deterministic tick-scheduler or wait-idiom for mod coroutines
     is worth building as later fast-path scope (D58), given that resuming
     across a tick boundary disables the mod.
+  - Confirm this spec's map treats the coroutine posture recorded in scope
+    in as closed rather than reopening it.
 
 ### S15 — Mod pipeline port: multi-mod shared world, proven by the mirroring test
 
@@ -1272,7 +1378,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   convention (Luau data files plus container references, no second scene
   format).
 - **Scope out:** the shipped base-as-mod ruleset (S30); the nettest mod
-  (S29); in-Session script reload, which S22b owns (D60).
+  (S29); in-Session script reload, which S22b owns (D60); mod acquisition
+  and distribution, how a mod reaches another machine, install and version
+  resolution and signing included, all post-engine product work on the D55
+  roster.
 - **Open questions:**
   - What the minimal base mod contains as a fixture versus leaving all
     content to test mods.
@@ -1315,6 +1424,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - What the D48 ImDrawData renderer needs from the S03 RHI surface:
     scissor rects, texture binding, and the sRGB posture against the D54
     resolve chain.
+  - Is that renderer exempt from any Windows gate obligation, being a dev
+    tool rather than a shipped artifact, so this spec does not inherit
+    S03b's Windows-readiness question by citing D48 alone.
 
 ### S17 — svsw CLI: new/run/package with 3D scaffold templates
 
@@ -1347,12 +1459,18 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   carrying the assert message and tick, the last checkpoint when one
   exists), local files only.
 - **Scope out:** server verbs (post-engine CLI work; D16 as amended drops
-  the rename pairing); package signing and distribution polish.
+  the rename pairing); package signing and distribution polish; mod
+  acquisition and distribution across machines, post-engine product work
+  on the D55 roster and distinct from the single-project packaging this
+  spec owns.
 - **Open questions:**
   - Template content: how minimal is the scaffolded scene while still
     exercising container, chunk, and Luau paths.
   - Windowed run policy in scaffold-check (headless only, or a parity leg
     too).
+  - Does `svsw package` output get checksum or provenance treatment
+    analogous to D53's tagged engine releases, or is D53 silent on
+    game-project packages by design, naming only engine releases.
 
 ## Stage 3 — Platform completion + gate roster
 
@@ -1386,7 +1504,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Spatialization model v1: distance attenuation plus pan only, or
     HRTF-adjacent features.
   - Sample source for the headless golden before S23's bake exists.
-  - Does the pump land behind the same platform_sdl package or its own seam.
+  - Does the pump land behind the same platform_sdl package or its own seam,
+    does it run on the main thread under D20, and should this row cite D20
+    and D55 rather than D7 alone.
+  - Does this spec need S12b, its scope naming a loader path for test audio
+    data while depends on lists S12a only, and if that path uses
+    worker-thread decode does D20's forced worker-count golden requirement
+    reach it.
 
 ### S19 — SDL3 input completion: event translation and gamepad
 
@@ -1413,9 +1537,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope out:** input remapping UI; touch and mobile input.
 - **Open questions:**
   - Input_Snapshot extensions 3D needs (relative mouse deltas, capture state)
-    and their hash classification.
+    and their hash classification: relative-mouse-delta capture takes an
+    explicit on-hash or off-hash classification with its rationale recorded
+    at the site, per the index ground rule binding any spec that reshapes
+    sim state.
   - Gamepad database update policy under the vendoring rules.
   - How the human checkpoint is scripted so it stays cheap.
+  - Should this row cite D55 for the input-remapping-UI exclusion its scope
+    out already makes.
 
 ### S20 — Luau UI over ImGui: the mod-facing svsw.ui surface
 
@@ -1452,6 +1581,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - What UI state, if any, is legal to persist and where.
   - Does the draw-list skeleton hash include ImGui draw data or is UI
     excluded from parity's skeleton tier.
+  - Does `svsw.ui` route through the same D48 ImDrawData renderer S16
+    establishes and S16b docks, or does it need its own capture seam, and
+    should this row cite D48 alongside D9.
+  - Does this spec inherit S16's question about what that renderer needs
+    from the S03 RHI surface, scissor rects, texture binding and the sRGB
+    posture, or restate it here.
 
 ### S16b — Editor walking skeleton: shell, one worker, viewport transport proof
 
@@ -1492,6 +1627,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Whether the smoke gate exercises the D47 transport headless on CI or
     only skeleton-deep, with the transport itself a dev-machine
     checkpoint.
+  - Does this spec cite D48 for the ImGui renderer it docks, or is that
+    fully inherited from S16 with nothing new decided here.
+  - Does scope name D49's editor and tooling message-kind range reservation
+    as a day-one constraint, this being the first spec to put traffic on
+    that range.
 
 ### S21 — Gate roster completion: the svsw equivalence obligation
 
@@ -1548,6 +1688,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     S12a, their owning spec; the internal prototype's proven
     single-format-server pattern (svsw-ldtk, svsw-aseprite) is recorded here
     as a standing pattern to decide against once that spec exists.
+  - Does this spec, closing stage 3, itself cut the D53 release tag the
+    index ground rules require at a stage exit, or does the tag cut wait
+    for S32's dry-run machinery, and should this row cite D53.
+  - Does the roster enumerate the report-only `win-check` item as firing at
+    this stage exit, the stated cadence being every stage exit from stage 2
+    onward (D48).
+  - Is D50's fuzz-gate promotion from report-only to hard recorded as a
+    numbered roster item carrying its hard-gate mark rather than as prose.
 
 ## Stage 4 — Editor + animation
 
@@ -1637,6 +1785,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - Does the in-editor script IDE warrant its own spec (buffers,
     diagnostics, symbol navigation, LSP versus custom) split out of
     S22/S23?
+  - Does this spec inherit the D48 ImDrawData renderer from S16 and S16b as
+    decided, or do the scene tree, the inspector chrome and a
+    multi-document workspace add new needs, and should this row cite D48.
+  - Confirm S21's roster enumeration is settled before this map is charted,
+    this spec depending on it.
 
 ### S22b — Engine dev loop: rebuild, respawn, restore
 
@@ -1697,6 +1850,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     Scene collapses the command log into fresh data-stage content and
     declares a new session start, so replay-from-session-start replays a
     bounded suffix; automatic or manual, and surfaced how.
+  - Do the rebuild trigger and D60's behavior-changing-script-reload
+    trigger share one surfacing mechanism in the editor chrome, or are they
+    two affordances.
+  - Does the rebuild step itself run as a D44 Job worker, derived-state
+    work being what D44 assigns to that kind, or stay outside the worker
+    model entirely.
 
 ### S22c — Time-travel debugger core: snapshot ring, seek, inspection family
 
@@ -1740,10 +1899,18 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   attach (S29b); the transport UI chrome itself (S22 ships it).
 - **Open questions:**
   - Snapshot cadence and ring-budget defaults, and how they compose with
-    the S22b checkpoint cadence over one substrate.
-  - The seek-cost budget number and the scene scale it assumes.
+    the S22b checkpoint cadence over one substrate; the grilling carries
+    candidate ranges anchored to S09's stress-scene scale so the numbers
+    are answerable rather than unbounded.
+  - The seek-cost budget number and the scene scale it assumes, anchored to
+    the same S09 scale.
   - Watch-subscription delivery cadence while paused and while
     scrubbing.
+  - Is entering D47's debug-suspended condition during a seek or scrub in
+    scope here, or reserved for S24b's breakpoint gate, S24b being the only
+    spec currently named as consuming that third worker condition.
+  - Are the mod component mirror's mechanics fully inherited from S14 and
+    D12 with nothing new decided here, or should this row cite D12.
 
 ### S22d — Extension seam proof: sample Extension, editor-build recipe
 
@@ -1780,6 +1947,16 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     engine checkout (D56's metadata may carry the answer).
   - Whether the editor-build recipe takes an arbitrary extension list or
     exactly the project's declared set.
+  - Why the sample Extension is native rather than editor Luau over
+    `svsw.editor.ui`, D58 defaulting to the fast path unless the sandbox or
+    the determinism model forecloses it.
+  - Does the sample Extension proof also exercise D56's pinned-engine
+    checkout plus toolchain build path, this editor-build recipe being its
+    second consumer after S17.
+  - What exactly "identical Session behavior" compares, world hash,
+    command-stream shape, panel registry, so D43's
+    Session-never-loads-an-Extension boundary is falsifiable.
+  - Should this row cite D56 and D58 alongside D3 and D43.
 
 ### S23 — Editor features: asset browser, gizmos, profiler panel
 
@@ -1817,7 +1994,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     in S30.
   - Audio section format and streaming posture in the container.
   - What the committed roundtrip log must contain to be a strong gate without
-    being brittle to editor UI churn.
+    being brittle to editor UI churn, and whether its format has to be
+    authored for S25's later swap to the real animated character so that
+    spec re-records the log rather than redesigning it.
 
 ### S24 — Editor-Luau capability tier
 
@@ -1872,7 +2051,16 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   - How editor scripts are discovered and loaded (a per-project scripts
     directory, a manifest).
   - Lifecycle of script-registered UI when its script is disabled in
-    place: torn down, tombstoned, or restored on re-enable.
+    place: torn down, tombstoned, or restored on re-enable; and if the
+    playhead rewinds past a script's registration point, does that
+    tombstone-and-restore logic key off D57's tick-stamped command log, or
+    is UI registration state kept outside that log.
+  - Does an editor-script reload need D60's dev-diverged marking, or are
+    editor scripts outside D60 entirely, acting only through the command
+    stream and never on sim state.
+  - Is this surface meant to absorb future native-panel requests of S22d's
+    shape, D58 defaulting to Luau or the data stage, and should this row
+    cite D58 and D60.
 
 ### S24b — Script and native debugging: Luau breakpoints, DAP attach
 
@@ -1916,6 +2104,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     Luau-and-Odin stack.
   - Whether a breakpoint in one worker of a multi-worker session pauses
     its siblings.
+  - Can the playhead be rewound while a VM sits suspended at a breakpoint,
+    and if so must resim reproduce the same breakpoint hit or skip past it
+    under D57's truncate-and-resim mechanics, and should this row cite D57.
+  - Is D43's absent-call-site rule, written for Extension registration,
+    actually the mechanism gating debug-hook compilation into editor-tier
+    builds, or is that a build tag.
 
 ### S25 — Animation runtime: sampler, blend, GPU skinning, container sections
 
@@ -1953,8 +2147,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     spline sampling too).
   - Bone-count and palette limits per the rendering interface's binding
     model.
-  - How blend inputs are driven before state machines exist (Luau-set
-    parameters?).
+  - How blend inputs are driven before state machines exist: if the answer
+    is Luau-set parameters, that is D58's default fast path and this row
+    names it as such, the `svsw.*` surface being the natural binding site.
 
 ## Stage 5 — Multiplayer
 
@@ -2001,6 +2196,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     pairs audited against the corpus.
   - Corpus format and where recorded frames live in the repo.
   - Go toolchain and CI wiring in a justfile-driven repo.
+  - Which consumer gates count as "present at that point" when the v1
+    envelope freezes, that set moving with implementation order across five
+    stages, and what re-runs them.
 
 ### S27a — Go gateway v1: QUIC, sessions, worker supervision
 
@@ -2063,9 +2261,15 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope out:** replication kinds (S28); multi-machine topology (S29).
 - **Open questions:**
   - Tick_Commit log storage engine v1 (flat append log versus an embedded
-    store).
+    store), which turns on whether the durable log is D57's tick-stamped
+    total order persisted or a separate parallel record, and on whether
+    this row cites D57.
   - Checkpoint cadence and retention policy.
   - Outbox delivery semantics the reserved service kinds will assume.
+  - Confirm the kill, respawn and resume gate is not read as a
+    supported-deployment posture, D52 scoping the online tier to
+    trusted-network use and D53 making release binaries verification
+    artifacts rather than supported downloads.
 
 ### S28 — Replication: chunk-scoped deltas, prediction, reconciliation
 
@@ -2116,7 +2320,15 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     tick-recorded event.
   - Tripwire trip semantics: what a trip does to the session (kill,
     resync-from-checkpoint, or quarantine), and how mod-induced
-    divergence is classified per the threat model (D50).
+    divergence is classified per the threat model (D50); and whether a trip
+    must produce a Tick_Commit-log artifact matching the shape S29b's
+    read-only attach-and-replay consumes.
+  - Must reconciliation resim respect D57's truncation contract when a
+    debugger session is attached mid-replication, that being S29b's attach
+    path.
+  - Is the checkpoint format, doubling as wire framing, release-scoped
+    under D53's save and log versioning language, with S33's save reader
+    later versioning that same format.
 
 ### S29 — Two-client co-op harness: mods/nettest and coop-smoke
 
@@ -2149,7 +2361,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Scope out:** the gameplay ruleset (stage 6 owns it); contested-interaction
   scenarios.
 - **Open questions:**
-  - How the windowed leg runs in CI (virtual display reuse from S04).
+  - How the windowed leg runs in CI (virtual display reuse from S04), and
+    whether its platform set excludes Windows, D48 permitting compile-gated
+    Windows only until S03b lands.
+  - Is freezing the replication message kinds here compatible with S28's
+    reconciliation-depth and tripwire-semantics answers, an incomplete kind
+    roster being what gets frozen otherwise.
+  - How much Tick_Commit history the coop-smoke run retains, this spec
+    producing the log S29b's retention question consumes.
 
 ### S29b — Server attach and desync replay
 
@@ -2187,6 +2406,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     the trusted network.
   - Retention: how much Tick_Commit history a server keeps for attach,
     against S27b's cadence and retention question.
+  - Confirm read-only attach forbids edits entirely, which makes D57's
+    truncation clause moot here, this row's scope out already barring write
+    access of any kind to server sessions.
+  - Is a D47 debug-suspended Session worker a valid attach target, or only
+    a live or a finished one.
 
 ## Stage 6 — Engine-completion verification + rebrand
 
@@ -2231,6 +2455,17 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     deterministic grid-search service if the private envelope demands it.
   - Whether the encounter needs minimal impact or feedback VFX, or the
     D55 deferral holds through engine completion.
+  - Does the scripted encounter's mod-side movement span multiple ticks,
+    S14's settled coroutine posture disabling a mod that resumes across a
+    tick boundary.
+  - Does D46's deterministic sim surface cover the calls the scripted
+    encounter expects, and should this row cite D46, whose own text names
+    this spec as its motivating consumer.
+  - Confirm the grid placement and collision content stays inside collision
+    v1's overlap and range envelope, dynamics-lite being settled out of the
+    index at S13.
+  - Confirm the second mod loads through existing dev-loop mechanics (D36)
+    only and exercises no acquisition or distribution surface D55 defers.
 
 ### S31 — Camera continuum, first-person controller, client presentation polish
 
@@ -2263,7 +2498,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     its input-mode handoff.
   - Controller tuning parameters that stay deterministic (view bobbing
     excluded or off-hash?).
-  - HUD theming scope: one shipped theme or a theme system.
+  - HUD theming scope: how far ImGui-based theming can go before it needs
+    the retained-mode toolkit D55 defers post-engine, that decision fixing
+    the immediate-mode substrate as the shipped-HUD answer for the engine
+    era.
 
 ### S33 — Player save/load v1: versioned reader, autosave
 
@@ -2294,11 +2532,17 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   reader's window; save-compatibility matrices across mod sets.
 - **Open questions:**
   - Save location conventions per platform, and what a save carries
-    beyond the snapshot (mod list, engine release, command-log tail).
+    beyond the snapshot (mod list, engine release, command-log tail); a
+    recorded engine-release identifier references a git tag in D53's
+    narrower sense, its binaries being verification artifacts and
+    reproducibility witnesses rather than supported downloads.
   - Autosave cadence and its composition with the S22b checkpoint
     cadence on one substrate.
   - How a load with missing or version-shifted mods degrades: refuse,
-    load-with-disabled, or prompt.
+    load-with-disabled, or prompt; and confirmation that this spec handles
+    the local mod-list mismatch only, deferring acquisition- or
+    provenance-driven remediation such as fetching a missing mod to the
+    post-engine work D55 names.
 
 ### S32 — Engine acceptance + residual sweep
 
@@ -2338,3 +2582,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     milestone declaration).
   - Whether the beads prefix question from S00 resurfaces here or stays
     settled.
+  - Does the D53 release dry-run's success criterion change now that its
+    binaries are declared verification artifacts rather than supported
+    downloads, and does it gain a reproducibility-witness check such as a
+    rebuild-from-tag hash match.
+  - What happens to the engine-accept schedule if S30's open questions are
+    still unresolved when S31 and S33 are otherwise ready to grill, both
+    depending on S30.

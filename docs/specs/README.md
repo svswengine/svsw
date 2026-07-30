@@ -532,7 +532,10 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Working software:** A headless deterministic simulation runs N ticks; the
   four-layer determinism pyramid (same-seed-twice, snapshot-then-resimulate,
   committed world-hash golden, neutral-input regression) passes green inside
-  `just check` on both CI platforms.
+  `just check` on both CI platforms; a save-load-save round-trip is
+  byte-identical, joining the golden discipline from this first port because
+  a serializer that mutates state on write is the divergence class the
+  forward-resim gates cannot see.
 - **Depends on:** S00
 - **Decisions:** D1, D20
 - **Course:** module S02a; path tag engine; teaches the deterministic kernel,
@@ -1135,7 +1138,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   and controller need (raycast, overlap, sweep of the supported primitives);
   hashed ECS collision components.
 - **Scope out:** convex-mesh decomposition collision; off-hash presentation
-  physics middleware; first-person controller feel (S31).
+  physics middleware; first-person controller feel (S31); the dynamics-lite
+  spec D55 left conditional on this grilling, which does not enter the
+  index: deterministic collision with overlap and range queries suffices
+  for the engine era, on the build-narrow evidence recorded on the map
+  (issue #39).
 - **Open questions:**
   - Exact envelope: which sweeps the gameplay-facing systems and the
     first-person controller require.
@@ -1195,8 +1202,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   simrng-backed math.random, and ordered iteration for sim-writing table
   walks; the wall-clock watchdog beside the allocation cap and instruction
   budget (D50); interrupt behavior across coroutine boundaries verified
-  rather than assumed (D50); the registry-driven binding fuzz gate,
-  report-only here and hard in S21's roster (D50);
+  against Luau upstream rather than assumed (D50, issue #38), settling the
+  posture: coroutines are permitted within a tick, resuming across a tick
+  boundary disables the mod, the shared instruction budget lives in the VM
+  callbacks' userdata and never in per-thread userdata, budget exhaustion
+  latches rather than resets because interrupt-raised errors are
+  pcall-catchable, and the wall-clock watchdog is unchanged; the
+  registry-driven binding fuzz gate, report-only here and hard in S21's
+  roster (D50);
   the `svsw.*` core binding surface sufficient for a hash-golden Luau sample;
   R1-R5 as a standing review rule in `docs/ODIN_STYLE.md` and checklists,
   re-verified against Luau's C API; atomic persistence for `svsw.storage`;
@@ -1223,6 +1236,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     into one primitive during the port, or port as-is first.
   - Which prototype `svsw.*` namespaces are in the v1 port surface versus
     deferred until a consumer exists.
+  - Whether a deterministic tick-scheduler or wait-idiom for mod coroutines
+    is worth building as later fast-path scope (D58), given that resuming
+    across a tick boundary disables the mod.
 
 ### S15 — Mod pipeline port: multi-mod shared world, proven by the mirroring test
 
@@ -1842,7 +1858,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   (D34); the command-stream emission binding; the
   capability-scoping test suite; `--!strict` gate-enforced on every editor
   script, the same
-  first-party typing policy S14 applies to base-as-mod and samples (D34).
+  first-party typing policy S14 applies to base-as-mod and samples (D34);
+  the per-project consent and project-identity paths joining the S14 fuzz
+  gate (D50) with their own hostile corpus, spoofed and malformed consent
+  records, identity path traversal, symlinked projects and check-to-enable
+  races, report-only until this spec's gate hardens.
 - **Scope out:** any editor-Luau access path that bypasses the command
   stream; shipped-build exposure of editor capabilities.
 - **Open questions:**

@@ -200,8 +200,8 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except M00, S00, S01, S02a, S02b, S03, S05
-and S14, which are **spec written**, and S03b, which is **grilled**.
+Every spec below is **pending**, except M00, S00, S01, S02a, S02b, S03,
+S03b, S05 and S14, which are **spec written**.
 
 ## Overview
 
@@ -221,7 +221,7 @@ and S14, which are **spec written**, and S03b, which is **grilled**.
 | S08 | Split-process topology: sim process + render client over the protocol | `just split-smoke` green, hash-checkpointed agreement | S05, S06 | pending |
 | S09 | 3D stress harness with provisional budgets | `just stress` p95 budgets report-only on hosted CI, hard on dev machine and win rig | S06 | pending |
 | S10 | Milestone B: compute-shader clustered light culling | clustered scene green incl. cluster counts in skeleton hash + parity | S07 | pending |
-| S03b | D3D12 backend: the third RHI implementation on the win rig | `just win-check` runs skeleton + readback tiers on D3D12, report-only | S04 | grilled |
+| [S03b](S03b-d3d12-backend-win-rig.md) | D3D12 backend: the third RHI implementation on the win rig | `just win-check` runs skeleton + readback tiers on D3D12, report-only | S04 | spec written |
 | S11a | Chunked world: worldgrid, per-chunk hashes, activation, default fill | `just chunk-golden-check` + parity on the chunk-crossing scenario | S02a, S04 | pending |
 | S11b | Floating origin: presentation-side re-basing | re-based far-from-origin scene, invariance test + parity green | S11a, S06 | pending |
 | S12a | Asset container + assetc: glTF to sectioned binary to rendered goldens | glTF round-trip to rendered goldens + codec fuzz green | S04, S06 | pending |
@@ -514,8 +514,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
   handles, draw order, counts, pass structure, floats excluded); the readback
   golden with perceptual tolerance and a re-record recipe; the parity runner
   including the virtual-display CI leg; a full-byte draw-list hash as an
-  optional same-machine golden; the golden axes stated: readback goldens
-  key per platform and shader backend, world and skeleton goldens stay
+  optional same-machine golden; the golden axes stated: one readback
+  golden serves every platform and shader backend, scored against a
+  per-device derived threshold, world and skeleton goldens stay
   platform-invariant, cross-backend visual equivalence belongs to the S21
   comparison gate (D48), and re-record ownership is recorded per axis;
   the cube goldens record ahead of the D54 resolve chain and are accepted
@@ -766,42 +767,13 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S03b — D3D12 backend: the third RHI implementation on the win rig
 
 - **Stage:** 1 — Renderer, Forward+ staged
-- **Status:** grilled
-- **Goal:** The third backend per D48: the RHI's D3D12 implementation,
-  exercised on the Windows rig because no hosted runner carries a D3D12
-  GPU. Its gate story grows `just win-check` with the skeleton and
-  readback tiers, report-only until the rig loop is demonstrated, and
-  S21's roster carries the D3D12 axis marked report-only. Nothing
-  downstream depends on this spec, so it floats: it can land any time
-  after S04 without blocking or being blocked.
-- **Working software:** `just win-check` runs the cube and multi-object
-  scenarios on D3D12: skeleton hashes match the committed
-  platform-invariant goldens, readback goldens record on the rig under
-  the S04 axes, and results are recorded per the S21 win-check cadence,
-  report-only.
-- **Depends on:** S04
-- **Decisions:** D42, D48
-- **Course:** module S03b; path tag engine; teaches the D3D12 backend
-  against the win-check tiers.
-- **Prototype ports:** none
-- **Normative references:** none
-- **Scope in:** the D3D12 RHI implementation behind the S03 seam; the
-  win-check growth to skeleton and readback tiers; the descriptor-heap
-  and barrier specifics the S03 interface shape reserved for this
-  backend.
-- **Scope out:** any hosted-CI obligation (no Windows GPU runner exists
-  at zero budget); D3D12-only features beyond the S03 interface.
-- **Open questions:**
-  - What triggers scheduling the floating spec, and how long the
-    interface may drift before the third implementation gets expensive.
-  - Whether readback tolerance bands differ on the rig's GPU class.
-  - Now that D48's compile-only hosted Windows leg is ruled into S01, does
-    this spec's rig work depend on that leg existing first, or is the rig
-    loop independent of it.
-  - Does D48's "Vulkan is the supported Windows path in the engine era"
-    demote D3D12 from floating to permanently non-blocking and optional,
-    and should this row say so explicitly rather than only that nothing
-    downstream depends on it.
+- **Status:** spec written
+- **Spec document:**
+  [S03b-d3d12-backend-win-rig.md](S03b-d3d12-backend-win-rig.md), the
+  normative text. This entry has collapsed into it: the document carries
+  every schema field, the grilling dispositions, the win-report protocol,
+  the interface-drift budget, the format basis and the rig's tolerance
+  derivation, the scheduling window, and the exit checklist.
 
 ## Stage 2 — World structure + assets
 

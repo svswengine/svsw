@@ -26,6 +26,9 @@ subdirectory holds one kind of document, and a new subdirectory such as
 - [docs/specs/S03-window-rhi-draw-list.md](specs/S03-window-rhi-draw-list.md) —
   the S03 normative text: the SDL3 platform layer, the in-house rendering
   interface, and the draw-list render core.
+- [docs/specs/S03b-d3d12-backend-win-rig.md](specs/S03b-d3d12-backend-win-rig.md) —
+  the S03b normative text: the D3D12 backend, the win-report protocol,
+  and the rig's tolerance derivation.
 - [docs/specs/S05-protocol-v0.md](specs/S05-protocol-v0.md) —
   the S05 normative text: the v0 frame envelope, the seam types, and the
   arrow rule.

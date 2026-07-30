@@ -200,8 +200,8 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except S00 and M00, which are **spec
-written**, and S01 and S02a, which are **grilled**.
+Every spec below is **pending**, except M00, S00 and S01, which are **spec
+written**, and S02a, which is **grilled**.
 
 ## Overview
 
@@ -209,7 +209,7 @@ written**, and S01 and S02a, which are **grilled**.
 |---|---|---|---|---|
 | M00 | Editor visual mockup: HTML+CSS prototype of the editor's look and behavior | mockup opens and runs interactive in any browser (design artifact) | none | spec written |
 | [S00](S00-repo-bootstrap.md) | Repo bootstrap: toolchain, just check skeleton, two-platform CI | `just check` green on both CI platforms (setup) | none | spec written |
-| S01 | Vendoring ceremony: all C-tier dependencies | `just vendor-libs` + `just shader-check` green (setup) | S00 | grilled |
+| [S01](S01-vendoring-ceremony.md) | Vendoring ceremony: all C-tier dependencies | `just vendor-libs` + `just shader-check` green (setup) | S00 | spec written |
 | C00 | Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates | deployed course shell with the S00 and S01 modules live (setup) | S00, S01 | pending |
 | S02a | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | grilled |
 | S02b | simmath3d subset + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | pending |
@@ -389,84 +389,11 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S01 — Vendoring ceremony: all C-tier dependencies
 
 - **Stage:** 0 — New-stack proof
-- **Status:** grilled
-- **Goal:** One quarantine pass vendors the full C-tier dependency set: SDL3 as
-  source, the Slang compiler as checksum-pinned prebuilt binaries per
-  platform, Dear ImGui plus cimgui wrappers, Luau
-  as source (its C++ implementation, entering the vendored C tier behind its
-  C-compatible boundary per D33's amendment to D14), and the asset-pipeline
-  libs cgltf, bc7enc, and astcenc (both encoders pinned per the roadmap;
-  runtime ASTC use held for mobile). VENDOR.md records provenance and the
-  binary-versus-source posture per dependency; `just vendor-libs` builds it
-  all; `just shader-check` compiles a seed shader through Slang to all three
-  targets. Vulkan, D3D12 and Metal are reached through Odin's own vendored
-  bindings and are not vendored here (D42). First consumers:
-  S03 (SDL3, Slang), S12a (cgltf, bc7enc, astcenc), S14 (Luau), S16
-  (ImGui).
-- **Working software:** Setup spec. `just vendor-libs` and `just shader-check`
-  green on both CI platforms; VENDOR.md complete.
-- **Depends on:** S00
-- **Decisions:** D7, D9, D14, D33, D42, D48, D50
-- **Course:** module S01; path tag engine; teaches the C-tier vendoring
-  ceremony against `just vendor-libs` and `just shader-check`; also seeds the
-  shared Setup track.
-- **Prototype ports:** quarantine vendoring policy and VENDOR.md conventions;
-  the prototype's Lua vendoring recipe, adapted for Luau (D33: Luau's C API
-  stays 5.1-era-compatible so the recipe's patterns carry, but the C++
-  toolchain and its build flags are new).
-- **Normative references:** none
-- **Scope in:** SDL3 source vendored and built by vendor-libs; the Slang
-  compiler prebuilt per target, checksum-pinned, upgrade procedure recorded,
-  wired into shader-check; Dear ImGui plus cimgui generated C wrappers
-  including imgui_impl_sdl3, with the render backend wrapper deferred to S16
-  now that there is no single imgui_impl to wrap and the render half is the
-  in-house ImDrawData renderer over the RHI (D48); Luau source vendored, C++
-  compiled inside vendor-libs alongside cimgui (D33); cgltf, bc7enc, astcenc
-  vendored and pinned; hostile-input posture recorded per dependency; a
-  per-dependency security-response field in VENDOR.md (upstream advisory
-  source, bump trigger, the re-vendor recipe), Luau marked the
-  security-critical dependency whose security releases re-vendor out of
-  cadence (D50), with a free scheduled report-only Action diffing pinned
-  versions against upstream release tags and opening a ticket on drift;
-  the D48 compile-only hosted Windows CI leg, ruled 2026-07-30 to enter
-  here because this is the first spec producing Windows-compilable code,
-  with S00 unchanged and this spec's grilling naming the leg's exact entry
-  point. The vendor-quarantine skill ships here
-  (`docs/plans/claude-tooling-design.md`).
-- **Scope out:** quic-go and Go dependencies (Go modules, S26 and S27a); any
-  consumer code of these libraries. The Vulkan, D3D12 and Metal bindings,
-  which come from Odin's vendor collection rather than this quarantine pass.
-- **Open questions:**
-  - Which Slang release to pin, and whether its Metal target is mature
-    enough to depend on. D42 requires a demonstrated real-shader-to-working
-    MSL compile before anything relies on it; this is where that
-    demonstration happens, and the fallback is Slang to SPIR-V to MSL
-    through SPIRV-Cross, which would add SPIRV-Cross to this pass.
-  - Whether `shader-check` compiles the seed shader to all three targets on
-    every run or one target per CI leg.
-  - cimgui generation: upstream-generated wrappers as-is or regenerated, and
-    how backend-wrapper gaps get shimmed per D14.
-  - Does Linux CI need lavapipe or another software Vulkan device installed
-    at this stage or deferred to S04.
-  - SDL3 build configuration surface (which subsystems compiled),
-    including whether the D47 shared offscreen-target viewport transport,
-    or its residual Win32/X11 reparenting tactic, needs anything enabled
-    here.
-  - **What deny rules go back into `.claude/settings.json`.** D45 emptied
-    them because `vendor/` did not exist; this spec creates it and fills it
-    with third-party source, which is exactly the prompt-injection surface
-    D28's `vendor/**` deny was written for. Decide the rule set here, and
-    whether the VENDOR.md carve-out D28 wanted is expressible now that file
-    matchers have no negation.
-  - Where the D48 compile-only Windows leg attaches now that it is ruled
-    into this spec: inside `just vendor-libs`, inside `just shader-check`,
-    or as a CI job beside them; which vendored C-tier sources it compiles;
-    and how it stays inside S00's bare-label and no-self-hosted-runner
-    rules.
-  - What opens the ticket when this spec's scheduled report-only drift
-    Action sees a new upstream release, who triages it, and how a Luau
-    security release reaches S14, Luau's first consumer, given D50 marks
-    Luau the dependency whose security releases re-vendor out of cadence.
+- **Status:** spec written
+- **Spec document:** [S01-vendoring-ceremony.md](S01-vendoring-ceremony.md),
+  the normative text. This entry has collapsed into it: the document
+  carries every schema field, the grilling dispositions, the vendored
+  roster and its gates, and the exit checklist.
 
 ### C00 — Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates
 

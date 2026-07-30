@@ -8,7 +8,9 @@ users arrive years before S32 and consume an unversioned HEAD, and D1
 calls a determinism break a release blocker in a plan that never defined
 a release. This defines the missing subsystem at the engine era's scale.
 A release is a git tag with CI-built, checksummed binaries attached
-through GitHub Releases, free under the zero-budget constraint. Tags cut
+through GitHub Releases, free under the zero-budget constraint. Those
+binaries are verification artifacts and reproducibility witnesses of the
+tag, not supported end-user downloads in the engine era. Tags cut
 at stage exits, numbered 0.<completed-stage>.<n> while the engine
 builds; S32's engine-accept cuts 1.0. The compatibility surface extends
 D19's re-bake-on-bump posture format by format: a game project and its

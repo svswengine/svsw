@@ -54,10 +54,10 @@ against a long subject that never matches), and never run one over
 mod-supplied, save-supplied or network-supplied text: pattern-matching
 backtracking runs inside one C call where the instruction hook cannot
 interrupt it, the hole the watchdog closes. No checker reads pattern
-literals; review is the whole enforcement. Do not assume a coroutine
-boundary resets or escapes the budget in either direction; whether it
-does is deliberately unspecified (D50), so code depending on either
-answer is written against an unrecorded fact.
+literals; review is the whole enforcement. A coroutine boundary neither
+resets nor escapes the budget: every coroutine in a VM drains the one
+shared pool, and exhaustion latches rather than resetting (D50), so
+splitting a hot loop across coroutines buys it nothing.
 
 ## 2. Mod layout
 

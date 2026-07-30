@@ -200,8 +200,8 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except M00, S00, S01, S02a, S02b, S03,
-S05 and S14, which are **spec written**.
+Every spec below is **pending**, except M00, S00, S01, S02a, S02b, S03, S05
+and S14, which are **spec written**, and S03b, which is **grilled**.
 
 ## Overview
 
@@ -221,7 +221,7 @@ S05 and S14, which are **spec written**.
 | S08 | Split-process topology: sim process + render client over the protocol | `just split-smoke` green, hash-checkpointed agreement | S05, S06 | pending |
 | S09 | 3D stress harness with provisional budgets | `just stress` p95 budgets report-only on hosted CI, hard on dev machine and win rig | S06 | pending |
 | S10 | Milestone B: compute-shader clustered light culling | clustered scene green incl. cluster counts in skeleton hash + parity | S07 | pending |
-| S03b | D3D12 backend: the third RHI implementation on the win rig | `just win-check` runs skeleton + readback tiers on D3D12, report-only | S04 | pending |
+| S03b | D3D12 backend: the third RHI implementation on the win rig | `just win-check` runs skeleton + readback tiers on D3D12, report-only | S04 | grilled |
 | S11a | Chunked world: worldgrid, per-chunk hashes, activation, default fill | `just chunk-golden-check` + parity on the chunk-crossing scenario | S02a, S04 | pending |
 | S11b | Floating origin: presentation-side re-basing | re-based far-from-origin scene, invariance test + parity green | S11a, S06 | pending |
 | S12a | Asset container + assetc: glTF to sectioned binary to rendered goldens | glTF round-trip to rendered goldens + codec fuzz green | S04, S06 | pending |
@@ -766,7 +766,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S03b — D3D12 backend: the third RHI implementation on the win rig
 
 - **Stage:** 1 — Renderer, Forward+ staged
-- **Status:** pending
+- **Status:** grilled
 - **Goal:** The third backend per D48: the RHI's D3D12 implementation,
   exercised on the Windows rig because no hosted runner carries a D3D12
   GPU. Its gate story grows `just win-check` with the skeleton and

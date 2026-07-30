@@ -200,8 +200,8 @@ rung, and what each may read and write, is
 [`docs/agents/skills.md`](../agents/skills.md). Spec status itself stays
 here: no tracker records it.
 
-Every spec below is **pending**, except M00, S00 and S01, which are **spec
-written**, and S02a, which is **grilled**.
+Every spec below is **pending**, except M00, S00, S01 and S02a, which are
+**spec written**.
 
 ## Overview
 
@@ -211,7 +211,7 @@ written**, and S02a, which is **grilled**.
 | [S00](S00-repo-bootstrap.md) | Repo bootstrap: toolchain, just check skeleton, two-platform CI | `just check` green on both CI platforms (setup) | none | spec written |
 | [S01](S01-vendoring-ceremony.md) | Vendoring ceremony: all C-tier dependencies | `just vendor-libs` + `just shader-check` green (setup) | S00 | spec written |
 | C00 | Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates | deployed course shell with the S00 and S01 modules live (setup) | S00, S01 | pending |
-| S02a | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | grilled |
+| [S02a](S02a-prototype-kernel-port.md) | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | spec written |
 | S02b | simmath3d subset + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | pending |
 | S03 | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | pending |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
@@ -460,65 +460,12 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S02a — Prototype kernel port: kernel, ECS, simrng, save/replay, harness
 
 - **Stage:** 0 — New-stack proof
-- **Status:** grilled
-- **Goal:** Port the deterministic core from the internal prototype test-first
-  with its suites: `engine/kernel` (accumulator, Session), `engine/ecs`
-  (generational handles, sparse-set pools, command buffer), `engine/simrng`
-  (PCG32 per logical slot), `engine/save` and `engine/replay` (hardened
-  codecs), and `engine/harness` (XXH3 `hash_world`, determinism pyramid). save
-  and replay port with the kernel because the pyramid's snapshot-resim tests
-  need them, ahead of their stage 5 consumer. Spall zones land at the base of
-  every ported package, compiled out of retail.
-- **Working software:** A headless deterministic simulation runs N ticks; the
-  four-layer determinism pyramid (same-seed-twice, snapshot-then-resimulate,
-  committed world-hash golden, neutral-input regression) passes green inside
-  `just check` on both CI platforms; a save-load-save round-trip is
-  byte-identical, joining the golden discipline from this first port because
-  a serializer that mutates state on write is the divergence class the
-  forward-resim gates cannot see.
-- **Depends on:** S00
-- **Decisions:** D1, D20
-- **Course:** module S02a; path tag engine; teaches the deterministic kernel,
-  ECS, and harness in Odin against the headless N-tick sim and the
-  determinism pyramid.
-- **Prototype ports:** `engine/kernel`, `engine/ecs`, `engine/simrng`,
-  `engine/save`, `engine/replay`, `engine/harness`, each with its test suite.
-- **Normative references:** none
-- **Scope in:** prototype packages ported with their suites, adapted only where
-  the svsw layout demands; spall profiling zones compiled out of retail;
-  `hash_world` injectivity and length-prefix discipline plus the
-  completeness-reflection test; the engine allocator model as an explicit
-  deliverable of the kernel port: which allocator sim code runs under, the
-  per-tick temporary arena policy, and the allocator-identity assertions
-  at VM entry points, so D43's reference to the engine's allocator has a
-  referent. The golden-hashes skill and the
-  golden-recorder agent's gate-availability re-verification ship here
-  (`docs/plans/claude-tooling-design.md`). The test-count badge ships here,
-  per `docs/plans/public-stats.md`.
-- **Scope out:** simmath3d and the cross-CPU gate (S02b); per-chunk hashing
-  and worldgrid (S11a); any rendering; the Luau host (S14); archetype/parallel
-  ECS redesign (not on this roadmap).
-- **Open questions:**
-  - Which prototype tests port verbatim versus get rewritten against svsw
-    package paths.
-  - Does `hash_world` port byte-identical or gain chunk-composition hooks now
-    to spare S11a churn.
-  - save/replay versioning: keep hard-reject-on-bump or start the
-    versioned-reader story the carry-forward flags, given stage 5 ships
-    checkpoints over the wire.
-  - How much of the harness's golden-recording workflow ports now versus with
-    S04's new tiers.
-  - Does the ported Session expose a per-system boundary hook (system
-    names, ordering, a suspension point between systems) now or only when
-    S22c needs it; exposing it now spares the time-travel debugger spec a
-    retrofit against frozen goldens.
-  - Does the byte-identical save-load-save round-trip run as its own layer
-    of the harness pyramid or as a `save` package unit test, and does it
-    need a golden fixture separate from the `hash_world` goldens.
-  - Confirm D20's forced worker-count clause, the identical golden run at
-    workers=1 and workers=max on one hash-golden leg, is S12b scope and
-    creates no obligation here, so no worker-count child is spawned under
-    this spec.
+- **Status:** spec written
+- **Spec document:**
+  [S02a-prototype-kernel-port.md](S02a-prototype-kernel-port.md), the
+  normative text. This entry has collapsed into it: the document carries
+  every schema field, the grilling dispositions, the port inventory, the
+  determinism pyramid, and the exit checklist.
 
 ### S02b — simmath3d subset + cross-CPU hash gate
 
@@ -1812,8 +1759,8 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 - **Course:** module S22c; path tag engine; teaches the snapshot ring,
   seek, and the inspection family against the scrub gate.
 - **Prototype ports:** none; consumes the S22b `engine/checkpoint`
-  substrate and the S02a per-system boundary hook if its open question
-  lands it there.
+  substrate and the per-system boundary hook S02a lands, which arrives
+  observation-only and hash-neutral with its semantics left to this spec.
 - **Normative references:** `docs/design/editor/index.html`, normative
   for the Sim debugger tab, the timeline scrubber, and the chunk-overlay
   hash chips this spec's data feeds serve.
@@ -2197,6 +2144,9 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
     supported-deployment posture, D52 scoping the online tier to
     trusted-network use and D53 making release binaries verification
     artifacts rather than supported downloads.
+  - Whether durability v1 needs a versioned reader for saves and command
+    logs: S02a's ported codecs hard-reject on a version mismatch per D53
+    and name this spec the only reopen point for that question.
 
 ### S28 — Replication: chunk-scoped deltas, prediction, reconciliation
 

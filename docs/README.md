@@ -17,6 +17,9 @@ subdirectory holds one kind of document, and a new subdirectory such as
 - [docs/specs/S01-vendoring-ceremony.md](specs/S01-vendoring-ceremony.md) —
   the S01 normative text: the C-tier vendoring ceremony, its roster, and
   the gates that judge it.
+- [docs/specs/S02a-prototype-kernel-port.md](specs/S02a-prototype-kernel-port.md) —
+  the S02a normative text: the prototype kernel port, the port inventory,
+  and the determinism pyramid.
 - [docs/decisions/README.md](decisions/README.md) — the decision log.
 - [docs/context/CONTEXT.md](context/CONTEXT.md) — the glossary and domain
   model: the terms this repo uses, the ones it bars, and the ambiguous

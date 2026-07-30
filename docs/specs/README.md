@@ -201,7 +201,7 @@ rung, and what each may read and write, is
 here: no tracker records it.
 
 Every spec below is **pending**, except M00, S00, S01 and S02a, which are
-**spec written**, and S02b, S05 and S14, which are **grilled**.
+**spec written**, and S02b, S03, S05 and S14, which are **grilled**.
 
 ## Overview
 
@@ -213,7 +213,7 @@ Every spec below is **pending**, except M00, S00, S01 and S02a, which are
 | C00 | Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates | deployed course shell with the S00 and S01 modules live (setup) | S00, S01 | pending |
 | [S02a](S02a-prototype-kernel-port.md) | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | spec written |
 | S02b | simmath3d subset + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | grilled |
-| S03 | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | pending |
+| S03 | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | grilled |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
 | S05 | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | grilled |
 | S06 | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | pending |
@@ -498,7 +498,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S03 — SDL3 window + RHI device + draw-list render core
 
 - **Stage:** 0 — New-stack proof
-- **Status:** pending
+- **Status:** grilled
 - **Goal:** The new render stack's skeleton: `engine/platform_sdl` (window,
   event pump, swapchain surface), `engine/render3d` (backend-free CPU core
   emitting a plain draw-list), `engine/render3d/gpu` (the in-house rendering

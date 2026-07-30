@@ -23,6 +23,9 @@ subdirectory holds one kind of document, and a new subdirectory such as
 - [docs/plans/public-stats.md](plans/public-stats.md) — the org profile's
   live project stats: which badges exist, what gates them, and where the
   numbers come from.
+- [docs/plans/spec-wayfinding-roadmap.md](plans/spec-wayfinding-roadmap.md) —
+  the order the pending specs get wayfound in, and why: order and rationale
+  only, no status.
 - [docs/design/editor-mockup.md](design/editor-mockup.md) — the M00 design
   record for the editor visual mockup.
 - [docs/design/editor/](design/editor/) — the M00 mockup itself; open

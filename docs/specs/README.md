@@ -201,7 +201,7 @@ rung, and what each may read and write, is
 here: no tracker records it.
 
 Every spec below is **pending**, except M00, S00, S01 and S02a, which are
-**spec written**.
+**spec written**, and S02b, S05 and S14, which are **grilled**.
 
 ## Overview
 
@@ -212,10 +212,10 @@ Every spec below is **pending**, except M00, S00, S01 and S02a, which are
 | [S01](S01-vendoring-ceremony.md) | Vendoring ceremony: all C-tier dependencies | `just vendor-libs` + `just shader-check` green (setup) | S00 | spec written |
 | C00 | Course platform bootstrap: sibling repo, Pages deploy, embed and truth-verify gates | deployed course shell with the S00 and S01 modules live (setup) | S00, S01 | pending |
 | [S02a](S02a-prototype-kernel-port.md) | Prototype kernel port: kernel, ECS, simrng, save/replay, harness | headless N-tick sim + determinism pyramid green | S00 | spec written |
-| S02b | simmath3d subset + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | pending |
+| S02b | simmath3d subset + cross-CPU hash gate | cross-platform hash gate green on both CI legs | S02a | grilled |
 | S03 | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | pending |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
-| S05 | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | pending |
+| S05 | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | grilled |
 | S06 | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | pending |
 | S07 | Milestone A: cascaded-shadow-mapped sun (stage 1 exit) | CSM scene green on all four tiers (stage 1 exit) | S06 | pending |
 | S08 | Split-process topology: sim process + render client over the protocol | `just split-smoke` green, hash-checkpointed agreement | S05, S06 | pending |
@@ -227,7 +227,7 @@ Every spec below is **pending**, except M00, S00, S01 and S02a, which are
 | S12a | Asset container + assetc: glTF to sectioned binary to rendered goldens | glTF round-trip to rendered goldens + codec fuzz green | S04, S06 | pending |
 | S12b | Runtime asset loader: worker-thread decode + hot reload | running scene hot-swaps assets with handle stability asserted | S12a | pending |
 | S13 | Deterministic collision v1, scoped by private product requirements | degenerate corpus + snapshot-resim + capsule-on-terrain golden green | S02a, S11a | pending |
-| S14 | Luau sandbox port: the scripting boundary, test-first | sandboxed Luau sample reproduces its world-hash golden headless | S01, S02a | pending |
+| S14 | Luau sandbox port: the scripting boundary, test-first | sandboxed Luau sample reproduces its world-hash golden headless | S01, S02a | grilled |
 | S15 | Mod pipeline port: multi-mod shared world, proven by the mirroring test | prototype mod suites + skeletal second-mod mirroring test green | S14 | pending |
 | S16 | Asset viewer: the minimal ImGui-on-SDL3 shell | viewer renders a container mesh (human checkpoint) + CI shell smoke | S01, S12a | pending |
 | S17 | svsw CLI: new/run/package with 3D scaffold templates | `just scaffold-check` green inside `just check` | S11a, S12b, S15 | pending |
@@ -470,7 +470,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S02b — simmath3d subset + cross-CPU hash gate
 
 - **Stage:** 0 — New-stack proof
-- **Status:** pending
+- **Status:** grilled
 - **Goal:** The new `engine/simmath3d` minimal subset (vec3/mat4/quat,
   transcendentals banned) under the policed no-FMA policy, with the
   cross-CPU/cross-OS hash gate live from its first commit. This is the
@@ -615,7 +615,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S05 — Protocol v0: versioned frames, two-process echo pair, the arrow rule
 
 - **Stage:** 0 — New-stack proof
-- **Status:** pending
+- **Status:** grilled
 - **Goal:** The protocol seam from frame one: a `protocol/` package with
   versioned, checksum-first, length-prefixed frames extending the prototype
   replay-codec hardening pattern, version negotiation with a
@@ -1144,7 +1144,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S14 — Luau sandbox port: the scripting boundary, test-first
 
 - **Stage:** 2 — World structure + assets
-- **Status:** pending
+- **Status:** grilled
 - **Goal:** Stand up the scripting boundary on Luau (D33), adapting the
   internal prototype's hardened Lua embedding as patterns rather than a literal
   port: sandbox construction, an allocation cap plus the shared

@@ -335,8 +335,9 @@ that would justify reinstating it.
 
 Committed in `.claude/settings.json`: allow `just *`, `odin *`, `go
 test`/`vet`/`build`, `gofmt`, read-only git, and bd; deny reads into
-`vendor/**` except VENDOR.md manifests, `**/build/**`, and
-`**/*.generated.*`; network-touching shell commands stay ask, matching the
+`vendor/**`, `**/build/**`, and `**/*.generated.*`, the vendoring manifest
+sitting outside that tree at `docs/VENDOR.md` rather than inside it;
+network-touching shell commands stay ask, matching the
 no-network-beyond-plan-pins policy. The `WebFetch` tool is the one carve-out
 and carries no rule at all (D39): `curl`, `wget`, the git network verbs,
 `go get` and `go install` still ask, because they write into the working
@@ -417,9 +418,10 @@ These amend the original tooling design where they conflict with it.
    Claude Code version, with nested CLAUDE.md documented as the fallback.
 5. **Committed permissions.** `.claude/settings.json` commits a shared
    allow and deny list: allow `just`, `odin`, and Go build/test/vet,
-   `gofmt`, read-only git, and bd; deny reads into `vendor/**` except
-   VENDOR.md, build output, and generated files; network commands stay
-   ask. Personal loosening lives in gitignored `settings.local.json`.
+   `gofmt`, read-only git, and bd; deny reads into `vendor/**`, build
+   output, and generated files, the vendoring manifest sitting outside
+   that tree at `docs/VENDOR.md`; network commands stay ask. Personal
+   loosening lives in gitignored `settings.local.json`.
    **Amended by D39:** the `WebFetch` tool carries no committed rule, while
    network-touching shell commands keep their ask; and personal loosening
    reaches only what the committed file leaves silent, since a local

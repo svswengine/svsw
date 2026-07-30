@@ -36,7 +36,7 @@ files.
 
 | Badge | Source | Available from |
 |---|---|---|
-| Spec progress (`N/39 implemented`) | the spec index in `docs/specs/README.md` | S00 (immediately) |
+| Spec progress (`N/46 implemented`) | the spec index in `docs/specs/README.md` | S00 (immediately) |
 | Test count | the Odin test runner | S02a |
 | Headless == windowed parity | the D22 parity gate | S04 |
 | Sim-tick p95 | the stress harness | S09 |
@@ -66,4 +66,4 @@ Not commitments; options to add once the tier-1 and tier-2 badges are live:
 - Stats jobs run on hosted runners only, per the S00 CI policy.
 - Spec progress counts the S- and C-series rows of the spec index, M00
   excluded: it is a design artifact, not engine software. The denominator is
-  39 today and changes only when that index gains or loses a row.
+  46 today and changes only when that index gains or loses a row.

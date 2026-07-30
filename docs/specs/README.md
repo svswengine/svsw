@@ -533,7 +533,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S02a — Prototype kernel port: kernel, ECS, simrng, save/replay, harness
 
 - **Stage:** 0 — New-stack proof
-- **Status:** pending
+- **Status:** grilled
 - **Goal:** Port the deterministic core from the internal prototype test-first
   with its suites: `engine/kernel` (accumulator, Session), `engine/ecs`
   (generational handles, sparse-set pools, command buffer), `engine/simrng`

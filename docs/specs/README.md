@@ -201,7 +201,8 @@ rung, and what each may read and write, is
 here: no tracker records it.
 
 Every spec below is **pending**, except M00, S00, S01, S02a, S02b, S03,
-S03b, S05 and S14, which are **spec written**.
+S03b, S05 and S14, which are **spec written**, and S06, which is
+**grilled**.
 
 ## Overview
 
@@ -216,7 +217,7 @@ S03b, S05 and S14, which are **spec written**.
 | [S03](S03-window-rhi-draw-list.md) | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | spec written |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
 | [S05](S05-protocol-v0.md) | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | spec written |
-| S06 | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | pending |
+| S06 | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | grilled |
 | S07 | Milestone A: cascaded-shadow-mapped sun (stage 1 exit) | CSM scene green on all four tiers (stage 1 exit) | S06 | pending |
 | S08 | Split-process topology: sim process + render client over the protocol | `just split-smoke` green, hash-checkpointed agreement | S05, S06 | pending |
 | S09 | 3D stress harness with provisional budgets | `just stress` p95 budgets report-only on hosted CI, hard on dev machine and win rig | S06 | pending |
@@ -558,7 +559,7 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S06 — Renderer foundations: pipeline cache, culling, materials, camera
 
 - **Stage:** 1 — Renderer, Forward+ staged
-- **Status:** pending
+- **Status:** grilled
 - **Goal:** The real renderer's substrate: simmath3d fleshed out under the
   policed policy; a pipeline cache keyed by the fixed permutation set (lit or
   unlit, skinned or static, alpha modes); frustum culling; depth-buffer

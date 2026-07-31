@@ -32,6 +32,9 @@ subdirectory holds one kind of document, and a new subdirectory such as
 - [docs/specs/S05-protocol-v0.md](specs/S05-protocol-v0.md) —
   the S05 normative text: the v0 frame envelope, the seam types, and the
   arrow rule.
+- [docs/specs/S06-renderer-foundations.md](specs/S06-renderer-foundations.md) —
+  the S06 normative text: the twelve-id pipeline permutation set, the
+  material, light and camera substrate, and the D54 resolve chain.
 - [docs/specs/S14-luau-sandbox-port.md](specs/S14-luau-sandbox-port.md) —
   the S14 normative text: the Luau scripting boundary, the v1 `svsw.*`
   surface, and the sandbox gates.

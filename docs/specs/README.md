@@ -201,8 +201,7 @@ rung, and what each may read and write, is
 here: no tracker records it.
 
 Every spec below is **pending**, except M00, S00, S01, S02a, S02b, S03,
-S03b, S05 and S14, which are **spec written**, and S06, which is
-**grilled**.
+S03b, S05, S06 and S14, which are **spec written**.
 
 ## Overview
 
@@ -217,7 +216,7 @@ S03b, S05 and S14, which are **spec written**, and S06, which is
 | [S03](S03-window-rhi-draw-list.md) | SDL3 window + RHI device + draw-list render core | offscreen frame headless + windowed present (human checkpoint) | S01, S02b | spec written |
 | S04 | Textured cube: three golden tiers + the D22 parity gate | `render3d-golden-check` + `just parity-check` green on the cube | S02b, S03 | pending |
 | [S05](S05-protocol-v0.md) | Protocol v0: versioned frames, two-process echo pair, the arrow rule | `just proto-frame-check` runs the echo pair + hostile corpus green | S02a | spec written |
-| S06 | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | grilled |
+| [S06](S06-renderer-foundations.md) | Renderer foundations: pipeline cache, culling, materials, camera | multi-object PBR scene green on all four tiers | S04 | spec written |
 | S07 | Milestone A: cascaded-shadow-mapped sun (stage 1 exit) | CSM scene green on all four tiers (stage 1 exit) | S06 | pending |
 | S08 | Split-process topology: sim process + render client over the protocol | `just split-smoke` green, hash-checkpointed agreement | S05, S06 | pending |
 | S09 | 3D stress harness with provisional budgets | `just stress` p95 budgets report-only on hosted CI, hard on dev machine and win rig | S06 | pending |
@@ -559,59 +558,14 @@ character. S30 owns its recipe name, `just scene-accept`, which S32's
 ### S06 — Renderer foundations: pipeline cache, culling, materials, camera
 
 - **Stage:** 1 — Renderer, Forward+ staged
-- **Status:** grilled
-- **Goal:** The real renderer's substrate: simmath3d fleshed out under the
-  policed policy; a pipeline cache keyed by the fixed permutation set (lit or
-  unlit, skinned or static, alpha modes); frustum culling; depth-buffer
-  opaque ordering plus a back-to-front transparent pass; a material system
-  consuming glTF metallic-roughness values as-authored; the camera (position,
-  quaternion, FOV, near-far, inverse-VP ray picking) with the
-  top-down-to-first-person continuum designed as one camera with two rigs.
-- **Working software:** A multi-object PBR scene (unshadowed) with opaque and
-  transparent draws passes world-hash, skeleton-hash, readback, and parity
-  tiers on both CI platforms; a camera-rig test scene exercises both rigs.
-- **Depends on:** S04
-- **Decisions:** D8, D54, D55
-- **Course:** module S06; path tag engine; teaches renderer foundations and
-  Slang shading against the multi-object PBR scene.
-- **Prototype ports:** none
-- **Normative references:** none
-- **Scope in:** simmath3d growth one function at a time under the cross-CPU
-  gate; pipeline cache plus permutation key; frustum culling;
-  opaque/transparent pass structure; glTF metallic-roughness BRDF in Slang
-  under the shader-check gate; the D54 resolve chain: an HDR offscreen
-  target resolved through one fixed tonemap operator to the sRGB target
-  D22 hashes, presents and reads back; camera, two rigs, ray picking;
-  an off-hash debug-draw layer (lines, shapes, text chips submitted per
-  frame, excluded from the world hash by construction) that S13, S22 and
-  S23 consume instead of inventing three ad-hoc paths; a shader
-  live-reload path, watch-recompile through the pinned Slang binary with
-  pipeline-cache invalidation at a deterministic frame point, dev-only
-  and off-hash; render-side math explicitly outside the policed regime,
-  covered by the skeleton tier.
-- **Scope out:** shadows (S07); clustered lights (S10); asset import (scene
-  data stays hardcoded or trivially embedded until S12a).
-- **Open questions:**
-  - The exact permutation set, and whether alpha modes mean mask plus blend
-    or blend only in v1.
-  - How PBR test materials get authored before assetc exists (hand-written
-    Odin data, embedded glTF values).
-  - Camera-rig API shape and the continuum transition contract.
-  - Point/spot light representation before clustering: a fixed small array
-    in Milestone A?
-  - The v1 ambient term, a flat or hemisphere constant (D54): shape and
-    value, settled before the Milestone A goldens record; IBL and GI stay
-    post-engine (D55). Frozen provisionally here and re-verified by S07's
-    grilling once real CSM shadows exist, or fixed once here for both.
-  - Does landing D54's HDR-offscreen to fixed-tonemap to sRGB resolve
-    chain here oblige the one-time re-record of S04's cube goldens as part
-    of this spec's gate, so the Milestone A goldens never absorb a stale
-    cube golden.
-  - The tonemap operator D54 fixes, and how its curve interacts with the
-    readback tolerance.
-  - The debug-draw layer's skeleton-hash treatment: included behind a
-    flag or excluded like ImGui, and how a windowed-only overlay stays
-    out of the D22 parity legs.
+- **Status:** spec written
+- **Spec document:**
+  [S06-renderer-foundations.md](S06-renderer-foundations.md), the
+  normative text. This entry has collapsed into it: the document carries
+  every schema field, the grilling dispositions, the twelve-id
+  permutation set and its cache, the material, light and camera
+  substrate, the D54 resolve chain with its two formats, and the exit
+  checklist.
 
 ### S07 — Milestone A: cascaded-shadow-mapped sun (stage 1 exit)
 
